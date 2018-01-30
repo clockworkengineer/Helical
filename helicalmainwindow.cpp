@@ -48,7 +48,6 @@ void HelicalMainWindow::error(const QString &errorMessage, int errorCode)
     qDebug() << errorMessage << " " << errorCode;
 
 }
-cancerman2064
 
 void HelicalMainWindow::serverVerified()
 {
