@@ -4,8 +4,11 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT += core
+QT += network
+QT += gui
 
+CONFIG += c++11
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Helical
@@ -25,10 +28,32 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        heilcalmainwindow.cpp
+    QtSSH/qtssh.cpp \
+    helicalconnectiondialog.cpp \
+    QtSSH/qtsshchannel.cpp \
+    qtterminaltext.cpp \
+    helicalmainwindow.cpp
 
 HEADERS += \
-        heilcalmainwindow.h
+    QtSSH/qtssh.h \
+    helicalconnectiondialog.h \
+    QtSSH/qtsshchannel.h \
+    qtterminaltext.h \
+    helicalmainwindow.h
 
 FORMS += \
-        heilcalmainwindow.ui
+        heilcalmainwindow.ui \
+    helicalconnectiondialog.ui
+
+INCLUDEPATH += $$PWD/../../NetBeansProjects/Antikythera_mechanism/include
+DEPENDPATH += $$PWD/../../NetBeansProjects/Antikythera_mechanism/include
+
+unix: LIBS += -L/usr/local/lib -lboost_system
+unix: LIBS += -L$$PWD/../../NetBeansProjects/Antik_Static_Library/dist/Debug/GNU-Linux/ -lantik_static_library
+
+unix: PRE_TARGETDEPS += $$PWD/../../NetBeansProjects/Antik_Static_Library/dist/Debug/GNU-Linux/libantik_static_library.a
+
+unix: CONFIG += link_pkgconfig
+unix: PKGCONFIG += libssh
+unix: PKGCONFIG += libssh_threads
+
