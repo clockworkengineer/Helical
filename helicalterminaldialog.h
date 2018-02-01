@@ -11,13 +11,13 @@ namespace Ui {
 class HelicalConnectionDialog;
 }
 
-class HelicalConnectionDialog : public QDialog
+class HelicalTerminalDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit HelicalConnectionDialog(QtSSH &session, QWidget *parent = 0);
-    ~HelicalConnectionDialog();
+    explicit HelicalTerminalDialog(QtSSH &session, QWidget *parent = 0);
+    ~HelicalTerminalDialog();
 
     void runCommand(const QString &command);
     void runShell(int columns, int rows);
@@ -27,11 +27,13 @@ public slots:
     void keyRecv(const QByteArray &keyAscii);
     void remoteShellClosed();
 
-public:
+protected:
+    void closeEvent(QCloseEvent *event);
 
 private:
 
     void setupTerminalTextArea();
+    void terminateShell();
 
     Ui::HelicalConnectionDialog *ui;
 
@@ -39,8 +41,7 @@ private:
 
     QScopedPointer<QtSSHChannel> m_connectionChannel {nullptr};
     QScopedPointer<QHBoxLayout> m_textAreaLayout {nullptr};
-    QScopedPointer<std::thread> m_commandThread {nullptr};
-
+    QScopedPointer<std::thread> m_remoteShellThread {nullptr};
 
 };
 

@@ -27,6 +27,7 @@ public:
     void disconnectFromServer();
     void verifyServer();
     void authorizeUser();
+    QString getBanner();
 
 signals:
     void error(const QString &errorMessage, int errorCode);
@@ -42,7 +43,6 @@ public:
     CSSHSession& getSession();
 
 private:
-
     SSHSession m_session;
 
 };

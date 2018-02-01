@@ -1,8 +1,5 @@
 #include "helicalmainwindow.h"
 #include <QApplication>
-#include "QtSSH/qtssh.h"
-
-#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -13,4 +10,5 @@ int main(int argc, char *argv[])
     helicalMain.show();
 
     return helicalApplication.exec();
+
 }

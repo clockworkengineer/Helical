@@ -46,7 +46,7 @@ public:
     void read(QByteArray &ioBuffer);
     void sendEndOfFile();
 
-    bool isOpened();
+    bool isOpen();
     bool isClosed();
     bool isEndOfFile();
 

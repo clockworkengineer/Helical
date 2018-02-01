@@ -6,7 +6,8 @@
 #include <QDebug>
 #include <QSettings>
 
-#include "helicalconnectiondialog.h"
+#include "helicalserverconnectionsdialog.h"
+#include "helicalterminaldialog.h"
 #include "QtSSH/qtssh.h"
 
 namespace Ui {
@@ -21,22 +22,36 @@ public:
     explicit HelicalMainWindow(QWidget *parent = 0);
     ~HelicalMainWindow();
 
+    void sessionFullyConnected();
+    void terminateSession();
+
 public slots:
+    void connectToServer(const QString &connectionName);
     void error(const QString &errorMessage, int errorCode);
     void serverVerified();
     void userAuthorized();
     void connectedToServer();
 
+private slots:
+    void on_actionEdit_triggered();
+
+    void on_disconnectServerButton_clicked();
+
+    void on_terminalButton_clicked();
+
 private:
     Ui::HeilcalMainWindow *ui;
 
-    QtSSH m_session;
+    QScopedPointer<QtSSH> m_session;
+
+    QString m_connectionName;
     QString m_serverName;
     QString m_serverPort;
     QString m_userName;
     QString m_userPassword;
 
-    QScopedPointer<HelicalConnectionDialog> m_connectionWindow;
+    QScopedPointer<HelicalServerConnectionsDialog> m_serverConnections;
+    QScopedPointer<HelicalTerminalDialog> m_connectionWindow;
 
 };
 

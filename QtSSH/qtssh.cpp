@@ -49,6 +49,7 @@ void QtSSH::verifyServer()
 
 void QtSSH::authorizeUser()
 {
+
     try {
         if (userAuthorize(m_session)) {
             emit userAuthorized();
@@ -56,6 +57,22 @@ void QtSSH::authorizeUser()
     }catch(const CSSHSession::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
     }
+
+}
+
+QString QtSSH::getBanner()
+{
+
+    QString serverBanner;
+
+    try {
+        std::string banner = m_session.getBanner();
+        serverBanner = serverBanner.fromStdString(banner);
+    }catch(const CSSHSession::Exception &e) {
+        emit error(QString::fromStdString(e.getMessage()),e.getCode());
+    }
+
+    return(serverBanner);
 
 }
 

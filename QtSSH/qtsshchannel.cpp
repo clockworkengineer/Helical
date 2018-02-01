@@ -34,10 +34,10 @@ void QtSSHChannel::close()
 void QtSSHChannel::executeRemoteCommand(const QString &command)
 {
 
-    QtChannelIOContext writeContext {this};
+    QtChannelIOContext ioContext {this};
 
     try {
-        executeCommand(*m_channel, command.toStdString(), writeContext);
+        executeCommand(*m_channel, command.toStdString(), ioContext);
     }catch(const CSSHChannel::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
     }
@@ -47,10 +47,10 @@ void QtSSHChannel::executeRemoteCommand(const QString &command)
 void QtSSHChannel::remoteShell(int columns, int rows)
 {
 
-    QtChannelIOContext writeContext {this};
+    QtChannelIOContext ioContext {this};
 
     try {
-        interactiveShell(*m_channel,  columns, rows, writeContext);
+        interactiveShell(*m_channel,  columns, rows, ioContext);
         emit remoteShellClosed();
     }catch(const CSSHChannel::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
@@ -88,7 +88,7 @@ void QtSSHChannel::sendEndOfFile()
     m_channel->sendEndOfFile();
 }
 
-bool QtSSHChannel::isOpened()
+bool QtSSHChannel::isOpen()
 {
     return(m_channel->isOpen());
 }
