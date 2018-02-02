@@ -25,11 +25,11 @@ HelicalMainWindow::~HelicalMainWindow()
 
 void HelicalMainWindow::sessionFullyConnected()
 {
-    qDebug() << "Connected.";
 
     if (!m_command.isEmpty()){
         ui->executeCommandButton->setEnabled(true);
     }
+
     ui->terminalButton->setEnabled(true);
     ui->disconnectServerButton->setEnabled(true);
 
@@ -75,30 +75,36 @@ void HelicalMainWindow::connectToServer(const QString &connectionName)
 
     m_session.reset(new QtSSH);
 
-    connect(m_session.data(), &QtSSH::error, this, &HelicalMainWindow::error);
-    connect(m_session.data(), &QtSSH::connectedToServer, this, &HelicalMainWindow::connectedToServer);
-    connect(m_session.data(), &QtSSH::serverVerified, this, &HelicalMainWindow::serverVerified);
-    connect(m_session.data(), &QtSSH::userAuthorized, this, &HelicalMainWindow::userAuthorized);
+    if (m_session) {
 
-    m_session->setSessionDetails(m_serverName,m_serverPort, m_userName, m_userPassword);
-    m_session->connectToServer();
-    m_serverConnections->hide();
-    ui->serverNameLabel->setText(m_serverName);
+        connect(m_session.data(), &QtSSH::error, this, &HelicalMainWindow::error);
+        connect(m_session.data(), &QtSSH::connectedToServer, this, &HelicalMainWindow::connectedToServer);
+        connect(m_session.data(), &QtSSH::serverVerified, this, &HelicalMainWindow::serverVerified);
+        connect(m_session.data(), &QtSSH::userAuthorized, this, &HelicalMainWindow::userAuthorized);
+
+        m_serverConnections->hide();
+        ui->statusBar->showMessage("Connecting to server ...");
+
+        m_session->setSessionDetails(m_serverName,m_serverPort, m_userName, m_userPassword);
+        m_session->connectToServer();
+        if (m_session->isConnected() && m_session->isAuthorized()) {
+            ui->serverNameLabel->setText(m_serverName);
+        }
+
+    }
 
 }
 
 void HelicalMainWindow::error(const QString &errorMessage, int errorCode)
 {
 
-    qDebug() << errorMessage << " " << errorCode;
+    ui->statusBar->showMessage(errorMessage);
 
 }
 
 void HelicalMainWindow::serverVerified()
 {
     QtSSH *session { qobject_cast<QtSSH*>(sender()) };
-
-    qDebug() << "Server verified...";
 
     ui->currentStatusLabel->setText("Server verified....");
     if (session) {
@@ -109,7 +115,6 @@ void HelicalMainWindow::serverVerified()
 
 void HelicalMainWindow::userAuthorized()
 {
-    qDebug() << "User authorized ...";
     ui->currentStatusLabel->setText("User authorized ...");
     sessionFullyConnected();
 }
@@ -118,7 +123,7 @@ void HelicalMainWindow::connectedToServer()
 {
     QtSSH *session { qobject_cast<QtSSH*>(sender()) };
 
-    qDebug() << "Connected to server ...";
+    ui->statusBar->clearMessage();
     ui->currentStatusLabel->setText("Connected to server ...");
     if (session) {
         session->verifyServer();
@@ -152,7 +157,7 @@ void HelicalMainWindow::on_actionConnections_triggered()
     if (!m_serverConnections) {
         m_serverConnections.reset(new HelicalServerConnectionsDialog(this));
     }
-
+    ui->statusBar->clearMessage();
     m_serverConnections->exec();
 }
 

@@ -1,5 +1,4 @@
 #include "qtsshchannel.h"
-#include <QDebug>
 
 QtSSHChannel::QtSSHChannel(QtSSH &session, QObject *parent) : QObject {parent},
     m_channel { new CSSHChannel(session.getSession()) }

@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QHBoxLayout>
 
-#include "qtterminaltext.h"
+#include "QtTerminal/qtterminaltext.h"
 #include "QtSSH/qtsshchannel.h"
 
 namespace Ui {

@@ -76,6 +76,16 @@ QString QtSSH::getBanner()
 
 }
 
+bool QtSSH::isConnected()
+{
+    return(m_session.isConnected());
+}
+
+bool QtSSH::isAuthorized()
+{
+    return(m_session.isAuthorized());
+}
+
 CSSHSession& QtSSH::getSession()
 {
     return m_session;

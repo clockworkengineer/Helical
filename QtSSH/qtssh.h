@@ -28,6 +28,8 @@ public:
     void verifyServer();
     void authorizeUser();
     QString getBanner();
+    bool isConnected();
+    bool isAuthorized();
 
 signals:
     void error(const QString &errorMessage, int errorCode);
