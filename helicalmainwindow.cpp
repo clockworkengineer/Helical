@@ -25,14 +25,17 @@ HelicalMainWindow::~HelicalMainWindow()
 
 void HelicalMainWindow::sessionFullyConnected()
 {
-        qDebug() << "Connected.";
+    qDebug() << "Connected.";
 
-        ui->terminalButton->setEnabled(true);
-        ui->disconnectServerButton->setEnabled(true);
+    if (!m_command.isEmpty()){
+        ui->executeCommandButton->setEnabled(true);
+    }
+    ui->terminalButton->setEnabled(true);
+    ui->disconnectServerButton->setEnabled(true);
 
-        ui->currentStatusLabel->setText("Connected.");
+    ui->currentStatusLabel->setText("Connected.");
 
-        ui->serverSessionLog->insertPlainText(m_session->getBanner());
+    ui->serverSessionLog->insertPlainText(m_session->getBanner());
 
 }
 
@@ -53,6 +56,7 @@ void HelicalMainWindow::terminateSession()
     ui->serverNameLabel->setText("");
     ui->terminalButton->setEnabled(false);
     ui->disconnectServerButton->setEnabled(false);
+    ui->executeCommandButton->setEnabled(false);
     ui->serverSessionLog->clear();
 
 }
@@ -66,6 +70,7 @@ void HelicalMainWindow::connectToServer(const QString &connectionName)
     m_serverPort = helicalSettings.value("port").toString();
     m_userName = helicalSettings.value("user").toString();
     m_userPassword = helicalSettings.value("password").toString();
+    m_command = helicalSettings.value("command").toString();
     helicalSettings.endGroup();
 
     m_session.reset(new QtSSH);
@@ -121,20 +126,16 @@ void HelicalMainWindow::connectedToServer()
 
 }
 
-void HelicalMainWindow::on_actionEdit_triggered()
+void HelicalMainWindow::commandOutput(const QString &text)
 {
-
-    if (!m_serverConnections) {
-        m_serverConnections.reset(new HelicalServerConnectionsDialog(this));
-    }
-
-    m_serverConnections->exec();
+    ui->serverSessionLog->insertPlainText(text);
+    ui->serverSessionLog->moveCursor (QTextCursor::End);
 
 }
 
 void HelicalMainWindow::on_disconnectServerButton_clicked()
 {
-   terminateSession();
+    terminateSession();
 }
 
 void HelicalMainWindow::on_terminalButton_clicked()
@@ -144,4 +145,27 @@ void HelicalMainWindow::on_terminalButton_clicked()
     m_connectionWindow->runShell(80,24);
     m_connectionWindow->show();
 
+}
+
+void HelicalMainWindow::on_actionConnections_triggered()
+{
+    if (!m_serverConnections) {
+        m_serverConnections.reset(new HelicalServerConnectionsDialog(this));
+    }
+
+    m_serverConnections->exec();
+}
+
+void HelicalMainWindow::on_executeCommandButton_clicked()
+{
+
+    m_connectionChannel.reset(new QtSSHChannel(*m_session));
+    if (m_connectionChannel) {
+        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOut, this, &HelicalMainWindow::commandOutput);
+        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdErr, this, &HelicalMainWindow::commandOutput);
+        m_connectionChannel->open();
+        m_connectionChannel->executeRemoteCommand(m_command);
+        m_connectionChannel->close();
+        m_connectionChannel.reset();
+    }
 }

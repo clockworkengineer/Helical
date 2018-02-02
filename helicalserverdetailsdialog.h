@@ -13,10 +13,13 @@ class HelicalServerDetailsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit HelicalServerDetailsDialog(QWidget *parent = 0);
+    explicit HelicalServerDetailsDialog(const QString& connectionName, QWidget *parent = 0);
     ~HelicalServerDetailsDialog();
 
     QString connectionName() const;
+
+protected:
+    void showEvent( QShowEvent* event );
 
 private slots:
     void on_cancelButton_clicked();
@@ -31,6 +34,7 @@ private:
     QString m_serverPort;
     QString m_userName;
     QString m_userPassword;
+    QString m_command;
 
 };
 

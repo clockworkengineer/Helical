@@ -52,8 +52,7 @@ void HelicalServerConnectionsDialog::saveConnectionList()
 void HelicalServerConnectionsDialog::on_newServerButton_clicked()
 {
 
-    HelicalServerDetailsDialog serverDetails;
-
+    HelicalServerDetailsDialog serverDetails("");
     serverDetails.exec();
 
     QString connectionName = serverDetails.connectionName();
@@ -67,6 +66,12 @@ void HelicalServerConnectionsDialog::on_newServerButton_clicked()
 void HelicalServerConnectionsDialog::on_editServerButton_clicked()
 {
 
+    QListWidgetItem *connectionToEdit= ui->connectionList->currentItem();
+
+    if(connectionToEdit != nullptr) {
+        HelicalServerDetailsDialog serverDetails(connectionToEdit->text());
+        serverDetails.exec();
+    }
 }
 
 void HelicalServerConnectionsDialog::on_removeServerButton_clicked()

@@ -31,24 +31,30 @@ public slots:
     void serverVerified();
     void userAuthorized();
     void connectedToServer();
+    void commandOutput(const QString &text);
 
 private slots:
-    void on_actionEdit_triggered();
 
     void on_disconnectServerButton_clicked();
 
     void on_terminalButton_clicked();
 
+    void on_actionConnections_triggered();
+
+    void on_executeCommandButton_clicked();
+
 private:
     Ui::HeilcalMainWindow *ui;
 
-    QScopedPointer<QtSSH> m_session;
+    QScopedPointer<QtSSH> m_session {nullptr};
+    QScopedPointer<QtSSHChannel> m_connectionChannel {nullptr};
 
     QString m_connectionName;
     QString m_serverName;
     QString m_serverPort;
     QString m_userName;
     QString m_userPassword;
+    QString m_command;
 
     QScopedPointer<HelicalServerConnectionsDialog> m_serverConnections;
     QScopedPointer<HelicalTerminalDialog> m_connectionWindow;
