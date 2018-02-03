@@ -16,6 +16,7 @@ class HelicalTerminalDialog : public QDialog
     Q_OBJECT
 
 public:
+
     explicit HelicalTerminalDialog(QtSSH &session, QWidget *parent = 0);
     ~HelicalTerminalDialog();
 
@@ -28,12 +29,15 @@ public slots:
     void remoteShellClosed();
 
 protected:
+
     void closeEvent(QCloseEvent *event);
 
 private:
 
     void setupTerminalTextArea();
     void terminateShell();
+
+    void vt100Unsupported();
 
     Ui::HelicalConnectionDialog *ui;
 

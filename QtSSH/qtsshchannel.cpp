@@ -49,7 +49,7 @@ void QtSSHChannel::remoteShell(int columns, int rows)
     QtChannelIOContext ioContext {this};
 
     try {
-        interactiveShell(*m_channel,  columns, rows, ioContext);
+        interactiveShell(*m_channel,  "vt100", columns, rows, ioContext);
         emit remoteShellClosed();
     }catch(const CSSHChannel::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());

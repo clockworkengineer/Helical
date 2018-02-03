@@ -51,6 +51,7 @@ public:
     bool isEndOfFile();
 
 signals:
+
     void error(const QString &errorMessage, int errorCode);
     void opened();
     void closed();

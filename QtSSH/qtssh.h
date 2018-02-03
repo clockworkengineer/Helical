@@ -30,8 +30,10 @@ public:
     QString getBanner();
     bool isConnected();
     bool isAuthorized();
+    CSSHSession& getSession();
 
 signals:
+
     void error(const QString &errorMessage, int errorCode);
     void connectedToServer();
     void serverVerified();
@@ -40,11 +42,8 @@ signals:
 
 public slots:
 
-public:
-
-    CSSHSession& getSession();
-
 private:
+
     SSHSession m_session;
 
 };

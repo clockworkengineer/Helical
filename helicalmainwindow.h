@@ -19,13 +19,12 @@ class HelicalMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+
     explicit HelicalMainWindow(QWidget *parent = 0);
     ~HelicalMainWindow();
 
-    void sessionFullyConnected();
-    void terminateSession();
-
 public slots:
+
     void connectToServer(const QString &connectionName);
     void error(const QString &errorMessage, int errorCode);
     void serverVerified();
@@ -36,14 +35,15 @@ public slots:
 private slots:
 
     void on_disconnectServerButton_clicked();
-
     void on_terminalButton_clicked();
-
     void on_actionConnections_triggered();
-
     void on_executeCommandButton_clicked();
 
 private:
+
+    void sessionFullyConnected();
+    void terminateSession();
+
     Ui::HeilcalMainWindow *ui;
 
     QScopedPointer<QtSSH> m_session {nullptr};

@@ -57,7 +57,7 @@ void HelicalTerminalDialog::setupTerminalTextArea()
     connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOut, m_terminalTextArea, &QtTerminalText::terminalOutput);
     connect(m_connectionChannel.data(), &QtSSHChannel::writeStdErr, m_terminalTextArea, &QtTerminalText::terminalOutput);
 
-    m_terminalTextArea->setFocus();
+    m_terminalTextArea->setupTerminal();
 
 }
 

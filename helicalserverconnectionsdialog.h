@@ -13,12 +13,9 @@ class HelicalServerConnectionsDialog : public QDialog
     Q_OBJECT
 
 public:
+
     explicit HelicalServerConnectionsDialog(QWidget *parent = 0);
     ~HelicalServerConnectionsDialog();
-
-    void loadConnectionsList();
-    void populateConnectionList();
-    void saveConnectionList();
 
 signals:
 
@@ -32,6 +29,11 @@ private slots:
     void on_connectServerButton_clicked();
 
 private:
+
+    void loadConnectionsList();
+    void populateConnectionList();
+    void saveConnectionList();
+
     Ui::HelicalServerConnectionsDialog *ui;
 
     QStringList m_connectionList;
