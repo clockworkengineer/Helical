@@ -1,5 +1,6 @@
 #include "helicalterminaldialog.h"
 #include "ui_helicalterminaldialog.h"
+#include <QDebug>
 
 HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, QWidget *parent) :
     QDialog(parent),
@@ -56,6 +57,15 @@ void HelicalTerminalDialog::setupTerminalTextArea()
     connect(m_connectionChannel.data(), &QtSSHChannel::remoteShellClosed, this, &HelicalTerminalDialog::remoteShellClosed);
     connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOut, m_terminalTextArea, &QtTerminalText::terminalOutput);
     connect(m_connectionChannel.data(), &QtSSHChannel::writeStdErr, m_terminalTextArea, &QtTerminalText::terminalOutput);
+
+    QFont font("Monospace");
+    font.setStyleHint(QFont::TypeWriter);
+    m_terminalTextArea->setFont(font);
+    QFontMetrics fm(m_terminalTextArea->property("font").value<QFont>());
+        qDebug() << fm.lineSpacing();
+    int pixelsWide = fm.width("0");
+    int pixelsHigh = fm.height();
+    m_terminalTextArea->setFixedSize(pixelsWide*(m_terminalTextArea->m_maxColumns+1), pixelsHigh*(m_terminalTextArea->m_maxRows+1)+2);
 
     m_terminalTextArea->setupTerminal();
 
