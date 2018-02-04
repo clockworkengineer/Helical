@@ -2,9 +2,11 @@
 #include "ui_helicalterminaldialog.h"
 #include <QDebug>
 
-HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, QWidget *parent) :
+HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, int columns, int rows, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::HelicalConnectionDialog)
+    ui(new Ui::HelicalConnectionDialog),
+    m_columns {columns},
+    m_rows {rows}
 
 {
     ui->setupUi(this);
@@ -62,10 +64,10 @@ void HelicalTerminalDialog::setupTerminalTextArea()
     font.setStyleHint(QFont::TypeWriter);
     m_terminalTextArea->setFont(font);
     QFontMetrics fm(m_terminalTextArea->property("font").value<QFont>());
-        qDebug() << fm.lineSpacing();
+    qDebug() << fm.lineSpacing();
     int pixelsWide = fm.width("0");
     int pixelsHigh = fm.height();
-    m_terminalTextArea->setFixedSize(pixelsWide*(m_terminalTextArea->m_maxColumns+1), pixelsHigh*(m_terminalTextArea->m_maxRows+1)+2);
+    m_terminalTextArea->setFixedSize(pixelsWide*(m_columns+1), pixelsHigh*(m_rows+1)+2);
 
     m_terminalTextArea->setupTerminal();
 
@@ -89,10 +91,10 @@ void HelicalTerminalDialog::runCommand(const QString &command)
 
 }
 
-void HelicalTerminalDialog::runShell(int columns, int rows)
+void HelicalTerminalDialog::runShell()
 {
 
-    m_remoteShellThread.reset(new std::thread(&QtSSHChannel::remoteShell,m_connectionChannel.data(), columns, rows));
+    m_remoteShellThread.reset(new std::thread(&QtSSHChannel::remoteShell,m_connectionChannel.data(), m_columns, m_rows));
 
 }
 

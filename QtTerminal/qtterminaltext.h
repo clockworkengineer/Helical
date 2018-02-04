@@ -27,6 +27,7 @@ public:
     void processCharacter(std::deque<QChar> &textToProcess);
     void scrollUp(int numberofLines);
     void bufferToScreen();
+    std::uint8_t* getBuffer(int row, int column) { return &m_terminalBuffer[row*m_maxColumns+column];}
 
 protected:
 
@@ -40,9 +41,7 @@ public slots:
 
     void terminalOutput(const QString &text);
 
-public:
-    const int m_maxColumns  {80};
-    const int m_maxRows {24};
+
 private:
 
     static void vt100Unsupported(QtTerminalText *terminal,const QString &escapeSequence);
@@ -54,10 +53,11 @@ private:
     int m_currentViewOffset {0};
 
     QHash<QString, TerminalFn>  m_vt100FnTable;
-    std::uint8_t m_terminalBuffer[24][80];
+    std::uint8_t m_terminalBuffer[80*24];
     int m_currentRow {0};
     int m_currentColumn {0};
-
+    const int m_maxColumns  {80};
+    const int m_maxRows {24};
 
 };
 

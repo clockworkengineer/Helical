@@ -12,8 +12,8 @@ QtTerminalText::QtTerminalText(QWidget *parent) : QListView(parent)
 
 {
 
-    for (auto line=0; line < m_maxRows; line++) {
-        std::memset(&m_terminalBuffer[line],' ', m_maxColumns);
+    for (auto row=0; row < m_maxRows; row++) {
+        std::memset(getBuffer(row,0),' ', m_maxColumns);
     }
 
     m_vt100FnTable.insert("[20h",QtTerminalText::vt100Unsupported);
@@ -103,10 +103,10 @@ void QtTerminalText::setupTerminal()
 
     m_terminalModel.insertRows(0, m_maxRows);
 
-    for (auto line : m_terminalBuffer) {
+    for (auto row=0; row < m_maxRows; row++) {
         QString screenLine;
-        for (auto cnt01=0; cnt01 < m_maxColumns; cnt01++) {
-            screenLine.append(QChar(line[cnt01]));
+        for (auto column=0; column < m_maxColumns; column++) {
+            screenLine.append(QChar(*getBuffer(row, column)));
         }
         m_terminalModel.setData(m_terminalModel.index(currentRow++), screenLine);
     }
@@ -159,16 +159,16 @@ void QtTerminalText::scrollUp(int numberofLines)
     m_terminalModel.insertRows(m_terminalModel.rowCount(), numberofLines);
     m_currentViewOffset+=numberofLines;
     QString screenLine;
-    for (auto cnt01=0; cnt01 < m_maxColumns; cnt01++) {
-        screenLine.append(QChar(m_terminalBuffer[0][cnt01]));
+    for (auto column=0; column < m_maxColumns; column++) {
+        screenLine.append(QChar(*getBuffer(0, column)));
     }
     m_terminalModel.setData(m_terminalModel.index(m_currentViewOffset-1), screenLine);
 
     while (numberofLines--) {
-        for (auto line=0; line < m_maxRows-1; line++) {
-            std::memmove(&m_terminalBuffer[line],&m_terminalBuffer[line+1], m_maxColumns);
+        for (auto row=0; row < m_maxRows-1; row++) {
+            std::memmove(getBuffer(row, 0), getBuffer(row+1, 0), m_maxColumns);
         }
-        std::memset(&m_terminalBuffer[m_maxRows-1],' ', m_maxColumns);
+        std::memset(getBuffer(m_maxRows-1, 0),' ', m_maxColumns);
     }
 
     setCurrentIndex(m_terminalModel.index(m_currentViewOffset+m_currentRow,m_currentColumn));
@@ -216,7 +216,7 @@ void QtTerminalText::processCharacter(std::deque<QChar> &textToProcess)
         if (!textToProcess.front().isPrint()) {
             std::cout << static_cast<int>(textToProcess.front().toLatin1()) << std::endl;
         }
-        m_terminalBuffer[m_currentRow][m_currentColumn] = textToProcess.front().toLatin1();
+        *getBuffer(m_currentRow, m_currentColumn) = textToProcess.front().toLatin1();
         m_currentColumn++;
         break;
 
@@ -226,10 +226,10 @@ void QtTerminalText::processCharacter(std::deque<QChar> &textToProcess)
 void QtTerminalText::bufferToScreen()
 {
     int currentRow=m_currentViewOffset;
-    for (auto line : m_terminalBuffer) {
+    for (auto row=0; row < m_maxRows; row++) {
         QString screenLine;
-        for (auto cnt01=0; cnt01 < m_maxColumns; cnt01++) {
-            screenLine.append(QChar(line[cnt01]));
+        for (auto column=0; column < m_maxColumns; column++) {
+            screenLine.append(QChar(*getBuffer(row, column)));
         }
         m_terminalModel.setData(m_terminalModel.index(currentRow++), screenLine);
     }
@@ -287,13 +287,13 @@ void QtTerminalText::vt100Unsupported(QtTerminalText *terminal, const QString &e
 void QtTerminalText::vt100ClearLine(QtTerminalText *terminal, const QString &escapeSequence)
 {
     if ((escapeSequence=="[K")||(escapeSequence=="[0K")) {
-        std::memset(&terminal->m_terminalBuffer[terminal->m_currentRow][terminal->m_currentColumn], ' ',
+        std::memset(terminal->getBuffer(terminal->m_currentRow, terminal->m_currentColumn), ' ',
                        terminal->m_maxColumns-terminal->m_currentColumn);
     } else if (escapeSequence=="[1K") {
-        std::memset(&terminal->m_terminalBuffer[terminal->m_currentRow][0], ' ',
+        std::memset(terminal->getBuffer(terminal->m_currentRow, 0), ' ',
                        terminal->m_currentColumn);
     } else if (escapeSequence=="[2K") {
-        std::memset(&terminal->m_terminalBuffer[terminal->m_currentRow][0], ' ',
+        std::memset(terminal->getBuffer(terminal->m_currentRow, 0), ' ',
                        terminal->m_maxColumns);
     }
 
@@ -304,17 +304,17 @@ void QtTerminalText::vt100ClearScreen(QtTerminalText *terminal, const QString &e
 
     if ((escapeSequence=="[J")||(escapeSequence=="[0J")) {
         vt100ClearLine(terminal, "[K");
-        for (auto line=terminal->m_currentRow+1; line < terminal->m_maxRows; line++) {
-            std::memset(&terminal->m_terminalBuffer[line][0], ' ', terminal->m_maxColumns);
+        for (auto row=terminal->m_currentRow+1; row < terminal->m_maxRows; row++) {
+            std::memset(terminal->getBuffer(row, 0), ' ', terminal->m_maxColumns);
         }
     } else if (escapeSequence=="[1J") {
         vt100ClearLine(terminal, "[1K");
-        for (auto line=0; line < terminal->m_currentRow; line++) {
-            std::memset(&terminal->m_terminalBuffer[line][0], ' ', terminal->m_maxColumns);
+        for (auto row=0; row < terminal->m_currentRow; row++) {
+            std::memset(terminal->getBuffer(row, 0), ' ', terminal->m_maxColumns);
         }
     } else if (escapeSequence=="[2J") {
-        for (auto line=0; line < terminal->m_maxRows; line++) {
-            std::memset(&terminal->m_terminalBuffer[line],' ', terminal->m_maxColumns);
+        for (auto row=0; row < terminal->m_maxRows; row++) {
+            std::memset(terminal->getBuffer(row, 0),' ', terminal->m_maxColumns);
         }
     }
 

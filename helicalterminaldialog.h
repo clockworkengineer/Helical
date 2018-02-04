@@ -17,11 +17,11 @@ class HelicalTerminalDialog : public QDialog
 
 public:
 
-    explicit HelicalTerminalDialog(QtSSH &session, QWidget *parent = 0);
+    explicit HelicalTerminalDialog(QtSSH &session, int columns, int rows, QWidget *parent = 0);
     ~HelicalTerminalDialog();
 
     void runCommand(const QString &command);
-    void runShell(int columns, int rows);
+    void runShell();
 
 public slots:
 
@@ -37,11 +37,14 @@ private:
     void setupTerminalTextArea();
     void terminateShell();
 
-    void vt100Unsupported();
+    //void vt100Unsupported();
 
     Ui::HelicalConnectionDialog *ui;
 
     QtTerminalText *m_terminalTextArea {nullptr};
+
+    int m_columns {0};
+    int m_rows {0};
 
     QScopedPointer<QtSSHChannel> m_connectionChannel {nullptr};
     QScopedPointer<QHBoxLayout> m_textAreaLayout {nullptr};

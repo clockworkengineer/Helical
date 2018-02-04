@@ -146,8 +146,8 @@ void HelicalMainWindow::on_disconnectServerButton_clicked()
 void HelicalMainWindow::on_terminalButton_clicked()
 {
 
-    m_connectionWindow.reset(new HelicalTerminalDialog(*m_session.data()));
-    m_connectionWindow->runShell(80,24);
+    m_connectionWindow.reset(new HelicalTerminalDialog(*m_session.data(), 80, 24));
+    m_connectionWindow->runShell();
     m_connectionWindow->show();
 
 }
