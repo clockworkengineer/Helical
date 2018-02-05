@@ -166,15 +166,12 @@ void CTerminal::vt100CursorMove(CTerminal *terminal, const QString &escapeSequen
         number.resize(number.size()-1);
         terminal->m_currentColumn -= std::stoi(number);
     } else {
-        QString coordinates { escapeSequence};
-        QStringList numbers;
-        coordinates = coordinates.remove(0,1);
+        std::string coordinates { escapeSequence.toStdString() };
+        coordinates = coordinates.substr(1);
         coordinates.resize(coordinates.size()-1);
-        numbers = coordinates.split(";");
-        if (numbers.size()==2) {
-            terminal->m_currentRow = std::min((numbers[0].toInt()-1), (terminal->m_maxRows-1));
-            terminal->m_currentColumn = std::min((numbers[1].toInt()-1),  (terminal->m_maxColumns-1));
-        }
+        terminal->m_currentRow = std::min((std::stoi(coordinates)-1), (terminal->m_maxRows-1));
+        coordinates = coordinates.substr(coordinates.find(';')+1);
+        terminal->m_currentColumn = std::min((std::stoi(coordinates)-1),  (terminal->m_maxColumns-1));
     }
 
 }
