@@ -1,11 +1,9 @@
 #include "cterminal.h"
-#include <QDebug>
 #include <cstring>
 #include <iostream>
 
 CTerminal::CTerminal(QObject *parent) : QObject(parent)
 {
-
 
     // Set character attributes/video modes.
 
@@ -91,7 +89,7 @@ void CTerminal::setupTerminal(int columns, int rows)
     m_maxColumns = columns;
     m_maxRows = rows;
 
-    m_terminalBuffer.reset(new (std::uint8_t[rows*columns]));
+    m_terminalBuffer.reset(new std::uint8_t[rows*columns]);
 
     for (auto row=0; row < m_maxRows; row++) {
         std::memset(getBuffer(0, row),' ', m_maxColumns);
@@ -148,33 +146,13 @@ void CTerminal::vt100CursorMove(CTerminal *terminal, const QString &escapeSequen
     if((escapeSequence == "[H") || (escapeSequence == "[;H")) {
         terminal->m_currentRow = terminal->m_currentColumn = 0;
     } else if (escapeSequence.endsWith('A')) {
-        std::string number {escapeSequence.toStdString()};
-        number = number.substr(1);
-        number.resize(number.size()-1);
-        if (!number.empty()){
-            terminal->m_currentRow -= std::stoi(number);
-        }
+        terminal->m_currentRow -= terminal->extractNumber(escapeSequence.toStdString());
     } else if (escapeSequence.endsWith('B')) {
-        std::string number {escapeSequence.toStdString()};
-        number = number.substr(1);
-        number.resize(number.size()-1);
-        if (!number.empty()){
-            terminal->m_currentRow += std::stoi(number);
-        }
+        terminal->m_currentRow += terminal->extractNumber(escapeSequence.toStdString());
     } else if (escapeSequence.endsWith('C')) {
-        std::string number {escapeSequence.toStdString()};
-        number = number.substr(1);
-        number.resize(number.size()-1);
-        if (!number.empty()){
-            terminal->m_currentColumn += std::stoi(number);
-        }
+        terminal->m_currentColumn += terminal->extractNumber(escapeSequence.toStdString());
     } else if (escapeSequence.endsWith('D')) {
-        std::string number {escapeSequence.toStdString()};
-        number = number.substr(1);
-        number.resize(number.size()-1);
-        if (!number.empty()){
-            terminal->m_currentColumn -= std::stoi(number);
-        }
+        terminal->m_currentColumn -= terminal->extractNumber(escapeSequence.toStdString());
     } else {
         std::string coordinates { escapeSequence.toStdString() };
         coordinates = coordinates.substr(1);
@@ -184,10 +162,6 @@ void CTerminal::vt100CursorMove(CTerminal *terminal, const QString &escapeSequen
         terminal->m_currentColumn = std::min((std::stoi(coordinates)-1),  (terminal->m_maxColumns-1));
     }
 }
-
-}
-
-
 
 void CTerminal::processEscapeSequence(std::deque<QChar> &textToProcess)
 {
@@ -289,6 +263,19 @@ void CTerminal::setScreenScroll(ScreenScrollFn screenScrollFn, void *screenScrol
 {
     m_screenScroll = screenScrollFn;
     m_screeSncrollContext = screenScrollContext;
+}
+
+int CTerminal::extractNumber(const std::string &numberToExtract)
+{
+    std::string number {numberToExtract};
+    number = number.substr(1);
+    number.resize(number.size()-1);
+    if (!number.empty()){
+        return(std::stoi(number));
+    }
+
+    return(0);
+
 }
 
 int CTerminal::getCurrentRow() const

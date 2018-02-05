@@ -22,6 +22,8 @@ public:
 
     void setScreenScroll(ScreenScrollFn screenScrollFn, void *screenCcrollContext);
 
+    int extractNumber(const std::string &numberToExtract);
+
     void processEscapeSequence(std::deque<QChar> &textToProcess);
     void processCharacter(std::deque<QChar> &textToProcess);
     void scrollScreenlUp(int numberofLines);
