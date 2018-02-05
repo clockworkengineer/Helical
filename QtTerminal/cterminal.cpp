@@ -146,25 +146,25 @@ void CTerminal::vt100CursorMove(CTerminal *terminal, const QString &escapeSequen
     if((escapeSequence == "[H") || (escapeSequence == "[;H")) {
         terminal->m_currentRow = terminal->m_currentColumn = 0;
     } else if (escapeSequence.endsWith('A')) {
-        QString number {escapeSequence};
-        number = number.remove(0,1);
+        std::string number {escapeSequence.toStdString()};
+        number = number.substr(1);
         number.resize(number.size()-1);
-        terminal->m_currentRow -= number.toInt();
+        terminal->m_currentRow -= std::stoi(number);
     } else if (escapeSequence.endsWith('B')) {
-        QString number {escapeSequence};
-        number = number.remove(0,1);
+        std::string number {escapeSequence.toStdString()};
+        number = number.substr(1);
         number.resize(number.size()-1);
-        terminal->m_currentRow += number.toInt();
+        terminal->m_currentRow += std::stoi(number);
     } else if (escapeSequence.endsWith('C')) {
-        QString number {escapeSequence};
-        number = number.remove(0,1);
+        std::string number {escapeSequence.toStdString()};
+        number = number.substr(1);
         number.resize(number.size()-1);
-        terminal->m_currentColumn += number.toInt();
+        terminal->m_currentColumn += std::stoi(number);
     } else if (escapeSequence.endsWith('D')) {
-        QString number {escapeSequence};
-        number = number.remove(0,1);
+        std::string number {escapeSequence.toStdString()};
+        number = number.substr(1);
         number.resize(number.size()-1);
-        terminal->m_currentColumn -= number.toInt();
+        terminal->m_currentColumn -= std::stoi(number);
     } else {
         QString coordinates { escapeSequence};
         QStringList numbers;
