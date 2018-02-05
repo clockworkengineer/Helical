@@ -36,6 +36,7 @@ public slots:
 private:
 
     QStringListModel m_terminalModel;
+
     int m_currentViewOffset {0};
 
     CTerminal m_terminal;

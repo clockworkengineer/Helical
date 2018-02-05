@@ -2,7 +2,6 @@
 #define CTERMINAL_H
 
 #include <QObject>
-#include <QHash>
 
 #include <memory>
 #include <unordered_map>
@@ -47,7 +46,7 @@ private:
     static void vt100ClearScreen(CTerminal *terminal, const QString &escapeSequence);
     static void vt100CursorMove(CTerminal *terminal, const QString &escapeSequence);
 
-    QHash<QString, TerminalFn>  m_vt100FnTable;
+    std::unordered_map<std::string, TerminalFn>  m_vt100FnTable;
 
     std::unique_ptr<std::uint8_t>m_terminalBuffer;
 

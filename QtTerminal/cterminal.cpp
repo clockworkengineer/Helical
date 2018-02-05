@@ -1,86 +1,88 @@
 #include "cterminal.h"
-
+#include <QDebug>
 #include <cstring>
 #include <iostream>
 
 CTerminal::CTerminal(QObject *parent) : QObject(parent)
 {
 
-    m_vt100FnTable.insert("[20h",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?1h",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?3h",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?4h",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?5h",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?6h",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?7h",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?8h",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?9h",CTerminal::vt100Unsupported);
 
     // Set character attributes/video modes.
 
-    m_vt100FnTable.insert("[m",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[;m",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[1m",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[2m",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[3m",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[4m",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[5m",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[6m",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[7m",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[8m",CTerminal::vt100Unsupported);
+    m_vt100FnTable["[m"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[;m"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[1m"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[2m"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[3m"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[4m"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[5m"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[6m"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[7m"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[8m"] = CTerminal::vt100Unsupported;
 
-    m_vt100FnTable.insert("[20l",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?1l",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?2l",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?3l",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?4l",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?5l",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?6l",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?7l",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?8l",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("[?9l",CTerminal::vt100Unsupported);
+    m_vt100FnTable["[20l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?1l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?2l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?3l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?4l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?5l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?6l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?7l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?8l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?9l"] = CTerminal::vt100Unsupported;
+
+    m_vt100FnTable["[20h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?1h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?3h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?4h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?5h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?6h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?7h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?8h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?9h"] = CTerminal::vt100Unsupported;
 
     // Cursor movement
 
-    m_vt100FnTable.insert("[H",CTerminal::vt100CursorMove);
-    m_vt100FnTable.insert("[;H",CTerminal::vt100CursorMove);
-    m_vt100FnTable.insert("[;r",CTerminal::vt100CursorMove);
-    m_vt100FnTable.insert("[A",CTerminal::vt100CursorMove);
-    m_vt100FnTable.insert("[B",CTerminal::vt100CursorMove);
-    m_vt100FnTable.insert("[C",CTerminal::vt100CursorMove);
-    m_vt100FnTable.insert("[D",CTerminal::vt100CursorMove);
+    m_vt100FnTable["[H"] = CTerminal::vt100CursorMove;
+    m_vt100FnTable["[;H"] = CTerminal::vt100CursorMove;
+    m_vt100FnTable["[;r"] = CTerminal::vt100CursorMove;
+    m_vt100FnTable["[A"] = CTerminal::vt100CursorMove;
+    m_vt100FnTable["[B"] = CTerminal::vt100CursorMove;
+    m_vt100FnTable["[C"] = CTerminal::vt100CursorMove;
+    m_vt100FnTable["[D"] = CTerminal::vt100CursorMove;
 
     // Clear line
 
-    m_vt100FnTable.insert("[K",CTerminal::vt100ClearLine);
-    m_vt100FnTable.insert("[0K",CTerminal::vt100ClearLine);
-    m_vt100FnTable.insert("[1K",CTerminal::vt100ClearLine);
-    m_vt100FnTable.insert("[2K",CTerminal::vt100ClearLine);
+    m_vt100FnTable["[K"] = CTerminal::vt100ClearLine;
+    m_vt100FnTable["[0K"] = CTerminal::vt100ClearLine;
+    m_vt100FnTable["[1K"] = CTerminal::vt100ClearLine;
+    m_vt100FnTable["[2K"] = CTerminal::vt100ClearLine;
 
     // Clear screen
 
-    m_vt100FnTable.insert("[J",CTerminal::vt100ClearScreen);
-    m_vt100FnTable.insert("[0J",CTerminal::vt100ClearScreen);
-    m_vt100FnTable.insert("[1J",CTerminal::vt100ClearScreen);
-    m_vt100FnTable.insert("[2J",CTerminal::vt100ClearScreen);
+    m_vt100FnTable["[J"] = CTerminal::vt100ClearScreen;
+    m_vt100FnTable["[0J"] = CTerminal::vt100ClearScreen;
+    m_vt100FnTable["[1J"] = CTerminal::vt100ClearScreen;
+    m_vt100FnTable["[2J"] = CTerminal::vt100ClearScreen;
 
     // Vt52 compatabilty  mode
 
-    m_vt100FnTable.insert("=",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert(">",CTerminal::vt100Unsupported);
+    m_vt100FnTable["="] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[">"] = CTerminal::vt100Unsupported;
 
     // Character set selection
 
-    m_vt100FnTable.insert("(A",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert(")A",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("(B",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert(")B",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("(0",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert(")0",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("(1",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert(")1",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert("(2",CTerminal::vt100Unsupported);
-    m_vt100FnTable.insert(")2",CTerminal::vt100Unsupported);
+    m_vt100FnTable["(A"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[")A"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["(B"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[")B"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["(0"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[")0"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["(1"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[")1"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["(2"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[")2"] = CTerminal::vt100Unsupported;
+
 }
 
 void CTerminal::setupTerminal(int columns, int rows)
@@ -107,13 +109,13 @@ void CTerminal::vt100ClearLine(CTerminal *terminal, const QString &escapeSequenc
 {
     if ((escapeSequence=="[K")||(escapeSequence=="[0K")) {
         std::memset(terminal->getBuffer(terminal->m_currentColumn, terminal->m_currentRow), ' ',
-                       terminal->m_maxColumns-terminal->m_currentColumn);
+                    terminal->m_maxColumns-terminal->m_currentColumn);
     } else if (escapeSequence=="[1K") {
         std::memset(terminal->getBuffer(0, terminal->m_currentRow), ' ',
-                       terminal->m_currentColumn);
+                    terminal->m_currentColumn);
     } else if (escapeSequence=="[2K") {
         std::memset(terminal->getBuffer(0, terminal->m_currentRow), ' ',
-                       terminal->m_maxColumns);
+                    terminal->m_maxColumns);
     }
 
 }
@@ -149,22 +151,30 @@ void CTerminal::vt100CursorMove(CTerminal *terminal, const QString &escapeSequen
         std::string number {escapeSequence.toStdString()};
         number = number.substr(1);
         number.resize(number.size()-1);
-        terminal->m_currentRow -= std::stoi(number);
+        if (!number.empty()){
+            terminal->m_currentRow -= std::stoi(number);
+        }
     } else if (escapeSequence.endsWith('B')) {
         std::string number {escapeSequence.toStdString()};
         number = number.substr(1);
         number.resize(number.size()-1);
-        terminal->m_currentRow += std::stoi(number);
+        if (!number.empty()){
+            terminal->m_currentRow += std::stoi(number);
+        }
     } else if (escapeSequence.endsWith('C')) {
         std::string number {escapeSequence.toStdString()};
         number = number.substr(1);
         number.resize(number.size()-1);
-        terminal->m_currentColumn += std::stoi(number);
+        if (!number.empty()){
+            terminal->m_currentColumn += std::stoi(number);
+        }
     } else if (escapeSequence.endsWith('D')) {
         std::string number {escapeSequence.toStdString()};
         number = number.substr(1);
         number.resize(number.size()-1);
-        terminal->m_currentColumn -= std::stoi(number);
+        if (!number.empty()){
+            terminal->m_currentColumn -= std::stoi(number);
+        }
     } else {
         std::string coordinates { escapeSequence.toStdString() };
         coordinates = coordinates.substr(1);
@@ -173,6 +183,7 @@ void CTerminal::vt100CursorMove(CTerminal *terminal, const QString &escapeSequen
         coordinates = coordinates.substr(coordinates.find(';')+1);
         terminal->m_currentColumn = std::min((std::stoi(coordinates)-1),  (terminal->m_maxColumns-1));
     }
+}
 
 }
 
@@ -190,12 +201,12 @@ void CTerminal::processEscapeSequence(std::deque<QChar> &textToProcess)
         if (!textToProcess.front().isNumber()) {
             matchSeqence.append(textToProcess.front());
         }
-        if (m_vt100FnTable.find(escapeSeqence)!=m_vt100FnTable.cend()) {
-            m_vt100FnTable[escapeSeqence](this, escapeSeqence);
+        if (m_vt100FnTable.find(escapeSeqence.toStdString())!=m_vt100FnTable.cend()) {
+            m_vt100FnTable[escapeSeqence.toStdString()](this, escapeSeqence);
             return;
         }
-        if (m_vt100FnTable.find(matchSeqence)!=m_vt100FnTable.cend()) {
-            m_vt100FnTable[matchSeqence](this, escapeSeqence);
+        if (m_vt100FnTable.find(matchSeqence.toStdString())!=m_vt100FnTable.cend()) {
+            m_vt100FnTable[matchSeqence.toStdString()](this, escapeSeqence);
             return;
         }
         textToProcess.pop_front();

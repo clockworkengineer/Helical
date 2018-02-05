@@ -18,6 +18,8 @@ HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, int columns, int ro
 
     setupTerminalTextArea();
 
+    adjustSize();
+
 }
 
 HelicalTerminalDialog::~HelicalTerminalDialog()
@@ -50,26 +52,21 @@ void HelicalTerminalDialog::setupTerminalTextArea()
 {
 
     m_terminalTextArea = new QtTerminalText(ui->terminalText);
-
     m_textAreaLayout.reset(new QHBoxLayout);
     m_textAreaLayout->addWidget(m_terminalTextArea);
     ui->terminalText->setLayout(m_textAreaLayout.data());
-
-    connect(m_terminalTextArea, &QtTerminalText::keySend, this, &HelicalTerminalDialog::keyRecv);
-    connect(m_connectionChannel.data(), &QtSSHChannel::remoteShellClosed, this, &HelicalTerminalDialog::remoteShellClosed);
-    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOut, m_terminalTextArea, &QtTerminalText::terminalOutput);
-    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdErr, m_terminalTextArea, &QtTerminalText::terminalOutput);
 
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     m_terminalTextArea->setFont(font);
     QFontMetrics fm(m_terminalTextArea->property("font").value<QFont>());
-    qDebug() << fm.lineSpacing();
-    int pixelsWide = fm.width("0");
-    int pixelsHigh = fm.height();
-    m_terminalTextArea->setFixedSize(pixelsWide*(m_columns+1), pixelsHigh*(m_rows+1)+2);
-
+    m_terminalTextArea->setFixedSize(fm.maxWidth()*(m_columns)+2, fm.height()*(m_rows+1)+2);
     m_terminalTextArea->setupTerminalText(m_columns, m_rows);
+
+    connect(m_terminalTextArea, &QtTerminalText::keySend, this, &HelicalTerminalDialog::keyRecv);
+    connect(m_connectionChannel.data(), &QtSSHChannel::remoteShellClosed, this, &HelicalTerminalDialog::remoteShellClosed);
+    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOut, m_terminalTextArea, &QtTerminalText::terminalOutput);
+    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdErr, m_terminalTextArea, &QtTerminalText::terminalOutput);
 
 }
 
