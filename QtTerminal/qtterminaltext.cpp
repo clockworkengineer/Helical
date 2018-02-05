@@ -12,101 +12,24 @@ QtTerminalText::QtTerminalText(QWidget *parent) : QListView(parent)
 
 {
 
-    for (auto row=0; row < m_maxRows; row++) {
-        std::memset(getBuffer(row,0),' ', m_maxColumns);
-    }
-
-    m_vt100FnTable.insert("[20h",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?1h",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?3h",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?4h",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?5h",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?6h",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?7h",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?8h",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?9h",QtTerminalText::vt100Unsupported);
-
-    // Set character attributes/video modes.
-
-    m_vt100FnTable.insert("[m",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[;m",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[1m",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[2m",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[3m",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[4m",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[5m",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[6m",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[7m",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[8m",QtTerminalText::vt100Unsupported);
-
-    m_vt100FnTable.insert("[20l",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?1l",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?2l",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?3l",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?4l",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?5l",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?6l",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?7l",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?8l",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("[?9l",QtTerminalText::vt100Unsupported);
-
-    // Cursor movement
-
-    m_vt100FnTable.insert("[H",QtTerminalText::vt100CursorMove);
-    m_vt100FnTable.insert("[;H",QtTerminalText::vt100CursorMove);
-    m_vt100FnTable.insert("[;r",QtTerminalText::vt100CursorMove);
-    m_vt100FnTable.insert("[A",QtTerminalText::vt100CursorMove);
-    m_vt100FnTable.insert("[B",QtTerminalText::vt100CursorMove);
-    m_vt100FnTable.insert("[C",QtTerminalText::vt100CursorMove);
-    m_vt100FnTable.insert("[D",QtTerminalText::vt100CursorMove);
-
-    // Clear line
-
-    m_vt100FnTable.insert("[K",QtTerminalText::vt100ClearLine);
-    m_vt100FnTable.insert("[0K",QtTerminalText::vt100ClearLine);
-    m_vt100FnTable.insert("[1K",QtTerminalText::vt100ClearLine);
-    m_vt100FnTable.insert("[2K",QtTerminalText::vt100ClearLine);
-
-    // Clear screen
-
-    m_vt100FnTable.insert("[J",QtTerminalText::vt100ClearScreen);
-    m_vt100FnTable.insert("[0J",QtTerminalText::vt100ClearScreen);
-    m_vt100FnTable.insert("[1J",QtTerminalText::vt100ClearScreen);
-    m_vt100FnTable.insert("[2J",QtTerminalText::vt100ClearScreen);
-
-    // Vt52 compatabilty  mode
-
-    m_vt100FnTable.insert("=",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert(">",QtTerminalText::vt100Unsupported);
-
-    // Character set selection
-
-    m_vt100FnTable.insert("(A",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert(")A",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("(B",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert(")B",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("(0",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert(")0",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("(1",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert(")1",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert("(2",QtTerminalText::vt100Unsupported);
-    m_vt100FnTable.insert(")2",QtTerminalText::vt100Unsupported);
+    m_terminal.setupTerminal(80, 24);
+    m_terminal.setScreenScroll(scrollScreenUp, this);
 
 }
 
-void QtTerminalText::setupTerminal()
+void QtTerminalText::setupTerminalText()
 {
 
     setModel(&m_terminalModel);
 
     int currentRow = 0;
 
-    m_terminalModel.insertRows(0, m_maxRows);
+    m_terminalModel.insertRows(0, m_terminal.getMaxRows());
 
-    for (auto row=0; row < m_maxRows; row++) {
+    for (auto row=0; row < m_terminal.getMaxRows(); row++) {
         QString screenLine;
-        for (auto column=0; column < m_maxColumns; column++) {
-            screenLine.append(QChar(*getBuffer(row, column)));
+        for (auto column=0; column < m_terminal.getMaxColumns(); column++) {
+            screenLine.append(QChar(*m_terminal.getBuffer(row, column)));
         }
         m_terminalModel.setData(m_terminalModel.index(currentRow++), screenLine);
     }
@@ -118,118 +41,40 @@ void QtTerminalText::setupTerminal()
 
 }
 
-void QtTerminalText::processEscapeSequence(std::deque<QChar> &textToProcess)
-{
-    QString escapeSeqence;
-    QString matchSeqence;
-
-    textToProcess.pop_front();
-
-    while (!textToProcess.empty()) {
-        escapeSeqence.append(textToProcess.front());
-        if (!textToProcess.front().isNumber()) {
-            matchSeqence.append(textToProcess.front());
-        }
-        if (m_vt100FnTable.find(escapeSeqence)!=m_vt100FnTable.cend()) {
-            m_vt100FnTable[escapeSeqence](this, escapeSeqence);
-            return;
-        }
-        if (m_vt100FnTable.find(matchSeqence)!=m_vt100FnTable.cend()) {
-            m_vt100FnTable[matchSeqence](this, escapeSeqence);
-            return;
-        }
-        textToProcess.pop_front();
-    }
-
-    std::cout << "Esc ";
-    for (auto sequence : escapeSeqence) {
-        if (sequence.isPrint()) {
-            std::cout << "[" << sequence.toLatin1() << "]";
-        }else {
-            std::cout << "[" << static_cast<int>(sequence.toLatin1()) << "]";
-        }
-    }
-    std::cout << std::endl;
-
-}
-
-void QtTerminalText::scrollUp(int numberofLines)
+void QtTerminalText::scrollScreenUp(void *terminalConext, int numberofLines)
 {
 
-    m_terminalModel.insertRows(m_terminalModel.rowCount(), numberofLines);
-    m_currentViewOffset+=numberofLines;
+    QtTerminalText *terminalText { static_cast<QtTerminalText *>(terminalConext) };
+
+    terminalText->m_terminalModel.insertRows(terminalText->m_terminalModel.rowCount(), numberofLines);
+    terminalText->m_currentViewOffset+=numberofLines;
     QString screenLine;
-    for (auto column=0; column < m_maxColumns; column++) {
-        screenLine.append(QChar(*getBuffer(0, column)));
+    for (auto column=0; column < terminalText->m_terminal.getMaxRows(); column++) {
+        screenLine.append(QChar(*terminalText->m_terminal.getBuffer(0, column)));
     }
-    m_terminalModel.setData(m_terminalModel.index(m_currentViewOffset-1), screenLine);
+    terminalText->m_terminalModel.setData(terminalText->m_terminalModel.index(terminalText->m_currentViewOffset-1), screenLine);
 
     while (numberofLines--) {
-        for (auto row=0; row < m_maxRows-1; row++) {
-            std::memmove(getBuffer(row, 0), getBuffer(row+1, 0), m_maxColumns);
+        for (auto row=0; row < terminalText->m_terminal.getMaxRows()-1; row++) {
+            std::memmove(terminalText->m_terminal.getBuffer(row, 0), terminalText->m_terminal.getBuffer(row+1, 0),
+                         terminalText->m_terminal.getMaxColumns());
         }
-        std::memset(getBuffer(m_maxRows-1, 0),' ', m_maxColumns);
+        std::memset(terminalText->m_terminal.getBuffer(terminalText->m_terminal.getMaxRows()-1, 0),' ',
+                    terminalText->m_terminal.getMaxColumns());
     }
 
-    setCurrentIndex(m_terminalModel.index(m_currentViewOffset+m_currentRow,m_currentColumn));
+    terminalText->setCurrentIndex(terminalText->m_terminalModel.index(terminalText->m_currentViewOffset+terminalText->m_terminal.getCurrentRow(),
+                                                        terminalText->m_terminal.getCurrentColumn()));
 
-}
-
-void QtTerminalText::processCharacter(std::deque<QChar> &textToProcess)
-{
-
-
-    switch(textToProcess.front().toLatin1()) {
-
-    case 0x1B:
-        processEscapeSequence(textToProcess);
-        break;
-
-    case 0x0A:
-        m_currentRow++;
-        if (m_currentRow==m_maxRows) {
-            m_currentRow -=1;
-            scrollUp(1);
-        }
-        break;
-
-    case 0x0D:
-        m_currentColumn=0;
-        break;
-
-    case 0x08:
-        m_currentColumn=std::max(0, m_currentColumn-1);
-        break;
-
-    case 0x0F:
-        break;  //Ignore
-
-    default:
-        if (m_currentColumn==m_maxColumns) {
-            m_currentColumn=0;
-            m_currentRow++;
-            if (m_currentRow==m_maxRows) {
-                m_currentRow -=1;
-                scrollUp(1);
-            }
-        }
-        if (!textToProcess.front().isPrint()) {
-            std::cout << static_cast<int>(textToProcess.front().toLatin1()) << std::endl;
-        }
-        *getBuffer(m_currentRow, m_currentColumn) = textToProcess.front().toLatin1();
-        m_currentColumn++;
-        break;
-
-    }
 }
 
 void QtTerminalText::bufferToScreen()
 {
     int currentRow=m_currentViewOffset;
-    for (auto row=0; row < m_maxRows; row++) {
+    for (auto row=0; row < m_terminal.getMaxRows(); row++) {
         QString screenLine;
-        for (auto column=0; column < m_maxColumns; column++) {
-            screenLine.append(QChar(*getBuffer(row, column)));
+        for (auto column=0; column < m_terminal.getMaxColumns(); column++) {
+            screenLine.append(QChar(*m_terminal.getBuffer(row, column)));
         }
         m_terminalModel.setData(m_terminalModel.index(currentRow++), screenLine);
     }
@@ -271,92 +116,10 @@ void QtTerminalText::terminalOutput(const QString &text)
     std::deque<QChar> textToProcess {text.begin(), text.end()};
 
     while(!textToProcess.empty()) {
-        processCharacter(textToProcess);
+        m_terminal.processCharacter(textToProcess);
         if(!textToProcess.empty())textToProcess.pop_front();
     }
 
     bufferToScreen();
 
 }
-
-void QtTerminalText::vt100Unsupported(QtTerminalText *terminal, const QString &escapeSequence)
-{
-    //std::cerr << "Esc " << escapeSequence.toStdString() << " : Unsupported Escape Sequence." << std::endl;
-}
-
-void QtTerminalText::vt100ClearLine(QtTerminalText *terminal, const QString &escapeSequence)
-{
-    if ((escapeSequence=="[K")||(escapeSequence=="[0K")) {
-        std::memset(terminal->getBuffer(terminal->m_currentRow, terminal->m_currentColumn), ' ',
-                       terminal->m_maxColumns-terminal->m_currentColumn);
-    } else if (escapeSequence=="[1K") {
-        std::memset(terminal->getBuffer(terminal->m_currentRow, 0), ' ',
-                       terminal->m_currentColumn);
-    } else if (escapeSequence=="[2K") {
-        std::memset(terminal->getBuffer(terminal->m_currentRow, 0), ' ',
-                       terminal->m_maxColumns);
-    }
-
-}
-
-void QtTerminalText::vt100ClearScreen(QtTerminalText *terminal, const QString &escapeSequence)
-{
-
-    if ((escapeSequence=="[J")||(escapeSequence=="[0J")) {
-        vt100ClearLine(terminal, "[K");
-        for (auto row=terminal->m_currentRow+1; row < terminal->m_maxRows; row++) {
-            std::memset(terminal->getBuffer(row, 0), ' ', terminal->m_maxColumns);
-        }
-    } else if (escapeSequence=="[1J") {
-        vt100ClearLine(terminal, "[1K");
-        for (auto row=0; row < terminal->m_currentRow; row++) {
-            std::memset(terminal->getBuffer(row, 0), ' ', terminal->m_maxColumns);
-        }
-    } else if (escapeSequence=="[2J") {
-        for (auto row=0; row < terminal->m_maxRows; row++) {
-            std::memset(terminal->getBuffer(row, 0),' ', terminal->m_maxColumns);
-        }
-    }
-
-
-}
-
-void QtTerminalText::vt100CursorMove(QtTerminalText *terminal, const QString &escapeSequence)
-{
-
-    if((escapeSequence == "[H") || (escapeSequence == "[;H")) {
-        terminal->m_currentRow = terminal->m_currentColumn = 0;
-    } else if (escapeSequence.endsWith('A')) {
-        QString number {escapeSequence};
-        number = number.remove(0,1);
-        number.resize(number.size()-1);
-        terminal->m_currentRow -= number.toInt();
-    } else if (escapeSequence.endsWith('B')) {
-        QString number {escapeSequence};
-        number = number.remove(0,1);
-        number.resize(number.size()-1);
-        terminal->m_currentRow += number.toInt();
-    } else if (escapeSequence.endsWith('C')) {
-        QString number {escapeSequence};
-        number = number.remove(0,1);
-        number.resize(number.size()-1);
-        terminal->m_currentColumn += number.toInt();
-    } else if (escapeSequence.endsWith('D')) {
-        QString number {escapeSequence};
-        number = number.remove(0,1);
-        number.resize(number.size()-1);
-        terminal->m_currentColumn -= number.toInt();
-    } else {
-        QString coordinates { escapeSequence};
-        QStringList numbers;
-        coordinates = coordinates.remove(0,1);
-        coordinates.resize(coordinates.size()-1);
-        numbers = coordinates.split(";");
-        if (numbers.size()==2) {
-            terminal->m_currentRow = std::min((numbers[0].toInt()-1), (terminal->m_maxRows-1));
-            terminal->m_currentColumn = std::min((numbers[1].toInt()-1),  (terminal->m_maxColumns-1));
-        }
-    }
-
-}
-
