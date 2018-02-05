@@ -86,13 +86,13 @@ CTerminal::CTerminal(QObject *parent) : QObject(parent)
 void CTerminal::setupTerminal(int columns, int rows)
 {
 
-    m_maxRows = rows;
     m_maxColumns = columns;
+    m_maxRows = rows;
 
-    m_terminalBuffer = new (std::uint8_t[rows*columns]);
+    m_terminalBuffer.reset(new (std::uint8_t[rows*columns]));
 
     for (auto row=0; row < m_maxRows; row++) {
-        std::memset(getBuffer(row,0),' ', m_maxColumns);
+        std::memset(getBuffer(0, row),' ', m_maxColumns);
     }
 
 
@@ -106,13 +106,13 @@ void CTerminal::vt100Unsupported(CTerminal *terminal, const QString &escapeSeque
 void CTerminal::vt100ClearLine(CTerminal *terminal, const QString &escapeSequence)
 {
     if ((escapeSequence=="[K")||(escapeSequence=="[0K")) {
-        std::memset(terminal->getBuffer(terminal->m_currentRow, terminal->m_currentColumn), ' ',
+        std::memset(terminal->getBuffer(terminal->m_currentColumn, terminal->m_currentRow), ' ',
                        terminal->m_maxColumns-terminal->m_currentColumn);
     } else if (escapeSequence=="[1K") {
-        std::memset(terminal->getBuffer(terminal->m_currentRow, 0), ' ',
+        std::memset(terminal->getBuffer(0, terminal->m_currentRow), ' ',
                        terminal->m_currentColumn);
     } else if (escapeSequence=="[2K") {
-        std::memset(terminal->getBuffer(terminal->m_currentRow, 0), ' ',
+        std::memset(terminal->getBuffer(0, terminal->m_currentRow), ' ',
                        terminal->m_maxColumns);
     }
 
@@ -124,16 +124,16 @@ void CTerminal::vt100ClearScreen(CTerminal *terminal, const QString &escapeSeque
     if ((escapeSequence=="[J")||(escapeSequence=="[0J")) {
         vt100ClearLine(terminal, "[K");
         for (auto row=terminal->m_currentRow+1; row < terminal->m_maxRows; row++) {
-            std::memset(terminal->getBuffer(row, 0), ' ', terminal->m_maxColumns);
+            std::memset(terminal->getBuffer(0, row), ' ', terminal->m_maxColumns);
         }
     } else if (escapeSequence=="[1J") {
         vt100ClearLine(terminal, "[1K");
         for (auto row=0; row < terminal->m_currentRow; row++) {
-            std::memset(terminal->getBuffer(row, 0), ' ', terminal->m_maxColumns);
+            std::memset(terminal->getBuffer(0, row), ' ', terminal->m_maxColumns);
         }
     } else if (escapeSequence=="[2J") {
         for (auto row=0; row < terminal->m_maxRows; row++) {
-            std::memset(terminal->getBuffer(row, 0),' ', terminal->m_maxColumns);
+            std::memset(terminal->getBuffer(0, row),' ', terminal->m_maxColumns);
         }
     }
 
@@ -260,11 +260,16 @@ void CTerminal::processCharacter(std::deque<QChar> &textToProcess)
                 scrollScreenlUp(1);
             }
         }
-        *getBuffer(m_currentRow, m_currentColumn) = textToProcess.front().toLatin1();
+        *getBuffer(m_currentColumn, m_currentRow) = textToProcess.front().toLatin1();
         m_currentColumn++;
         break;
 
     }
+}
+
+std::uint8_t* CTerminal::getBuffer(int column, int row)
+{
+    return m_terminalBuffer.get()+(row*m_maxColumns+column);
 }
 
 int CTerminal::getCurrentColumn() const

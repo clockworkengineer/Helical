@@ -16,7 +16,7 @@ public:
 
     QtTerminalText(QWidget *parent = 0);
 
-    void setupTerminalText();
+    void setupTerminalText(int columns, int rows);
     void bufferToScreen();
 
     static void scrollScreenUp( void *termminalText, int numberofLines);

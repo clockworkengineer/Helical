@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QHash>
 
+#include <memory>
 #include <unordered_map>
 #include <functional>
 #include <deque>
@@ -18,7 +19,7 @@ public:
 
     explicit CTerminal(QObject *parent = nullptr);
 
-    void setupTerminal(int row, int columns);
+    void setupTerminal(int columns, int rows);
 
     void setScreenScroll(ScreenScrollFn screenScrollFn, void *screenCcrollContext);
 
@@ -26,10 +27,7 @@ public:
     void processCharacter(std::deque<QChar> &textToProcess);
     void scrollScreenlUp(int numberofLines);
 
-    std::uint8_t* getBuffer(int row, int column)
-    {
-        return &m_terminalBuffer[row*m_maxColumns+column];
-    }
+    std::uint8_t* getBuffer(int column, int row);
 
     int getMaxRows() const;
     int getMaxColumns() const;
@@ -51,7 +49,7 @@ private:
 
     QHash<QString, TerminalFn>  m_vt100FnTable;
 
-    std::uint8_t *m_terminalBuffer;
+    std::unique_ptr<std::uint8_t>m_terminalBuffer;
 
     int m_currentRow {0};
     int m_currentColumn {0};

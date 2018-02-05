@@ -69,7 +69,7 @@ void HelicalTerminalDialog::setupTerminalTextArea()
     int pixelsHigh = fm.height();
     m_terminalTextArea->setFixedSize(pixelsWide*(m_columns+1), pixelsHigh*(m_rows+1)+2);
 
-    m_terminalTextArea->setupTerminalText();
+    m_terminalTextArea->setupTerminalText(m_columns, m_rows);
 
 }
 
