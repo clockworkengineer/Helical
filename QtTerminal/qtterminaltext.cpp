@@ -1,11 +1,12 @@
 #include "qtterminaltext.h"
 
-#include <QDebug>
+#include <cstring>
+#include <iostream>
+
+//#include <QDebug>
 #include <QListView>
 #include <QTextCursor>
 
-#include <cstring>
-#include <iostream>
 
 
 QtTerminalText::QtTerminalText(QWidget *parent) : QListView(parent)
@@ -113,7 +114,11 @@ void QtTerminalText::keyPressEvent(QKeyEvent *event)
 
 void QtTerminalText::terminalOutput(const QString &text)
 {
-    std::deque<QChar> textToProcess {text.begin(), text.end()};
+    std::deque<std::uint8_t> textToProcess;
+
+    for (auto byte : text) {
+        textToProcess.push_back(byte.toLatin1());
+    }
 
     while(!textToProcess.empty()) {
         m_terminal.processCharacter(textToProcess);

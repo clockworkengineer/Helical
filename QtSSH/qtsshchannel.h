@@ -2,6 +2,7 @@
 #define QTSSHCHANNEL_H
 
 #include <QObject>
+
 #include "QtSSH/qtssh.h"
 #include "SSHChannelUtil.hpp"
 

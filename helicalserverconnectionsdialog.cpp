@@ -1,5 +1,6 @@
 #include "helicalserverconnectionsdialog.h"
 #include "ui_helicalserverconnectionsdialog.h"
+
 #include "helicalmainwindow.h"
 #include "helicalserverdetailsdialog.h"
 

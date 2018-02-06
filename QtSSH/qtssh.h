@@ -2,6 +2,7 @@
 #define QTSSH_H
 
 #include <QObject>
+
 #include "SSHSessionUtil.hpp"
 
 using namespace Antik::SSH;

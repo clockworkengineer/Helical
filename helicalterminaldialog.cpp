@@ -1,5 +1,6 @@
 #include "helicalterminaldialog.h"
 #include "ui_helicalterminaldialog.h"
+
 #include <QDebug>
 
 HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, int columns, int rows, QWidget *parent) :

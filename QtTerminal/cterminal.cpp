@@ -1,4 +1,5 @@
 #include "cterminal.h"
+
 #include <cstring>
 #include <iostream>
 
@@ -98,12 +99,12 @@ void CTerminal::setupTerminal(int columns, int rows)
 
 }
 
-void CTerminal::vt100Unsupported(CTerminal *terminal, const QString &escapeSequence)
+void CTerminal::vt100Unsupported(CTerminal *terminal, const std::string &escapeSequence)
 {
-    //std::cerr << "Esc " << escapeSequence.toStdString() << " : Unsupported Escape Sequence." << std::endl;
+    std::cerr << "{ Esc " << escapeSequence << "} : Unsupported Escape Sequence." << std::endl;
 }
 
-void CTerminal::vt100ClearLine(CTerminal *terminal, const QString &escapeSequence)
+void CTerminal::vt100ClearLine(CTerminal *terminal, const std::string &escapeSequence)
 {
     if ((escapeSequence=="[K")||(escapeSequence=="[0K")) {
         std::memset(terminal->getBuffer(terminal->m_currentColumn, terminal->m_currentRow), ' ',
@@ -118,7 +119,7 @@ void CTerminal::vt100ClearLine(CTerminal *terminal, const QString &escapeSequenc
 
 }
 
-void CTerminal::vt100ClearScreen(CTerminal *terminal, const QString &escapeSequence)
+void CTerminal::vt100ClearScreen(CTerminal *terminal, const std::string &escapeSequence)
 {
 
     if ((escapeSequence=="[J")||(escapeSequence=="[0J")) {
@@ -140,21 +141,21 @@ void CTerminal::vt100ClearScreen(CTerminal *terminal, const QString &escapeSeque
 
 }
 
-void CTerminal::vt100CursorMove(CTerminal *terminal, const QString &escapeSequence)
+void CTerminal::vt100CursorMove(CTerminal *terminal, const std::string &escapeSequence)
 {
 
     if((escapeSequence == "[H") || (escapeSequence == "[;H")) {
         terminal->m_currentRow = terminal->m_currentColumn = 0;
-    } else if (escapeSequence.endsWith('A')) {
-        terminal->m_currentRow -= terminal->extractNumber(escapeSequence.toStdString());
-    } else if (escapeSequence.endsWith('B')) {
-        terminal->m_currentRow += terminal->extractNumber(escapeSequence.toStdString());
-    } else if (escapeSequence.endsWith('C')) {
-        terminal->m_currentColumn += terminal->extractNumber(escapeSequence.toStdString());
-    } else if (escapeSequence.endsWith('D')) {
-        terminal->m_currentColumn -= terminal->extractNumber(escapeSequence.toStdString());
+    } else if (escapeSequence.back()=='A') {
+        terminal->m_currentRow -= terminal->extractNumber(escapeSequence);
+    } else if (escapeSequence.back()=='B') {
+        terminal->m_currentRow += terminal->extractNumber(escapeSequence);
+    } else if (escapeSequence.back()=='C') {
+        terminal->m_currentColumn += terminal->extractNumber(escapeSequence);
+    } else if (escapeSequence.back()=='D') {
+        terminal->m_currentColumn -= terminal->extractNumber(escapeSequence);
     } else {
-        std::string coordinates { escapeSequence.toStdString() };
+        std::string coordinates { escapeSequence };
         coordinates = coordinates.substr(1);
         coordinates.resize(coordinates.size()-1);
         terminal->m_currentRow = std::min((std::stoi(coordinates)-1), (terminal->m_maxRows-1));
@@ -163,24 +164,24 @@ void CTerminal::vt100CursorMove(CTerminal *terminal, const QString &escapeSequen
     }
 }
 
-void CTerminal::processEscapeSequence(std::deque<QChar> &textToProcess)
+void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &textToProcess)
 {
-    QString escapeSeqence;
-    QString matchSeqence;
+    std::string escapeSeqence;
+    std::string matchSeqence;
 
     textToProcess.pop_front();
 
     while (!textToProcess.empty()) {
-        escapeSeqence.append(textToProcess.front());
-        if (!textToProcess.front().isNumber()) {
-            matchSeqence.append(textToProcess.front());
+        escapeSeqence.append(1,textToProcess.front());
+        if (!std::isdigit(textToProcess.front())) {
+            matchSeqence.append(1,textToProcess.front());
         }
-        if (m_vt100FnTable.find(escapeSeqence.toStdString())!=m_vt100FnTable.cend()) {
-            m_vt100FnTable[escapeSeqence.toStdString()](this, escapeSeqence);
+        if (m_vt100FnTable.find(escapeSeqence)!=m_vt100FnTable.cend()) {
+            m_vt100FnTable[escapeSeqence](this, escapeSeqence);
             return;
         }
-        if (m_vt100FnTable.find(matchSeqence.toStdString())!=m_vt100FnTable.cend()) {
-            m_vt100FnTable[matchSeqence.toStdString()](this, escapeSeqence);
+        if (m_vt100FnTable.find(matchSeqence)!=m_vt100FnTable.cend()) {
+            m_vt100FnTable[matchSeqence](this, escapeSeqence);
             return;
         }
         textToProcess.pop_front();
@@ -188,10 +189,10 @@ void CTerminal::processEscapeSequence(std::deque<QChar> &textToProcess)
 
     std::cout << "Esc ";
     for (auto sequence : escapeSeqence) {
-        if (sequence.isPrint()) {
-            std::cout << "[" << sequence.toLatin1() << "]";
+        if (std::isprint(sequence)) {
+            std::cout << "[" << sequence << "]";
         }else {
-            std::cout << "[" << static_cast<int>(sequence.toLatin1()) << "]";
+            std::cout << "[" << static_cast<int>(sequence) << "]";
         }
     }
     std::cout << std::endl;
@@ -205,10 +206,10 @@ void CTerminal::scrollScreenlUp(int numberofLines)
     }
 }
 
-void CTerminal::processCharacter(std::deque<QChar> &textToProcess)
+void CTerminal::processCharacter(std::deque<std::uint8_t> &textToProcess)
 {
 
-    switch(textToProcess.front().toLatin1()) {
+    switch(textToProcess.front()) {
 
     case 0x1B:
         processEscapeSequence(textToProcess);
@@ -242,7 +243,7 @@ void CTerminal::processCharacter(std::deque<QChar> &textToProcess)
                 scrollScreenlUp(1);
             }
         }
-        *getBuffer(m_currentColumn, m_currentRow) = textToProcess.front().toLatin1();
+        *getBuffer(m_currentColumn, m_currentRow) = textToProcess.front();
         m_currentColumn++;
         break;
 
