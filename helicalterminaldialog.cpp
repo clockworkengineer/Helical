@@ -17,7 +17,15 @@ HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, int columns, int ro
     m_connectionChannel.reset(new QtSSHChannel(session));
     m_connectionChannel->open();
 
-    setupTerminalTextArea();
+    m_terminalTextArea.reset(new QtTerminal(m_columns, m_rows, ui->terminalText));
+    m_textAreaLayout.reset(new QHBoxLayout);
+    m_textAreaLayout->addWidget(m_terminalTextArea.data());
+    ui->terminalText->setLayout(m_textAreaLayout.data());
+
+    connect(m_terminalTextArea.data(), &QtTerminal::keySend, this, &HelicalTerminalDialog::keyRecv);
+    connect(m_connectionChannel.data(), &QtSSHChannel::remoteShellClosed, this, &HelicalTerminalDialog::remoteShellClosed);
+    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOut, m_terminalTextArea.data(), &QtTerminal::terminalOutput);
+    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdErr, m_terminalTextArea.data(), &QtTerminal::terminalOutput);
 
     adjustSize();
 
@@ -46,28 +54,6 @@ void HelicalTerminalDialog::closeEvent(QCloseEvent *event)
 
     terminateShell();
     QDialog::closeEvent(event);
-
-}
-
-void HelicalTerminalDialog::setupTerminalTextArea()
-{
-
-    m_terminalTextArea = new QtTerminal(ui->terminalText);
-    m_textAreaLayout.reset(new QHBoxLayout);
-    m_textAreaLayout->addWidget(m_terminalTextArea);
-    ui->terminalText->setLayout(m_textAreaLayout.data());
-
-    QFont font("Monospace");
-    font.setStyleHint(QFont::TypeWriter);
-    m_terminalTextArea->setFont(font);
-    QFontMetrics fm(m_terminalTextArea->property("font").value<QFont>());
-    m_terminalTextArea->setFixedSize(fm.maxWidth()*(m_columns)+2, fm.height()*(m_rows+1)+2);
-    m_terminalTextArea->setupTerminalText(m_columns, m_rows);
-
-    connect(m_terminalTextArea, &QtTerminal::keySend, this, &HelicalTerminalDialog::keyRecv);
-    connect(m_connectionChannel.data(), &QtSSHChannel::remoteShellClosed, this, &HelicalTerminalDialog::remoteShellClosed);
-    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOut, m_terminalTextArea, &QtTerminal::terminalOutput);
-    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdErr, m_terminalTextArea, &QtTerminal::terminalOutput);
 
 }
 

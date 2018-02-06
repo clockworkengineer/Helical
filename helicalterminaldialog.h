@@ -34,14 +34,11 @@ protected:
 
 private:
 
-    void setupTerminalTextArea();
     void terminateShell();
-
-    //void vt100Unsupported();
 
     Ui::HelicalConnectionDialog *ui;
 
-    QtTerminal *m_terminalTextArea {nullptr};
+    QScopedPointer<QtTerminal> m_terminalTextArea {nullptr};
 
     int m_columns {0};
     int m_rows {0};

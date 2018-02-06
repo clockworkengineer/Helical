@@ -3,37 +3,28 @@
 #include <cstring>
 #include <iostream>
 
-QtTerminal::QtTerminal(QWidget *parent) : QListView(parent)
-
+QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(parent)
 {
-
-}
-
-void QtTerminal::setupTerminalText(int columns, int rows)
-{
-
-   int currentRow = 0;
 
     m_terminal.initializeTerminal(columns, rows);
     m_terminal.setScreenScroll(scrollScreenUp, this);
 
-    setModel(&m_terminalModel);
-
-    m_terminalModel.insertRows(0, m_terminal.getMaxRows());
-
-    for (auto row=0; row < m_terminal.getMaxRows(); row++) {
-        QString screenLine;
-        for (auto column=0; column < m_terminal.getMaxColumns(); column++) {
-            screenLine.append(QChar(*m_terminal.getBuffer(column, row)));
-        }
-        m_terminalModel.setData(m_terminalModel.index(currentRow++), screenLine, Qt::DisplayRole);
-    }
+    QFont font("Monospace");
+    font.setStyleHint(QFont::TypeWriter);
+    setFont(font);
+    QFontMetrics fm(property("font").value<QFont>());
+    setFixedWidth(fm.maxWidth()*(m_terminal.getMaxColumns())+2);
+    setFixedHeight(fm.height()*(m_terminal.getMaxRows()+1)+2);
 
     setSelectionRectVisible(false);
     setSelectionMode(QAbstractItemView::NoSelection);
     setSelectionMode(QListView::NoSelection);
     setEditTriggers(QListView::NoEditTriggers);
     setSelectionBehavior(QListView::SelectItems);
+
+    setModel(&m_terminalModel);
+
+    m_terminalModel.insertRows(0, m_terminal.getMaxRows());
 
     setFocus();
 

@@ -14,11 +14,9 @@ class QtTerminal : public QListView
 
 public:
 
-    QtTerminal(QWidget *parent = 0);
+    QtTerminal(int columns, int rows, QWidget *parent = 0);
 
-    void setupTerminalText(int columns, int rows);
     void bufferToScreen();
-
     static void scrollScreenUp( void *termminalText, int numberofLines);
 
 protected:
@@ -36,9 +34,7 @@ public slots:
 private:
 
     QStringListModel m_terminalModel;
-
     int m_currentViewOffset {0};
-
     CTerminal m_terminal;
 
 
