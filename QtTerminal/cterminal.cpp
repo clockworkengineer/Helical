@@ -3,8 +3,54 @@
 #include <cstring>
 #include <iostream>
 
-CTerminal::CTerminal(QObject *parent) : QObject(parent)
+CTerminal::CTerminal()
 {
+
+    // Set terminal modes.
+
+    m_vt100FnTable["[20h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?1h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?3h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?4h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?5h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?6h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?7h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?8h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?9h"] = CTerminal::vt100Unsupported;
+
+    m_vt100FnTable["[20l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?1l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?2l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?3l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?4l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?5l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?6l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?7l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?8l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?9l"] = CTerminal::vt100Unsupported;
+
+    // Vt52 compatabilty  mode
+
+    m_vt100FnTable["="] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[">"] = CTerminal::vt100Unsupported;
+
+    // Character set selection
+
+    m_vt100FnTable["(A"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[")A"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["(B"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[")B"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["(0"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[")0"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["(1"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[")1"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["(2"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable[")2"] = CTerminal::vt100Unsupported;
+
+    // Set single shifts
+
+    m_vt100FnTable["N"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["O"] = CTerminal::vt100Unsupported;
 
     // Set character attributes/video modes.
 
@@ -18,27 +64,6 @@ CTerminal::CTerminal(QObject *parent) : QObject(parent)
     m_vt100FnTable["[6m"] = CTerminal::vt100Unsupported;
     m_vt100FnTable["[7m"] = CTerminal::vt100Unsupported;
     m_vt100FnTable["[8m"] = CTerminal::vt100Unsupported;
-
-    m_vt100FnTable["[20l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?1l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?2l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?3l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?4l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?5l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?6l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?7l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?8l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?9l"] = CTerminal::vt100Unsupported;
-
-    m_vt100FnTable["[20h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?1h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?3h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?4h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?5h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?6h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?7h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?8h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?9h"] = CTerminal::vt100Unsupported;
 
     // Cursor movement
 
@@ -64,27 +89,10 @@ CTerminal::CTerminal(QObject *parent) : QObject(parent)
     m_vt100FnTable["[1J"] = CTerminal::vt100ClearScreen;
     m_vt100FnTable["[2J"] = CTerminal::vt100ClearScreen;
 
-    // Vt52 compatabilty  mode
-
-    m_vt100FnTable["="] = CTerminal::vt100Unsupported;
-    m_vt100FnTable[">"] = CTerminal::vt100Unsupported;
-
-    // Character set selection
-
-    m_vt100FnTable["(A"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable[")A"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["(B"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable[")B"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["(0"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable[")0"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["(1"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable[")1"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["(2"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable[")2"] = CTerminal::vt100Unsupported;
 
 }
 
-void CTerminal::setupTerminal(int columns, int rows)
+void CTerminal::initializeTerminal(int columns, int rows)
 {
 
     m_maxColumns = columns;
@@ -187,15 +195,11 @@ void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &textToProcess)
         textToProcess.pop_front();
     }
 
-    std::cout << "Esc ";
+    std::cout << "Esc {";
     for (auto sequence : escapeSeqence) {
-        if (std::isprint(sequence)) {
-            std::cout << "[" << sequence << "]";
-        }else {
-            std::cout << "[" << static_cast<int>(sequence) << "]";
-        }
+        std::cout << " " << (std::isprint(sequence) ? sequence : static_cast<int>(sequence));
     }
-    std::cout << std::endl;
+    std::cout << " }" << std::endl;
 
 }
 
@@ -269,8 +273,10 @@ void CTerminal::setScreenScroll(ScreenScrollFn screenScrollFn, void *screenScrol
 int CTerminal::extractNumber(const std::string &numberToExtract)
 {
     std::string number {numberToExtract};
+
     number = number.substr(1);
     number.resize(number.size()-1);
+
     if (!number.empty()){
         return(std::stoi(number));
     }

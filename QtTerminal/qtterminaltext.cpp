@@ -20,7 +20,7 @@ void QtTerminalText::setupTerminalText(int columns, int rows)
 
    int currentRow = 0;
 
-    m_terminal.setupTerminal(columns, rows);
+    m_terminal.initializeTerminal(columns, rows);
     m_terminal.setScreenScroll(scrollScreenUp, this);
 
     setModel(&m_terminalModel);

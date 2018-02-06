@@ -6,19 +6,16 @@
 #include <functional>
 #include <deque>
 
-#include <QObject>
-
-class CTerminal : public QObject
+class CTerminal
 {
-    Q_OBJECT
 
 public:
 
     typedef std::function<void(void*, int)> ScreenScrollFn;
 
-    explicit CTerminal(QObject *parent = nullptr);
+    explicit CTerminal();
 
-    void setupTerminal(int columns, int rows);
+    void initializeTerminal(int columns, int rows);
 
     void setScreenScroll(ScreenScrollFn screenScrollFn, void *screenCcrollContext);
 
@@ -35,10 +32,6 @@ public:
     int getCurrentRow() const;
     int getCurrentColumn() const;
 
-signals:
-
-public slots:
-
 private:
 
     typedef std::function<void(CTerminal *, const std::string &escapeSequence)> TerminalFn;
@@ -50,7 +43,7 @@ private:
 
     std::unordered_map<std::string, TerminalFn>  m_vt100FnTable;
 
-    std::unique_ptr<std::uint8_t>m_terminalBuffer;
+    std::unique_ptr<std::uint8_t> m_terminalBuffer;
 
     int m_currentRow {0};
     int m_currentColumn {0};
