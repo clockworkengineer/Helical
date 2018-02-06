@@ -8,13 +8,13 @@
 #include <QStringListModel>
 #include <QKeyEvent>
 
-class QtTerminalText : public QListView
+class QtTerminal : public QListView
 {
     Q_OBJECT
 
 public:
 
-    QtTerminalText(QWidget *parent = 0);
+    QtTerminal(QWidget *parent = 0);
 
     void setupTerminalText(int columns, int rows);
     void bufferToScreen();

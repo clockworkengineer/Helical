@@ -1,21 +1,15 @@
-#include "qtterminaltext.h"
+#include "qtterminal.h"
 
 #include <cstring>
 #include <iostream>
 
-//#include <QDebug>
-#include <QListView>
-#include <QTextCursor>
-
-
-
-QtTerminalText::QtTerminalText(QWidget *parent) : QListView(parent)
+QtTerminal::QtTerminal(QWidget *parent) : QListView(parent)
 
 {
 
 }
 
-void QtTerminalText::setupTerminalText(int columns, int rows)
+void QtTerminal::setupTerminalText(int columns, int rows)
 {
 
    int currentRow = 0;
@@ -32,20 +26,23 @@ void QtTerminalText::setupTerminalText(int columns, int rows)
         for (auto column=0; column < m_terminal.getMaxColumns(); column++) {
             screenLine.append(QChar(*m_terminal.getBuffer(column, row)));
         }
-        m_terminalModel.setData(m_terminalModel.index(currentRow++), screenLine);
+        m_terminalModel.setData(m_terminalModel.index(currentRow++), screenLine, Qt::DisplayRole);
     }
 
     setSelectionRectVisible(false);
     setSelectionMode(QAbstractItemView::NoSelection);
+    setSelectionMode(QListView::NoSelection);
+    setEditTriggers(QListView::NoEditTriggers);
+    setSelectionBehavior(QListView::SelectItems);
 
     setFocus();
 
 }
 
-void QtTerminalText::scrollScreenUp(void *terminalConext, int numberofLines)
+void QtTerminal::scrollScreenUp(void *terminalConext, int numberofLines)
 {
 
-    QtTerminalText *terminalText { static_cast<QtTerminalText *>(terminalConext) };
+    QtTerminal *terminalText { static_cast<QtTerminal *>(terminalConext) };
 
     terminalText->m_terminalModel.insertRows(terminalText->m_terminalModel.rowCount(), numberofLines);
     terminalText->m_currentViewOffset+=numberofLines;
@@ -69,20 +66,20 @@ void QtTerminalText::scrollScreenUp(void *terminalConext, int numberofLines)
 
 }
 
-void QtTerminalText::bufferToScreen()
+void QtTerminal::bufferToScreen()
 {
+
     int currentRow=m_currentViewOffset;
+
     for (auto row=0; row < m_terminal.getMaxRows(); row++) {
-        QString screenLine;
-        for (auto column=0; column < m_terminal.getMaxColumns(); column++) {
-            screenLine.append(QChar(*m_terminal.getBuffer(column,row)));
-        }
-        m_terminalModel.setData(m_terminalModel.index(currentRow++), screenLine);
+        std::uint8_t*screenRow=m_terminal.getBuffer(0,row);
+        std::string screenLine { &screenRow[0], &screenRow[m_terminal.getMaxColumns()]};
+        m_terminalModel.setData(m_terminalModel.index(currentRow++), QString::fromStdString(screenLine), Qt::DisplayRole);
     }
 
 }
 
-void QtTerminalText::keyPressEvent(QKeyEvent *event)
+void QtTerminal::keyPressEvent(QKeyEvent *event)
 {
 
     switch(event->key()){
@@ -112,7 +109,7 @@ void QtTerminalText::keyPressEvent(QKeyEvent *event)
 
 }
 
-void QtTerminalText::terminalOutput(const QString &text)
+void QtTerminal::terminalOutput(const QString &text)
 {
     std::deque<std::uint8_t> textToProcess;
 

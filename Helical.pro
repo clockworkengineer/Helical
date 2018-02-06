@@ -34,8 +34,8 @@ SOURCES += \
     helicalserverconnectionsdialog.cpp \
     helicalterminaldialog.cpp \
     helicalserverdetailsdialog.cpp \
-    QtTerminal/qtterminaltext.cpp \
-    QtTerminal/cterminal.cpp
+    QtTerminal/cterminal.cpp \
+    QtTerminal/qtterminal.cpp
 
 HEADERS += \
     QtSSH/qtssh.h \
@@ -45,8 +45,8 @@ HEADERS += \
     helicalserverconnectionsdialog.h \
     helicalterminaldialog.h \
     helicalserverdetailsdialog.h \
-    QtTerminal/qtterminaltext.h \
-    QtTerminal/cterminal.h
+    QtTerminal/cterminal.h \
+    QtTerminal/qtterminal.h
 
 FORMS += \
         heilcalmainwindow.ui \

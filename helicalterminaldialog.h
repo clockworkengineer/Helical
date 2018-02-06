@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QHBoxLayout>
 
-#include "QtTerminal/qtterminaltext.h"
+#include "QtTerminal/qtterminal.h"
 #include "QtSSH/qtsshchannel.h"
 
 namespace Ui {
@@ -41,7 +41,7 @@ private:
 
     Ui::HelicalConnectionDialog *ui;
 
-    QtTerminalText *m_terminalTextArea {nullptr};
+    QtTerminal *m_terminalTextArea {nullptr};
 
     int m_columns {0};
     int m_rows {0};

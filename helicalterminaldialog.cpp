@@ -52,7 +52,7 @@ void HelicalTerminalDialog::closeEvent(QCloseEvent *event)
 void HelicalTerminalDialog::setupTerminalTextArea()
 {
 
-    m_terminalTextArea = new QtTerminalText(ui->terminalText);
+    m_terminalTextArea = new QtTerminal(ui->terminalText);
     m_textAreaLayout.reset(new QHBoxLayout);
     m_textAreaLayout->addWidget(m_terminalTextArea);
     ui->terminalText->setLayout(m_textAreaLayout.data());
@@ -64,10 +64,10 @@ void HelicalTerminalDialog::setupTerminalTextArea()
     m_terminalTextArea->setFixedSize(fm.maxWidth()*(m_columns)+2, fm.height()*(m_rows+1)+2);
     m_terminalTextArea->setupTerminalText(m_columns, m_rows);
 
-    connect(m_terminalTextArea, &QtTerminalText::keySend, this, &HelicalTerminalDialog::keyRecv);
+    connect(m_terminalTextArea, &QtTerminal::keySend, this, &HelicalTerminalDialog::keyRecv);
     connect(m_connectionChannel.data(), &QtSSHChannel::remoteShellClosed, this, &HelicalTerminalDialog::remoteShellClosed);
-    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOut, m_terminalTextArea, &QtTerminalText::terminalOutput);
-    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdErr, m_terminalTextArea, &QtTerminalText::terminalOutput);
+    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOut, m_terminalTextArea, &QtTerminal::terminalOutput);
+    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdErr, m_terminalTextArea, &QtTerminal::terminalOutput);
 
 }
 

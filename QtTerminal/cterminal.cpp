@@ -236,6 +236,7 @@ void CTerminal::processCharacter(std::deque<std::uint8_t> &textToProcess)
         break;
 
     case 0x0F:
+    case 0x07:
         break;  //Ignore
 
     default:
