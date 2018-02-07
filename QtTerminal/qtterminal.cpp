@@ -1,5 +1,7 @@
 #include "qtterminal.h"
 
+#include <QDebug>
+#include <QScrollBar>
 #include <cstring>
 #include <iostream>
 
@@ -13,8 +15,18 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
     font.setStyleHint(QFont::TypeWriter);
     setFont(font);
     QFontMetrics fm(property("font").value<QFont>());
-    setFixedWidth(fm.maxWidth()*(m_terminal.getMaxColumns())+2);
-    setFixedHeight(fm.height()*(m_terminal.getMaxRows()+1)+2);
+
+    int extraCols=verticalScrollBar()->height()/fm.maxWidth();
+    int extraRows=horizontalScrollBar()->height()/fm.height();
+
+    setFixedWidth(fm.maxWidth()*(m_terminal.getMaxColumns()+extraCols));
+    setFixedHeight(fm.height()*(m_terminal.getMaxRows()+extraRows-1));
+
+    setUniformItemSizes(true);
+
+    horizontalScrollBar()->setDisabled(true);
+    horizontalScrollBar()->setHidden(true);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     setSelectionRectVisible(false);
     setSelectionMode(QAbstractItemView::NoSelection);
