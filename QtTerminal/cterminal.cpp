@@ -167,12 +167,10 @@ void CTerminal::vt100CursorMovement(CTerminal *terminal, const std::string &esca
     } else if (escapeSequence.back()=='D') {
         terminal->m_currentColumn -= terminal->extractNumber(escapeSequence);
     } else {
-        std::string coordinates { escapeSequence };
-        coordinates = coordinates.substr(1);
-        coordinates.resize(coordinates.size()-1);
-        terminal->m_currentRow = std::min((std::stoi(coordinates)-1), (terminal->m_maxRows-1));
-        coordinates = coordinates.substr(coordinates.find(';')+1);
-        terminal->m_currentColumn = std::min((std::stoi(coordinates)-1),  (terminal->m_maxColumns-1));
+        std::pair<int,int> coords;
+        coords=terminal->extractCoordinates(escapeSequence);
+        terminal->m_currentRow = std::min((coords.first-1), (terminal->m_maxRows-1));
+        terminal->m_currentColumn = std::min((coords.second-1), (terminal->m_maxColumns-1));
     }
 }
 
@@ -290,6 +288,27 @@ int CTerminal::extractNumber(const std::string &escapeSequence)
     }
 
     return(0);
+
+}
+
+std::pair<int,int> CTerminal::extractCoordinates(const std::string &escapeSequence)
+{
+    std::string coordinates { escapeSequence };
+    std::pair<int,int> coords {1,1};
+
+    try {
+        coordinates = coordinates.substr(1);
+        coordinates.resize(coordinates.size()-1);
+        if (coordinates.front()!=';') {
+            coords.first=std::stoi(coordinates);
+        }
+        coordinates = coordinates.substr(coordinates.find(';')+1);
+        coords.second=std::stoi(coordinates);
+    } catch (...) {
+        return (coords);
+    }
+
+    return(coords);
 
 }
 

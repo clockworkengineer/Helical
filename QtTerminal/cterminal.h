@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <functional>
 #include <deque>
+#include <utility>
 
 class CTerminal
 {
@@ -19,7 +20,8 @@ public:
 
     void setScreenScroll(ScreenScrollFn screenScrollFn, void *screenCcrollContext);
 
-    int extractNumber(const std::string &numberToExtract);
+    int extractNumber(const std::string &escapeSequence);
+    std::pair<int,int> extractCoordinates(const std::string &escapeSequence);
 
     void processEscapeSequence(std::deque<std::uint8_t> &textToProcess);
     void processCharacter(std::deque<std::uint8_t> &textToProcess);
