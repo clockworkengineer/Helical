@@ -8,26 +8,10 @@ CTerminal::CTerminal()
 
     // Set terminal modes.
 
-    m_vt100FnTable["[20h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?1h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?3h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?4h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?5h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?6h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?7h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?8h"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?9h"] = CTerminal::vt100Unsupported;
-
-    m_vt100FnTable["[20l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?1l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?2l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?3l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?4l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?5l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?6l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?7l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?8l"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[?9l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?h"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[l"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[?l"] = CTerminal::vt100Unsupported;
 
     // Vt52 compatabilty  mode
 
@@ -56,14 +40,6 @@ CTerminal::CTerminal()
 
     m_vt100FnTable["[m"] = CTerminal::vt100Unsupported;
     m_vt100FnTable["[;m"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[1m"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[2m"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[3m"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[4m"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[5m"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[6m"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[7m"] = CTerminal::vt100Unsupported;
-    m_vt100FnTable["[8m"] = CTerminal::vt100Unsupported;
 
     // Cursor movement
 
@@ -77,21 +53,13 @@ CTerminal::CTerminal()
     m_vt100FnTable["[f"] = CTerminal::vt100CursorMovement;
     m_vt100FnTable["[;f"] = CTerminal::vt100CursorMovement;
 
-
     // Clear line
 
     m_vt100FnTable["[K"] = CTerminal::vt100ClearLine;
-    m_vt100FnTable["[0K"] = CTerminal::vt100ClearLine;
-    m_vt100FnTable["[1K"] = CTerminal::vt100ClearLine;
-    m_vt100FnTable["[2K"] = CTerminal::vt100ClearLine;
 
     // Clear screen
 
     m_vt100FnTable["[J"] = CTerminal::vt100ClearScreen;
-    m_vt100FnTable["[0J"] = CTerminal::vt100ClearScreen;
-    m_vt100FnTable["[1J"] = CTerminal::vt100ClearScreen;
-    m_vt100FnTable["[2J"] = CTerminal::vt100ClearScreen;
-
 
 }
 
@@ -102,31 +70,29 @@ void CTerminal::initializeTerminal(int columns, int rows)
     m_maxRows = rows;
 
     m_terminalBuffer.reset(new std::uint8_t[rows*columns]);
-
-    for (auto row=0; row < m_maxRows; row++) {
-        std::memset(getBuffer(0, row),' ', m_maxColumns);
-    }
-
+    std::memset(m_terminalBuffer.get(),' ', rows*columns);
 
 }
 
 void CTerminal::vt100Unsupported(CTerminal *terminal, const std::string &escapeSequence)
 {
-    std::cerr << "{ Esc " << escapeSequence << "} : Unsupported Escape Sequence." << std::endl;
+  //  std::cerr << "{ Esc " << escapeSequence << "} : Unsupported Escape Sequence." << std::endl;
 }
 
 void CTerminal::vt100ClearLine(CTerminal *terminal, const std::string &escapeSequence)
 {
+    int lengthToClear {0};
+    std::uint8_t* line = terminal->getBuffer(terminal->m_currentColumn, terminal->m_currentRow);
+
     if ((escapeSequence=="[K")||(escapeSequence=="[0K")) {
-        std::memset(terminal->getBuffer(terminal->m_currentColumn, terminal->m_currentRow), ' ',
-                    terminal->m_maxColumns-terminal->m_currentColumn);
+        lengthToClear = terminal->m_maxColumns-terminal->m_currentColumn;
     } else if (escapeSequence=="[1K") {
-        std::memset(terminal->getBuffer(0, terminal->m_currentRow), ' ',
-                    terminal->m_currentColumn);
+        lengthToClear = terminal->m_currentColumn;
     } else if (escapeSequence=="[2K") {
-        std::memset(terminal->getBuffer(0, terminal->m_currentRow), ' ',
-                    terminal->m_maxColumns);
+        lengthToClear = terminal->m_maxColumns;
     }
+
+    std::memset(line, ' ', lengthToClear);
 
 }
 
@@ -155,23 +121,28 @@ void CTerminal::vt100ClearScreen(CTerminal *terminal, const std::string &escapeS
 void CTerminal::vt100CursorMovement(CTerminal *terminal, const std::string &escapeSequence)
 {
 
-    if((escapeSequence == "[H") || (escapeSequence == "[;H") ||
-       (escapeSequence == "[f") || (escapeSequence == "[;f")) {
-        terminal->m_currentRow = terminal->m_currentColumn = 0;
-    } else if (escapeSequence.back()=='A') {
+    switch(escapeSequence.back()) {
+    case 'A':
         terminal->m_currentRow -= terminal->extractNumber(escapeSequence);
-    } else if (escapeSequence.back()=='B') {
+        break;
+    case 'B':
         terminal->m_currentRow += terminal->extractNumber(escapeSequence);
-    } else if (escapeSequence.back()=='C') {
+        break;
+    case 'C':
         terminal->m_currentColumn += terminal->extractNumber(escapeSequence);
-    } else if (escapeSequence.back()=='D') {
+        break;
+    case 'D':
         terminal->m_currentColumn -= terminal->extractNumber(escapeSequence);
-    } else {
+        break;
+    case 'H':
+    case 'f':
         std::pair<int,int> coords;
         coords=terminal->extractCoordinates(escapeSequence);
         terminal->m_currentRow = std::min((coords.first-1), (terminal->m_maxRows-1));
         terminal->m_currentColumn = std::min((coords.second-1), (terminal->m_maxColumns-1));
+        break;
     }
+
 }
 
 void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &textToProcess)
