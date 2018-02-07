@@ -67,13 +67,16 @@ CTerminal::CTerminal()
 
     // Cursor movement
 
-    m_vt100FnTable["[H"] = CTerminal::vt100CursorMove;
-    m_vt100FnTable["[;H"] = CTerminal::vt100CursorMove;
-    m_vt100FnTable["[;r"] = CTerminal::vt100CursorMove;
-    m_vt100FnTable["[A"] = CTerminal::vt100CursorMove;
-    m_vt100FnTable["[B"] = CTerminal::vt100CursorMove;
-    m_vt100FnTable["[C"] = CTerminal::vt100CursorMove;
-    m_vt100FnTable["[D"] = CTerminal::vt100CursorMove;
+    m_vt100FnTable["[H"] = CTerminal::vt100CursorMovement;
+    m_vt100FnTable["[;H"] = CTerminal::vt100CursorMovement;
+    m_vt100FnTable["[;r"] = CTerminal::vt100CursorMovement;
+    m_vt100FnTable["[A"] = CTerminal::vt100CursorMovement;
+    m_vt100FnTable["[B"] = CTerminal::vt100CursorMovement;
+    m_vt100FnTable["[C"] = CTerminal::vt100CursorMovement;
+    m_vt100FnTable["[D"] = CTerminal::vt100CursorMovement;
+    m_vt100FnTable["[f"] = CTerminal::vt100CursorMovement;
+    m_vt100FnTable["[;f"] = CTerminal::vt100CursorMovement;
+
 
     // Clear line
 
@@ -149,10 +152,11 @@ void CTerminal::vt100ClearScreen(CTerminal *terminal, const std::string &escapeS
 
 }
 
-void CTerminal::vt100CursorMove(CTerminal *terminal, const std::string &escapeSequence)
+void CTerminal::vt100CursorMovement(CTerminal *terminal, const std::string &escapeSequence)
 {
 
-    if((escapeSequence == "[H") || (escapeSequence == "[;H")) {
+    if((escapeSequence == "[H") || (escapeSequence == "[;H") ||
+       (escapeSequence == "[f") || (escapeSequence == "[;f")) {
         terminal->m_currentRow = terminal->m_currentColumn = 0;
     } else if (escapeSequence.back()=='A') {
         terminal->m_currentRow -= terminal->extractNumber(escapeSequence);
@@ -271,15 +275,18 @@ void CTerminal::setScreenScroll(ScreenScrollFn screenScrollFn, void *screenScrol
     m_screeSncrollContext = screenScrollContext;
 }
 
-int CTerminal::extractNumber(const std::string &numberToExtract)
+int CTerminal::extractNumber(const std::string &escapeSequence)
 {
-    std::string number {numberToExtract};
-
-    number = number.substr(1);
-    number.resize(number.size()-1);
+    std::string number {escapeSequence};
 
     if (!number.empty()){
-        return(std::stoi(number));
+        number = number.substr(1);
+        number.resize(number.size()-1);
+        try {
+            return(std::stoi(number));
+        } catch (...) {
+            return(0);
+        }
     }
 
     return(0);
