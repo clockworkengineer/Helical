@@ -17,7 +17,7 @@ public:
     QtTerminal(int columns, int rows, QWidget *parent = 0);
 
     void bufferToScreen();
-    static void scrollScreenUp( void *termminalText, int numberofLines);
+    static void scrollScreenUp( void *termminalContext, int numberofLines);
 
 protected:
 
@@ -29,7 +29,7 @@ signals:
 
 public slots:
 
-    void terminalOutput(const QString &text);
+    void terminalOutput(const QString &characters);
 
 private:
 

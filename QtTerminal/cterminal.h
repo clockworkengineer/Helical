@@ -23,8 +23,8 @@ public:
     int extractNumber(const std::string &escapeSequence);
     std::pair<int,int> extractCoordinates(const std::string &escapeSequence);
 
-    void processEscapeSequence(std::deque<std::uint8_t> &textToProcess);
-    void processCharacter(std::deque<std::uint8_t> &textToProcess);
+    void processEscapeSequence(std::deque<std::uint8_t> &escapeSequence);
+    void processCharacter(std::deque<std::uint8_t> &charactersToProcess);
     void scrollScreenlUp(int numberofLines);
 
     std::uint8_t* getBuffer(int column, int row);

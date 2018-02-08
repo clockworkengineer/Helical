@@ -11,16 +11,18 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
     m_terminal.initializeTerminal(columns, rows);
     m_terminal.setScreenScroll(scrollScreenUp, this);
 
+    setStyleSheet("QListView {selection-background-color: white; selection-color: white;}");
+
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     setFont(font);
     QFontMetrics fm(property("font").value<QFont>());
 
     int extraCols=verticalScrollBar()->height()/fm.maxWidth();
-    int extraRows=horizontalScrollBar()->height()/fm.height();
+    int extraRows=horizontalScrollBar()->height()/fm.height()-1;
 
     setFixedWidth(fm.maxWidth()*(m_terminal.getMaxColumns()+extraCols));
-    setFixedHeight(fm.height()*(m_terminal.getMaxRows()+extraRows-1));
+    setFixedHeight(fm.height()*(m_terminal.getMaxRows()+extraRows));
 
     setUniformItemSizes(true);
 
@@ -112,17 +114,17 @@ void QtTerminal::keyPressEvent(QKeyEvent *event)
 
 }
 
-void QtTerminal::terminalOutput(const QString &text)
+void QtTerminal::terminalOutput(const QString &characters)
 {
-    std::deque<std::uint8_t> textToProcess;
+    std::deque<std::uint8_t> charactersToProcess;
 
-    for (auto byte : text) {
-        textToProcess.push_back(byte.toLatin1());
+    for (auto byte : characters) {
+        charactersToProcess.push_back(byte.toLatin1());
     }
 
-    while(!textToProcess.empty()) {
-        m_terminal.processCharacter(textToProcess);
-        if(!textToProcess.empty())textToProcess.pop_front();
+    while(!charactersToProcess.empty()) {
+        m_terminal.processCharacter(charactersToProcess);
+        if(!charactersToProcess.empty())charactersToProcess.pop_front();
     }
 
     bufferToScreen();

@@ -52,6 +52,23 @@ CTerminal::CTerminal()
     m_vt100FnTable["[D"] = CTerminal::vt100CursorMovement;
     m_vt100FnTable["[f"] = CTerminal::vt100CursorMovement;
     m_vt100FnTable["[;f"] = CTerminal::vt100CursorMovement;
+    m_vt100FnTable["D"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["M"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["E"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["7"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["8"] = CTerminal::vt100Unsupported;
+
+    // Tab support
+
+    m_vt100FnTable["H"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["[g"] = CTerminal::vt100Unsupported;
+
+    // Double height/width character support
+
+    m_vt100FnTable["#3"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["#4"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["#5"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["#6"] = CTerminal::vt100Unsupported;
 
     // Clear line
 
@@ -60,6 +77,16 @@ CTerminal::CTerminal()
     // Clear screen
 
     m_vt100FnTable["[J"] = CTerminal::vt100ClearScreen;
+
+    // Device status report/get cursor position
+
+    m_vt100FnTable["5n"] = CTerminal::vt100Unsupported;
+    m_vt100FnTable["6n"] = CTerminal::vt100Unsupported;
+
+    // LED support
+
+    m_vt100FnTable["[q"] = CTerminal::vt100Unsupported;
+
 
 }
 
@@ -145,17 +172,17 @@ void CTerminal::vt100CursorMovement(CTerminal *terminal, const std::string &esca
 
 }
 
-void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &textToProcess)
+void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &escapeSequence)
 {
     std::string escapeSeqence;
     std::string matchSeqence;
 
-    textToProcess.pop_front();
+    escapeSequence.pop_front();
 
-    while (!textToProcess.empty()) {
-        escapeSeqence.append(1,textToProcess.front());
-        if (!std::isdigit(textToProcess.front())) {
-            matchSeqence.append(1,textToProcess.front());
+    while (!escapeSequence.empty()) {
+        escapeSeqence.append(1,escapeSequence.front());
+        if (!std::isdigit(escapeSequence.front())) {
+            matchSeqence.append(1,escapeSequence.front());
         }
         if (m_vt100FnTable.find(escapeSeqence)!=m_vt100FnTable.cend()) {
             m_vt100FnTable[escapeSeqence](this, escapeSeqence);
@@ -165,7 +192,7 @@ void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &textToProcess)
             m_vt100FnTable[matchSeqence](this, escapeSeqence);
             return;
         }
-        textToProcess.pop_front();
+        escapeSequence.pop_front();
     }
 
     std::cout << "Esc {";
@@ -183,13 +210,13 @@ void CTerminal::scrollScreenlUp(int numberofLines)
     }
 }
 
-void CTerminal::processCharacter(std::deque<std::uint8_t> &textToProcess)
+void CTerminal::processCharacter(std::deque<std::uint8_t> &charactersToProcess)
 {
 
-    switch(textToProcess.front()) {
+    switch(charactersToProcess.front()) {
 
     case 0x1B:
-        processEscapeSequence(textToProcess);
+        processEscapeSequence(charactersToProcess);
         break;
 
     case 0x0A:
@@ -221,7 +248,7 @@ void CTerminal::processCharacter(std::deque<std::uint8_t> &textToProcess)
                 scrollScreenlUp(1);
             }
         }
-        *getBuffer(m_currentColumn, m_currentRow) = textToProcess.front();
+        *getBuffer(m_currentColumn, m_currentRow) = charactersToProcess.front();
         m_currentColumn++;
         break;
 
