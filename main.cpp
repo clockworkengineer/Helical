@@ -27,6 +27,13 @@
 // ===== MAIN ENTRY POINT =====
 // ============================
 
+/**
+ * @brief main
+ * @param argc
+ * @param argv
+ * @return
+ */
+
 int main(int argc, char *argv[])
 {
     QApplication helicalApplication(argc, argv);

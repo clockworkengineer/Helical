@@ -24,6 +24,14 @@
 
 #include <QDebug>
 
+/**
+ * @brief HelicalTerminalDialog::HelicalTerminalDialog
+ * @param session
+ * @param columns
+ * @param rows
+ * @param parent
+ */
+
 HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, int columns, int rows, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::HelicalConnectionDialog),
@@ -52,6 +60,10 @@ HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, int columns, int ro
 
 }
 
+/**
+ * @brief HelicalTerminalDialog::~HelicalTerminalDialog
+ */
+
 HelicalTerminalDialog::~HelicalTerminalDialog()
 {
 
@@ -59,17 +71,28 @@ HelicalTerminalDialog::~HelicalTerminalDialog()
     delete ui;
 }
 
+/**
+ * @brief HelicalTerminalDialog::keyRecv
+ * @param keyAscii
+ */
 void HelicalTerminalDialog::keyRecv(const QByteArray &keyAscii)
 {
     m_connectionChannel->write(keyAscii);
 
 }
 
+/**
+ * @brief HelicalTerminalDialog::remoteShellClosed
+ */
 void HelicalTerminalDialog::remoteShellClosed()
 {
     close();
 }
 
+/**
+ * @brief HelicalTerminalDialog::closeEvent
+ * @param event
+ */
 void HelicalTerminalDialog::closeEvent(QCloseEvent *event)
 {
 
@@ -78,6 +101,9 @@ void HelicalTerminalDialog::closeEvent(QCloseEvent *event)
 
 }
 
+/**
+ * @brief HelicalTerminalDialog::terminateShell
+ */
 void HelicalTerminalDialog::terminateShell()
 {
     if (m_connectionChannel->isOpen()) {
@@ -89,6 +115,10 @@ void HelicalTerminalDialog::terminateShell()
     }
 }
 
+/**
+ * @brief HelicalTerminalDialog::runCommand
+ * @param command
+ */
 void HelicalTerminalDialog::runCommand(const QString &command)
 {
 
@@ -96,6 +126,9 @@ void HelicalTerminalDialog::runCommand(const QString &command)
 
 }
 
+/**
+ * @brief HelicalTerminalDialog::runShell
+ */
 void HelicalTerminalDialog::runShell()
 {
 

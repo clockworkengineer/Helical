@@ -26,6 +26,12 @@
 #include <cstring>
 #include <iostream>
 
+/**
+ * @brief QtTerminal::QtTerminal
+ * @param columns
+ * @param rows
+ * @param parent
+ */
 QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(parent)
 {
 
@@ -65,6 +71,11 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
 
 }
 
+/**
+ * @brief QtTerminal::scrollScreenUp
+ * @param terminalConext
+ * @param numberofLines
+ */
 void QtTerminal::scrollScreenUp(void *terminalConext, int numberofLines)
 {
 
@@ -92,6 +103,9 @@ void QtTerminal::scrollScreenUp(void *terminalConext, int numberofLines)
 
 }
 
+/**
+ * @brief QtTerminal::bufferToScreen
+ */
 void QtTerminal::bufferToScreen()
 {
 
@@ -105,6 +119,10 @@ void QtTerminal::bufferToScreen()
 
 }
 
+/**
+ * @brief QtTerminal::keyPressEvent
+ * @param event
+ */
 void QtTerminal::keyPressEvent(QKeyEvent *event)
 {
 
@@ -135,6 +153,10 @@ void QtTerminal::keyPressEvent(QKeyEvent *event)
 
 }
 
+/**
+ * @brief QtTerminal::terminalOutput
+ * @param characters
+ */
 void QtTerminal::terminalOutput(const QString &characters)
 {
     std::deque<std::uint8_t> charactersToProcess;

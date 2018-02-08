@@ -24,6 +24,9 @@
 #include <cstring>
 #include <iostream>
 
+/**
+ * @brief CTerminal::CTerminal
+ */
 CTerminal::CTerminal()
 {
 
@@ -111,6 +114,11 @@ CTerminal::CTerminal()
 
 }
 
+/**
+ * @brief CTerminal::initializeTerminal
+ * @param columns
+ * @param rows
+ */
 void CTerminal::initializeTerminal(int columns, int rows)
 {
 
@@ -122,6 +130,11 @@ void CTerminal::initializeTerminal(int columns, int rows)
 
 }
 
+/**
+ * @brief CTerminal::vt100Unsupported
+ * @param terminal
+ * @param escapeSequence
+ */
 void CTerminal::vt100Unsupported(CTerminal *terminal, const std::string &escapeSequence)
 {
 
@@ -132,6 +145,11 @@ void CTerminal::vt100Unsupported(CTerminal *terminal, const std::string &escapeS
 
 }
 
+/**
+ * @brief CTerminal::vt100ClearLine
+ * @param terminal
+ * @param escapeSequence
+ */
 void CTerminal::vt100ClearLine(CTerminal *terminal, const std::string &escapeSequence)
 {
     int lengthToClear {0};
@@ -149,6 +167,11 @@ void CTerminal::vt100ClearLine(CTerminal *terminal, const std::string &escapeSeq
 
 }
 
+/**
+ * @brief CTerminal::vt100ClearScreen
+ * @param terminal
+ * @param escapeSequence
+ */
 void CTerminal::vt100ClearScreen(CTerminal *terminal, const std::string &escapeSequence)
 {
 
@@ -171,6 +194,11 @@ void CTerminal::vt100ClearScreen(CTerminal *terminal, const std::string &escapeS
 
 }
 
+/**
+ * @brief CTerminal::vt100CursorMovement
+ * @param terminal
+ * @param escapeSequence
+ */
 void CTerminal::vt100CursorMovement(CTerminal *terminal, const std::string &escapeSequence)
 {
 
@@ -198,6 +226,10 @@ void CTerminal::vt100CursorMovement(CTerminal *terminal, const std::string &esca
 
 }
 
+/**
+ * @brief CTerminal::processEscapeSequence
+ * @param escapeSequence
+ */
 void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &escapeSequence)
 {
     std::string escapeSeqence;
@@ -229,6 +261,10 @@ void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &escapeSequence)
 
 }
 
+/**
+ * @brief CTerminal::scrollScreenlUp
+ * @param numberofLines
+ */
 void CTerminal::scrollScreenlUp(int numberofLines)
 {
     if (m_screenScroll) {
@@ -236,6 +272,10 @@ void CTerminal::scrollScreenlUp(int numberofLines)
     }
 }
 
+/**
+ * @brief CTerminal::processCharacter
+ * @param charactersToProcess
+ */
 void CTerminal::processCharacter(std::deque<std::uint8_t> &charactersToProcess)
 {
 
@@ -281,22 +321,42 @@ void CTerminal::processCharacter(std::deque<std::uint8_t> &charactersToProcess)
     }
 }
 
+/**
+ * @brief CTerminal::getBuffer
+ * @param column
+ * @param row
+ * @return
+ */
 std::uint8_t* CTerminal::getBuffer(int column, int row)
 {
     return m_terminalBuffer.get()+(row*m_maxColumns+column);
 }
 
+/**
+ * @brief CTerminal::getCurrentColumn
+ * @return
+ */
 int CTerminal::getCurrentColumn() const
 {
     return m_currentColumn;
 }
 
+/**
+ * @brief CTerminal::setScreenScroll
+ * @param screenScrollFn
+ * @param screenScrollContext
+ */
 void CTerminal::setScreenScroll(ScreenScrollFn screenScrollFn, void *screenScrollContext)
 {
     m_screenScroll = screenScrollFn;
     m_screeSncrollContext = screenScrollContext;
 }
 
+/**
+ * @brief CTerminal::extractNumber
+ * @param escapeSequence
+ * @return
+ */
 int CTerminal::extractNumber(const std::string &escapeSequence)
 {
     std::string number {escapeSequence};
@@ -315,6 +375,11 @@ int CTerminal::extractNumber(const std::string &escapeSequence)
 
 }
 
+/**
+ * @brief CTerminal::extractCoordinates
+ * @param escapeSequence
+ * @return
+ */
 std::pair<int,int> CTerminal::extractCoordinates(const std::string &escapeSequence)
 {
     std::string coordinates { escapeSequence };
@@ -336,16 +401,28 @@ std::pair<int,int> CTerminal::extractCoordinates(const std::string &escapeSequen
 
 }
 
+/**
+ * @brief CTerminal::getCurrentRow
+ * @return
+ */
 int CTerminal::getCurrentRow() const
 {
     return m_currentRow;
 }
 
+/**
+ * @brief CTerminal::getMaxColumns
+ * @return
+ */
 int CTerminal::getMaxColumns() const
 {
     return m_maxColumns;
 }
 
+/**
+ * @brief CTerminal::getMaxRows
+ * @return
+ */
 int CTerminal::getMaxRows() const
 {
     return m_maxRows;

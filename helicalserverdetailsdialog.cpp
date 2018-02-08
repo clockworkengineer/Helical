@@ -22,6 +22,11 @@
 #include "helicalserverdetailsdialog.h"
 #include "ui_helicalserverdetailsdialog.h"
 
+/**
+ * @brief HelicalServerDetailsDialog::HelicalServerDetailsDialog
+ * @param connectionName
+ * @param parent
+ */
 HelicalServerDetailsDialog::HelicalServerDetailsDialog(const QString& connectionName, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::HelicalServerDetailsDialog),
@@ -41,11 +46,17 @@ HelicalServerDetailsDialog::HelicalServerDetailsDialog(const QString& connection
     }
 }
 
+/**
+ * @brief HelicalServerDetailsDialog::~HelicalServerDetailsDialog
+ */
 HelicalServerDetailsDialog::~HelicalServerDetailsDialog()
 {
     delete ui;
 }
 
+/**
+ * @brief HelicalServerDetailsDialog::on_cancelButton_clicked
+ */
 void HelicalServerDetailsDialog::on_cancelButton_clicked()
 {
 
@@ -53,6 +64,9 @@ void HelicalServerDetailsDialog::on_cancelButton_clicked()
 
 }
 
+/**
+ * @brief HelicalServerDetailsDialog::on_saveButton_clicked
+ */
 void HelicalServerDetailsDialog::on_saveButton_clicked()
 {
 
@@ -76,11 +90,19 @@ void HelicalServerDetailsDialog::on_saveButton_clicked()
 
 }
 
+/**
+ * @brief HelicalServerDetailsDialog::connectionName
+ * @return
+ */
 QString HelicalServerDetailsDialog::connectionName() const
 {
     return m_connectionName;
 }
 
+/**
+ * @brief HelicalServerDetailsDialog::showEvent
+ * @param event
+ */
 void HelicalServerDetailsDialog::showEvent(QShowEvent *event)
 {
 
@@ -96,7 +118,6 @@ void HelicalServerDetailsDialog::showEvent(QShowEvent *event)
         ui->userNameLineEdit->setText(m_userName);
         ui->userPasswordLineEdit->setText(m_userPassword);
         ui->commandLineEdit->setText(this->m_command);
-
 
 }
 

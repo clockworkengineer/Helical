@@ -21,11 +21,22 @@
 
 #include "qtssh.h"
 
+/**
+ * @brief QtSSH::QtSSH
+ * @param parent
+ */
 QtSSH::QtSSH(QObject *parent) : QObject(parent)
 {
 
 }
 
+/**
+ * @brief QtSSH::setSessionDetails
+ * @param serverName
+ * @param serverPort
+ * @param userName
+ * @param userPassword
+ */
 void QtSSH::setSessionDetails(const QString &serverName, const QString &serverPort, const QString &userName, const QString &userPassword)
 {
 
@@ -38,6 +49,9 @@ void QtSSH::setSessionDetails(const QString &serverName, const QString &serverPo
 
 }
 
+/**
+ * @brief QtSSH::connectToServer
+ */
 void QtSSH::connectToServer()
 {
     try {
@@ -49,6 +63,9 @@ void QtSSH::connectToServer()
 
 }
 
+/**
+ * @brief QtSSH::disconnectFromServer
+ */
 void QtSSH::disconnectFromServer()
 {
     m_session.disconnect();
@@ -68,6 +85,9 @@ void QtSSH::verifyServer()
 
 }
 
+/**
+ * @brief QtSSH::authorizeUser
+ */
 void QtSSH::authorizeUser()
 {
 
@@ -81,6 +101,10 @@ void QtSSH::authorizeUser()
 
 }
 
+/**
+ * @brief QtSSH::getBanner
+ * @return
+ */
 QString QtSSH::getBanner()
 {
 
@@ -97,16 +121,28 @@ QString QtSSH::getBanner()
 
 }
 
+/**
+ * @brief QtSSH::isConnected
+ * @return
+ */
 bool QtSSH::isConnected()
 {
     return(m_session.isConnected());
 }
 
+/**
+ * @brief QtSSH::isAuthorized
+ * @return
+ */
 bool QtSSH::isAuthorized()
 {
     return(m_session.isAuthorized());
 }
 
+/**
+ * @brief QtSSH::getSession
+ * @return
+ */
 CSSHSession& QtSSH::getSession()
 {
     return m_session;

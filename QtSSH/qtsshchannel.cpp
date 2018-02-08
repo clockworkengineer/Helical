@@ -21,12 +21,20 @@
 
 #include "qtsshchannel.h"
 
+/**
+ * @brief QtSSHChannel::QtSSHChannel
+ * @param session
+ * @param parent
+ */
 QtSSHChannel::QtSSHChannel(QtSSH &session, QObject *parent) : QObject {parent},
     m_channel { new CSSHChannel(session.getSession()) }
 {
 
 }
 
+/**
+ * @brief QtSSHChannel::open
+ */
 void QtSSHChannel::open()
 {
 
@@ -39,6 +47,9 @@ void QtSSHChannel::open()
 
 }
 
+/**
+ * @brief QtSSHChannel::close
+ */
 void QtSSHChannel::close()
 {
 
@@ -51,6 +62,10 @@ void QtSSHChannel::close()
 
 }
 
+/**
+ * @brief QtSSHChannel::executeRemoteCommand
+ * @param command
+ */
 void QtSSHChannel::executeRemoteCommand(const QString &command)
 {
 
@@ -64,6 +79,11 @@ void QtSSHChannel::executeRemoteCommand(const QString &command)
 
 }
 
+/**
+ * @brief QtSSHChannel::remoteShell
+ * @param columns
+ * @param rows
+ */
 void QtSSHChannel::remoteShell(int columns, int rows)
 {
 
@@ -78,6 +98,10 @@ void QtSSHChannel::remoteShell(int columns, int rows)
 
 }
 
+/**
+ * @brief QtSSHChannel::write
+ * @param ioBuffer
+ */
 void QtSSHChannel::write(const QByteArray &ioBuffer)
 {
 
@@ -89,6 +113,10 @@ void QtSSHChannel::write(const QByteArray &ioBuffer)
 
 }
 
+/**
+ * @brief QtSSHChannel::read
+ * @param ioBuffer
+ */
 void QtSSHChannel::read(QByteArray &ioBuffer)
 {
 
@@ -103,21 +131,36 @@ void QtSSHChannel::read(QByteArray &ioBuffer)
 
 }
 
+/**
+ * @brief QtSSHChannel::sendEndOfFile
+ */
 void QtSSHChannel::sendEndOfFile()
 {
     m_channel->sendEndOfFile();
 }
 
+/**
+ * @brief QtSSHChannel::isOpen
+ * @return
+ */
 bool QtSSHChannel::isOpen()
 {
     return(m_channel->isOpen());
 }
 
+/**
+ * @brief QtSSHChannel::isClosed
+ * @return
+ */
 bool QtSSHChannel::isClosed()
 {
     return(m_channel->isClosed());
 }
 
+/**
+ * @brief QtSSHChannel::isEndOfFile
+ * @return
+ */
 bool QtSSHChannel::isEndOfFile()
 {
     return(m_channel->isEndOfFile());

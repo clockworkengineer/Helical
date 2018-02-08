@@ -25,6 +25,10 @@
 #include "helicalmainwindow.h"
 #include "helicalserverdetailsdialog.h"
 
+/**
+ * @brief HelicalServerConnectionsDialog::HelicalServerConnectionsDialog
+ * @param parent
+ */
 HelicalServerConnectionsDialog::HelicalServerConnectionsDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::HelicalServerConnectionsDialog)
@@ -38,11 +42,17 @@ HelicalServerConnectionsDialog::HelicalServerConnectionsDialog(QWidget *parent) 
 
 }
 
+/**
+ * @brief HelicalServerConnectionsDialog::~HelicalServerConnectionsDialog
+ */
 HelicalServerConnectionsDialog::~HelicalServerConnectionsDialog()
 {
     delete ui;
 }
 
+/**
+ * @brief HelicalServerConnectionsDialog::loadConnectionsList
+ */
 void HelicalServerConnectionsDialog::loadConnectionsList()
 {
 
@@ -53,6 +63,9 @@ void HelicalServerConnectionsDialog::loadConnectionsList()
 
 }
 
+/**
+ * @brief HelicalServerConnectionsDialog::populateConnectionList
+ */
 void HelicalServerConnectionsDialog::populateConnectionList()
 {
 
@@ -62,6 +75,9 @@ void HelicalServerConnectionsDialog::populateConnectionList()
 
 }
 
+/**
+ * @brief HelicalServerConnectionsDialog::saveConnectionList
+ */
 void HelicalServerConnectionsDialog::saveConnectionList()
 {
 
@@ -71,6 +87,9 @@ void HelicalServerConnectionsDialog::saveConnectionList()
     helicalSettings.endGroup();
 }
 
+/**
+ * @brief HelicalServerConnectionsDialog::on_newServerButton_clicked
+ */
 void HelicalServerConnectionsDialog::on_newServerButton_clicked()
 {
 
@@ -85,6 +104,9 @@ void HelicalServerConnectionsDialog::on_newServerButton_clicked()
 
 }
 
+/**
+ * @brief HelicalServerConnectionsDialog::on_editServerButton_clicked
+ */
 void HelicalServerConnectionsDialog::on_editServerButton_clicked()
 {
 
@@ -96,6 +118,9 @@ void HelicalServerConnectionsDialog::on_editServerButton_clicked()
     }
 }
 
+/**
+ * @brief HelicalServerConnectionsDialog::on_removeServerButton_clicked
+ */
 void HelicalServerConnectionsDialog::on_removeServerButton_clicked()
 {
     QListWidgetItem *connectionToDelete = ui->connectionList->currentItem();
@@ -116,6 +141,9 @@ void HelicalServerConnectionsDialog::on_removeServerButton_clicked()
 
 }
 
+/**
+ * @brief HelicalServerConnectionsDialog::on_connectServerButton_clicked
+ */
 void HelicalServerConnectionsDialog::on_connectServerButton_clicked()
 {
 
