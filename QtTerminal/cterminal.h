@@ -48,7 +48,7 @@ public:
     int extractNumber(const std::string &escapeSequence);
     std::pair<int,int> extractCoordinates(const std::string &escapeSequence);
 
-    void processEscapeSequence(std::deque<std::uint8_t> &escapeSequence);
+    void processEscapeSequence(std::deque<std::uint8_t> &sequenceToProcess);
     void processCharacter(std::deque<std::uint8_t> &charactersToProcess);
     void scrollScreenlUp(int numberofLines);
 

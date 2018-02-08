@@ -230,31 +230,31 @@ void CTerminal::vt100CursorMovement(CTerminal *terminal, const std::string &esca
  * @brief CTerminal::processEscapeSequence
  * @param escapeSequence
  */
-void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &escapeSequence)
+void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &sequenceToProcess)
 {
-    std::string escapeSeqence;
-    std::string matchSeqence;
+    std::string fullSeqence;
+    std::string partialSeqence;
 
-    escapeSequence.pop_front();
+    sequenceToProcess.pop_front();
 
-    while (!escapeSequence.empty()) {
-        escapeSeqence.append(1,escapeSequence.front());
-        if (!std::isdigit(escapeSequence.front())) {
-            matchSeqence.append(1,escapeSequence.front());
+    while (!sequenceToProcess.empty()) {
+        fullSeqence.append(1,sequenceToProcess.front());
+        if (!std::isdigit(sequenceToProcess.front())) {
+            partialSeqence.append(1,sequenceToProcess.front());
         }
-        if (m_vt100FnTable.find(escapeSeqence)!=m_vt100FnTable.cend()) {
-            m_vt100FnTable[escapeSeqence](this, escapeSeqence);
+        if (m_vt100FnTable.find(fullSeqence)!=m_vt100FnTable.cend()) {
+            m_vt100FnTable[fullSeqence](this, fullSeqence);
             return;
         }
-        if (m_vt100FnTable.find(matchSeqence)!=m_vt100FnTable.cend()) {
-            m_vt100FnTable[matchSeqence](this, escapeSeqence);
+        if (m_vt100FnTable.find(partialSeqence)!=m_vt100FnTable.cend()) {
+            m_vt100FnTable[partialSeqence](this, fullSeqence);
             return;
         }
-        escapeSequence.pop_front();
+        sequenceToProcess.pop_front();
     }
 
     std::cout << "Esc {";
-    for (auto sequence : escapeSeqence) {
+    for (auto sequence : fullSeqence) {
         std::cout << " " << (std::isprint(sequence) ? sequence : static_cast<int>(sequence));
     }
     std::cout << " }" << std::endl;
@@ -419,10 +419,6 @@ int CTerminal::getMaxColumns() const
     return m_maxColumns;
 }
 
-/**
- * @brief CTerminal::getMaxRows
- * @return
- */
 int CTerminal::getMaxRows() const
 {
     return m_maxRows;
