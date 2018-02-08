@@ -1,11 +1,36 @@
+/*
+ * File:   cterminal.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
 #ifndef CTERMINAL_H
 #define CTERMINAL_H
+
+//
+// Class: QtTerminal
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
 
 #include <memory>
 #include <unordered_map>
 #include <functional>
 #include <deque>
 #include <utility>
+
+// =================
+// CLASS DECLARATION
+// =================
 
 class CTerminal
 {

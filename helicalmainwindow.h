@@ -1,5 +1,26 @@
+/*
+ * File:   helicalmainwindow.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
 #ifndef HEILCALMAINWINDOW_H
 #define HEILCALMAINWINDOW_H
+
+//
+// Class: HeilcalMainWindow
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
 
 #include <QMainWindow>
 #include <QKeyEvent>
@@ -9,6 +30,10 @@
 #include "helicalserverconnectionsdialog.h"
 #include "helicalterminaldialog.h"
 #include "QtSSH/qtssh.h"
+
+// =================
+// CLASS DECLARATION
+// =================
 
 namespace Ui {
 class HeilcalMainWindow;

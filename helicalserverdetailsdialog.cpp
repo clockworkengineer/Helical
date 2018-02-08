@@ -1,3 +1,24 @@
+/*
+ * File:   helicalserverdetailsdialog.cpp
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
+//
+// Class: HelicalServerDetailsDialog
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include "helicalserverdetailsdialog.h"
 #include "ui_helicalserverdetailsdialog.h"
 

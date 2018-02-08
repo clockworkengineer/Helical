@@ -1,3 +1,24 @@
+/*
+ * File:   cterminal.cpp
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
+//
+// Class: CTerminal
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include "cterminal.h"
 
 #include <cstring>
@@ -103,7 +124,12 @@ void CTerminal::initializeTerminal(int columns, int rows)
 
 void CTerminal::vt100Unsupported(CTerminal *terminal, const std::string &escapeSequence)
 {
+
+    (void)terminal;
+    (void)escapeSequence;
+
   //  std::cerr << "{ Esc " << escapeSequence << "} : Unsupported Escape Sequence." << std::endl;
+
 }
 
 void CTerminal::vt100ClearLine(CTerminal *terminal, const std::string &escapeSequence)

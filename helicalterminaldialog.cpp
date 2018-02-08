@@ -1,3 +1,24 @@
+/*
+ * File:   helicalterminaldialog.cpp
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
+//
+// Class: HelicalTerminalDialog
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include "helicalterminaldialog.h"
 #include "ui_helicalterminaldialog.h"
 

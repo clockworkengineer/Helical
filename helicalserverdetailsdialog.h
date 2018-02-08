@@ -1,8 +1,33 @@
+/*
+ * File:   helicalserverdetailsdialog.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
 #ifndef HELICALSERVERDETAILSDIALOG_H
 #define HELICALSERVERDETAILSDIALOG_H
 
+//
+// Class: HelicalServerDetailsDialog
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include <QDialog>
 #include <QSettings>
+
+// =================
+// CLASS DECLARATION
+// =================
 
 namespace Ui {
 class HelicalServerDetailsDialog;

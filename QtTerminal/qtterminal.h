@@ -1,5 +1,26 @@
+/*
+ * File:   qtterminal.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
 #ifndef QTTERMINALTEXT_H
 #define QTTERMINALTEXT_H
+
+//
+// Class: QtTerminal
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
 
 #include <QtTerminal/cterminal.h>
 
@@ -7,6 +28,10 @@
 #include <QListView>
 #include <QStringListModel>
 #include <QKeyEvent>
+
+// =================
+// CLASS DECLARATION
+// =================
 
 class QtTerminal : public QListView
 {

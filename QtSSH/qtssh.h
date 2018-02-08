@@ -1,9 +1,34 @@
+/*
+ * File:   qtssh.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
 #ifndef QTSSH_H
 #define QTSSH_H
+
+//
+// Class: QtSSH
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
 
 #include <QObject>
 
 #include "SSHSessionUtil.hpp"
+
+// =================
+// CLASS DECLARATION
+// =================
 
 using namespace Antik::SSH;
 

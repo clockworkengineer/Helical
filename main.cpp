@@ -1,6 +1,31 @@
+/*
+ * File:   main.cpp
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
+//
+// Program: Helical
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include "helicalmainwindow.h"
 
 #include <QApplication>
+
+// ============================
+// ===== MAIN ENTRY POINT =====
+// ============================
 
 int main(int argc, char *argv[])
 {

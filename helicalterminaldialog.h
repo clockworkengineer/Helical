@@ -1,8 +1,33 @@
+/*
+ * File:   helicalterminaldialog.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
 #ifndef HELICALCONNECTIONDIALOG_H
 #define HELICALCONNECTIONDIALOG_H
 
+//
+// Class: HelicalConnectionDialog
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include <QDialog>
 #include <QHBoxLayout>
+
+// =================
+// CLASS DECLARATION
+// =================
 
 #include "QtTerminal/qtterminal.h"
 #include "QtSSH/qtsshchannel.h"

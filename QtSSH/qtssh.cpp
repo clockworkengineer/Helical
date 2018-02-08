@@ -1,3 +1,24 @@
+/*
+ * File:   qtssh.cpp
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
+//
+// Class: QtSSH
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include "qtssh.h"
 
 QtSSH::QtSSH(QObject *parent) : QObject(parent)

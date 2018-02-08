@@ -1,3 +1,24 @@
+/*
+ * File:   qtsshchannels.cpp
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
+//
+// Class: QtSSHChannel
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include "qtsshchannel.h"
 
 QtSSHChannel::QtSSHChannel(QtSSH &session, QObject *parent) : QObject {parent},

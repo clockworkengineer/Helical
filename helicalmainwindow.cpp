@@ -1,3 +1,24 @@
+/*
+ * File:   helicalmainwindow.cpp
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
+//
+// Class: HelicalMainWindow
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include "helicalmainwindow.h"
 #include "ui_heilcalmainwindow.h"
 
@@ -97,6 +118,8 @@ void HelicalMainWindow::connectToServer(const QString &connectionName)
 
 void HelicalMainWindow::error(const QString &errorMessage, int errorCode)
 {
+
+    Q_UNUSED(errorCode);
 
     ui->statusBar->showMessage(errorMessage);
 

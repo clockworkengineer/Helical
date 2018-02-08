@@ -1,3 +1,24 @@
+/*
+ * File:   qtterminal.cpp
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
+//
+// Class: QtTerminal
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include "qtterminal.h"
 
 #include <QDebug>

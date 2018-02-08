@@ -1,10 +1,35 @@
+/*
+ * File:   qtsshchannel.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
 #ifndef QTSSHCHANNEL_H
 #define QTSSHCHANNEL_H
+
+//
+// Class: QtSSHChannel
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
 
 #include <QObject>
 
 #include "QtSSH/qtssh.h"
 #include "SSHChannelUtil.hpp"
+
+// =================
+// CLASS DECLARATION
+// =================
 
 using namespace Antik::SSH;
 

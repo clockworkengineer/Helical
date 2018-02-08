@@ -1,8 +1,33 @@
+/*
+ * File:   helicalserverconnectionsdialog.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
 #ifndef HELICALSERVERCONNECTIONSDIALOG_H
 #define HELICALSERVERCONNECTIONSDIALOG_H
 
+//
+// Class: HelicalServerConnectionsDialog
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include <QDialog>
 #include <QSettings>
+
+// =================
+// CLASS DECLARATION
+// =================
 
 namespace Ui {
 class HelicalServerConnectionsDialog;
