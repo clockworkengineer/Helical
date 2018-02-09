@@ -54,7 +54,7 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
     setUniformItemSizes(true);
 
     horizontalScrollBar()->setDisabled(true);
-    horizontalScrollBar()->setHidden(true);
+  //  horizontalScrollBar()->setHidden(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     setSelectionRectVisible(false);

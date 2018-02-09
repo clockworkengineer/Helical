@@ -74,9 +74,10 @@ void QtSSH::disconnectFromServer()
 
 void QtSSH::verifyServer()
 {
+    QtServerVerificationContext verificationContext {this };
 
     try {
-        if (verifyKnownServer(m_session)) {
+        if (verifyKnownServer(m_session, verificationContext)) {
             emit serverVerified();
         }
     }catch(const CSSHSession::Exception &e) {

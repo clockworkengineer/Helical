@@ -103,6 +103,12 @@ void HelicalMainWindow::connectToServer(const QString &connectionName)
         connect(m_session.data(), &QtSSH::serverVerified, this, &HelicalMainWindow::serverVerified);
         connect(m_session.data(), &QtSSH::userAuthorized, this, &HelicalMainWindow::userAuthorized);
 
+        connect(m_session.data(), &QtSSH::serverKnownChanged, this, &HelicalMainWindow::serverKnownChanged);
+        connect(m_session.data(), &QtSSH::serverFoundOther, this, &HelicalMainWindow::serverFoundOther);
+        connect(m_session.data(), &QtSSH::serverFileNotFound, this, &HelicalMainWindow::serverFileNotFound);
+        connect(m_session.data(), &QtSSH::serverNotKnown, this, &HelicalMainWindow::serverNotKnown);
+        connect(m_session.data(), &QtSSH::serverError, this, &HelicalMainWindow::serverError);
+
         m_serverConnections->hide();
         ui->statusBar->showMessage("Connecting to server ...");
 
@@ -158,6 +164,63 @@ void HelicalMainWindow::commandOutput(const QString &text)
 {
     ui->serverSessionLog->insertPlainText(text);
     ui->serverSessionLog->moveCursor (QTextCursor::End);
+
+}
+
+void HelicalMainWindow::serverKnownChanged(std::vector<unsigned char> &keyHash)
+{
+
+    QString message { "Host key for server changed: it is now:"+
+                      QString::fromStdString(this->m_session->getSession().convertKeyHashToHex(keyHash))+
+                              " For security reasons, connection will be stopped."};
+
+    QMessageBox::warning(this, "Helical", message);
+
+    ui->currentStatusLabel->clear();
+
+}
+
+void HelicalMainWindow::serverFoundOther()
+{
+    QString error { "The host key for this server was not found but an other type of key exists."
+                    "An attacker might change the default server key to confuse your client into "
+                    "thinking the key does not exist" };
+
+    QMessageBox::warning(this, "Helical", error);
+
+    ui->currentStatusLabel->clear();
+}
+
+void HelicalMainWindow::serverFileNotFound(std::vector<unsigned char> &keyHash)
+{
+    QString error { "Could not find known host file.\n"
+                    "If you accept the host key here, the file will be automatically created."};
+
+    QMessageBox::information(this, "Helical", error);
+
+    serverNotKnown(keyHash);
+
+}
+
+void HelicalMainWindow::serverNotKnown(std::vector<unsigned char> &keyHash)
+{
+
+    QString message { "The server is unknown. Do you trust the host key? Public key hash: "+
+                      QString::fromStdString(m_session->getSession().convertKeyHashToHex(keyHash))};
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Test", message, QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        m_session->getSession().writeKnownHost();
+        emit serverVerified();
+    } else {
+        ui->currentStatusLabel->clear();
+    }
+
+}
+
+void HelicalMainWindow::serverError()
+{
 
 }
 

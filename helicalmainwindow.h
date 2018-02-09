@@ -26,6 +26,7 @@
 #include <QKeyEvent>
 #include <QDebug>
 #include <QSettings>
+#include <QMessageBox>
 
 #include "helicalserverconnectionsdialog.h"
 #include "helicalterminaldialog.h"
@@ -56,6 +57,12 @@ public slots:
     void userAuthorized();
     void connectedToServer();
     void commandOutput(const QString &text);
+
+    void serverKnownChanged(std::vector<unsigned char> &keyHash);
+    void serverFoundOther();
+    void serverFileNotFound(std::vector<unsigned char> &keyHash);
+    void serverNotKnown(std::vector<unsigned char> &keyHash);
+    void serverError();
 
 private slots:
 
