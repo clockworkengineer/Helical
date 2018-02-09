@@ -42,69 +42,27 @@ class QtSSH : public QObject
 
     class QtServerVerificationContext : public ServerVerificationContext {
     public:
-        explicit QtServerVerificationContext(void *context=nullptr) : ServerVerificationContext{context}
-        {
+        explicit QtServerVerificationContext(void *context=nullptr) : ServerVerificationContext{context} {}
 
-        }
+        virtual void serverKnown() final;
+        virtual bool serverKnownChanged(std::vector<unsigned char> &keyHash) final;
+        virtual bool serverFoundOther() final;
+        virtual bool serverFileNotFound(std::vector<unsigned char> &keyHash) final;
+        virtual bool serverNotKnown(std::vector<unsigned char> &keyHash) final;
+        virtual bool serverError() final;
 
-        virtual void serverKnown() {
-            if (m_contextData) {
-                QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
-                emit sshSession->serverKnown();
-            }
-        }
-
-        virtual bool serverKnownChanged(std::vector<unsigned char> &keyHash) {
-            if (m_contextData) {
-                QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
-                emit sshSession->serverKnownChanged(keyHash);
-            }
-            return (false);
-        }
-
-        virtual bool serverFoundOther() {
-            if (m_contextData) {
-                QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
-                emit sshSession->serverFoundOther();
-            }
-            return (false);
-        }
-
-        virtual bool serverFileNotFound(std::vector<unsigned char> &keyHash) {
-            if (m_contextData) {
-                QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
-                emit sshSession->serverFileNotFound(keyHash);
-            }
-            return(false);
-        }
-
-        virtual bool serverNotKnown(std::vector<unsigned char> &keyHash) {
-            if (m_contextData) {
-                QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
-                emit sshSession->serverNotKnown(keyHash);
-            }
-            return(false);
-        }
-
-        virtual bool serverError() {
-            if (m_contextData) {
-                QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
-                emit sshSession->serverError();
-            }
-            return(false);
-        }
-
-
-    };
-
-    class SSHSession : public CSSHSession
-    {
-        //        virtual int userAuthorizationWithPassword();
-        //        virtual int userAuthorizationWithPublicKey();
-        //        virtual int userAuthorizationWithKeyboardInteractive();
     };
 
 public:
+
+    class SSHSession : public CSSHSession
+    {
+       // virtual int userAuthorizationWithNone();
+       // virtual int userAuthorizationWithPassword();
+       // virtual int userAuthorizationWithPublicKey();
+       // virtual int userAuthorizationWithPublicKeyAuto();
+       // virtual int userAuthorizationWithKeyboardInteractive();s
+    };
 
     explicit QtSSH(QObject *parent = nullptr);
 

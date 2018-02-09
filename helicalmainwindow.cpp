@@ -42,6 +42,7 @@ HelicalMainWindow::~HelicalMainWindow()
     terminateSession();
 
     delete ui;
+
 }
 
 void HelicalMainWindow::sessionFullyConnected()
@@ -55,6 +56,23 @@ void HelicalMainWindow::sessionFullyConnected()
     ui->disconnectServerButton->setEnabled(true);
 
     ui->currentStatusLabel->setText("Connected.");
+    ui->userNameLabel->setText(m_userName);
+
+    std::uint32_t authorizationType=(m_session.data())->getSession().getAuthorizarionType();
+    switch (authorizationType) {
+    case UserAuthorizationType::None:
+        ui->authorizationTypeLabel->setText("None");
+        break;
+    case UserAuthorizationType::Password:
+        ui->authorizationTypeLabel->setText("Password");
+        break;
+    case UserAuthorizationType::PublicKey:
+        ui->authorizationTypeLabel->setText("Public Key");
+        break;
+    case UserAuthorizationType::Interactice:
+        ui->authorizationTypeLabel->setText("Interactive");
+        break;
+    }
 
     ui->serverSessionLog->insertPlainText(m_session->getBanner());
 
@@ -74,10 +92,13 @@ void HelicalMainWindow::terminateSession()
     }
 
     ui->currentStatusLabel->setText("Disconnected.");
-    ui->serverNameLabel->setText("");
+    ui->serverNameLabel->clear();
+    ui->userNameLabel->clear();
+    ui->authorizationTypeLabel->clear();
     ui->terminalButton->setEnabled(false);
     ui->disconnectServerButton->setEnabled(false);
     ui->executeCommandButton->setEnabled(false);
+    ui->sftpButton->setEnabled(false);
     ui->serverSessionLog->clear();
 
 }
@@ -174,29 +195,31 @@ void HelicalMainWindow::serverKnownChanged(std::vector<unsigned char> &keyHash)
                       QString::fromStdString(this->m_session->getSession().convertKeyHashToHex(keyHash))+
                               " For security reasons, connection will be stopped."};
 
-    QMessageBox::warning(this, "Helical", message);
+    QMessageBox::warning(this, QCoreApplication::applicationName(), message);
 
-    ui->currentStatusLabel->clear();
+    ui->currentStatusLabel->setText("Disconnected.");
 
 }
 
 void HelicalMainWindow::serverFoundOther()
 {
-    QString error { "The host key for this server was not found but an other type of key exists."
-                    "An attacker might change the default server key to confuse your client into "
-                    "thinking the key does not exist" };
 
-    QMessageBox::warning(this, "Helical", error);
+    QString message { "The host key for this server was not found but an other type of key exists."
+                      "An attacker might change the default server key to confuse your client into "
+                      "thinking the key does not exist" };
 
-    ui->currentStatusLabel->clear();
+    QMessageBox::warning(this, QCoreApplication::applicationName(), message);
+
+    ui->currentStatusLabel->setText("Disconnected.");
+
 }
 
 void HelicalMainWindow::serverFileNotFound(std::vector<unsigned char> &keyHash)
 {
-    QString error { "Could not find known host file.\n"
-                    "If you accept the host key here, the file will be automatically created."};
+    QString message { "Could not find known host file.\n"
+                      "If you accept the host key here, the file will be automatically created."};
 
-    QMessageBox::information(this, "Helical", error);
+    QMessageBox::information(this, QCoreApplication::applicationName(), message);
 
     serverNotKnown(keyHash);
 
@@ -209,12 +232,12 @@ void HelicalMainWindow::serverNotKnown(std::vector<unsigned char> &keyHash)
                       QString::fromStdString(m_session->getSession().convertKeyHashToHex(keyHash))};
 
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Test", message, QMessageBox::Yes|QMessageBox::No);
+    reply = QMessageBox::question(this, QCoreApplication::applicationName(), message, QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::Yes) {
         m_session->getSession().writeKnownHost();
         emit serverVerified();
     } else {
-        ui->currentStatusLabel->clear();
+        ui->currentStatusLabel->setText("Disconnected.");
     }
 
 }
@@ -259,4 +282,5 @@ void HelicalMainWindow::on_executeCommandButton_clicked()
         m_connectionChannel->close();
         m_connectionChannel.reset();
     }
+
 }

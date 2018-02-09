@@ -22,6 +22,85 @@
 #include "qtssh.h"
 
 /**
+ * @brief QtSSH::QtServerVerificationContext::serverKnown
+ */
+void QtSSH::QtServerVerificationContext::serverKnown()
+{
+    if (m_contextData) {
+        QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
+        emit sshSession->serverKnown();
+    }
+}
+
+/**
+ * @brief QtSSH::QtServerVerificationContext::serverKnownChanged
+ * @param keyHash
+ * @return
+ */
+bool QtSSH::QtServerVerificationContext::serverKnownChanged(std::vector<unsigned char> &keyHash)
+{
+    if (m_contextData) {
+        QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
+        emit sshSession->serverKnownChanged(keyHash);
+    }
+    return (false);
+}
+
+/**
+ * @brief QtSSH::QtServerVerificationContext::serverFoundOther
+ * @return
+ */
+bool QtSSH::QtServerVerificationContext::serverFoundOther()
+{
+    if (m_contextData) {
+        QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
+        emit sshSession->serverFoundOther();
+    }
+    return (false);
+}
+
+/**
+ * @brief QtSSH::QtServerVerificationContext::serverFileNotFound
+ * @param keyHash
+ * @return
+ */
+bool QtSSH::QtServerVerificationContext::serverFileNotFound(std::vector<unsigned char> &keyHash)
+{
+    if (m_contextData) {
+        QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
+        emit sshSession->serverFileNotFound(keyHash);
+    }
+    return(false);
+}
+
+/**
+ * @brief QtSSH::QtServerVerificationContext::serverNotKnown
+ * @param keyHash
+ * @return
+ */
+bool QtSSH::QtServerVerificationContext::serverNotKnown(std::vector<unsigned char> &keyHash)
+{
+    if (m_contextData) {
+        QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
+        emit sshSession->serverNotKnown(keyHash);
+    }
+    return(false);
+}
+
+/**
+ * @brief QtSSH::QtServerVerificationContext::serverError
+ * @return
+ */
+bool QtSSH::QtServerVerificationContext::serverError()
+{
+    if (m_contextData) {
+        QtSSH *sshSession = static_cast<QtSSH *> (m_contextData);
+        emit sshSession->serverError();
+    }
+    return(false);
+}
+
+/**
  * @brief QtSSH::QtSSH
  * @param parent
  */
