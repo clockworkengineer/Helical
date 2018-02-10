@@ -55,15 +55,6 @@ class QtSSH : public QObject
 
 public:
 
-    class SSHSession : public CSSHSession
-    {
-       // virtual int userAuthorizationWithNone();
-       // virtual int userAuthorizationWithPassword();
-       // virtual int userAuthorizationWithPublicKey();
-       // virtual int userAuthorizationWithPublicKeyAuto();
-       // virtual int userAuthorizationWithKeyboardInteractive();s
-    };
-
     explicit QtSSH(QObject *parent = nullptr);
 
     void setSessionDetails(const QString &serverName, const QString &serverPort, const QString &userName, const QString &userPassword);
@@ -73,6 +64,7 @@ public:
     void verifyServer();
     void authorizeUser();
     QString getBanner();
+    quint32 getAuthorizarionType();
     bool isConnected();
     bool isAuthorized();
     CSSHSession& getSession();
@@ -96,7 +88,7 @@ public slots:
 
 private:
 
-    SSHSession m_session;
+    CSSHSession m_session;
 
 };
 

@@ -21,6 +21,10 @@
 
 #include "qtssh.h"
 
+//
+// Overidden Qt server verification methods.
+//
+
 /**
  * @brief QtSSH::QtServerVerificationContext::serverKnown
  */
@@ -199,6 +203,11 @@ QString QtSSH::getBanner()
 
     return(serverBanner);
 
+}
+
+quint32 QtSSH::getAuthorizarionType()
+{
+    return(m_session.getAuthorizarionType());
 }
 
 /**

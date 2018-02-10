@@ -32,6 +32,8 @@ HelicalMainWindow::HelicalMainWindow(QWidget *parent) :
     QCoreApplication::setOrganizationName("ClockWorkEngineer");
     QCoreApplication::setApplicationName("Helical");
 
+    setWindowTitle(QCoreApplication::applicationName());
+
     terminateSession();
 
 }
@@ -58,7 +60,7 @@ void HelicalMainWindow::sessionFullyConnected()
     ui->currentStatusLabel->setText("Connected.");
     ui->userNameLabel->setText(m_userName);
 
-    std::uint32_t authorizationType=(m_session.data())->getSession().getAuthorizarionType();
+    quint32 authorizationType=m_session->getAuthorizarionType();
     switch (authorizationType) {
     case UserAuthorizationType::None:
         ui->authorizationTypeLabel->setText("None");
@@ -100,6 +102,8 @@ void HelicalMainWindow::terminateSession()
     ui->executeCommandButton->setEnabled(false);
     ui->sftpButton->setEnabled(false);
     ui->serverSessionLog->clear();
+
+    ui->statusBar->setStyleSheet("QStatusBar {color: default}");
 
 }
 
@@ -148,6 +152,7 @@ void HelicalMainWindow::error(const QString &errorMessage, int errorCode)
 
     Q_UNUSED(errorCode);
 
+    ui->statusBar->setStyleSheet("QStatusBar {color: red}");
     ui->statusBar->showMessage(errorMessage);
 
 }
@@ -266,6 +271,7 @@ void HelicalMainWindow::on_actionConnections_triggered()
     if (!m_serverConnections) {
         m_serverConnections.reset(new HelicalServerConnectionsDialog(this));
     }
+    ui->statusBar->setStyleSheet("QStatusBar {color: default}");
     ui->statusBar->clearMessage();
     m_serverConnections->exec();
 }
@@ -275,8 +281,8 @@ void HelicalMainWindow::on_executeCommandButton_clicked()
 
     m_connectionChannel.reset(new QtSSHChannel(*m_session));
     if (m_connectionChannel) {
-        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOut, this, &HelicalMainWindow::commandOutput);
-        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdErr, this, &HelicalMainWindow::commandOutput);
+        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOutput, this, &HelicalMainWindow::commandOutput);
+        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdError, this, &HelicalMainWindow::commandOutput);
         m_connectionChannel->open();
         m_connectionChannel->executeRemoteCommand(m_command);
         m_connectionChannel->close();

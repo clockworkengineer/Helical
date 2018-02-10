@@ -40,22 +40,8 @@ class QtSSHChannel : public QObject
     class QtChannelIOContext : public IOContext {
     public:
         QtChannelIOContext(void *context) : IOContext {context} { m_internalInput = false;}
-        virtual void writeOutFn(void *data, uint32_t size) {
-            if (m_contextData) {
-                QtSSHChannel *channel = static_cast<QtSSHChannel *> (m_contextData);
-                if (size) {
-                    emit channel->writeStdOut(QString::fromLocal8Bit(static_cast<char *>(data), size));
-                }
-            }
-        }
-        virtual void writeErrFn(void *data, uint32_t size) {
-            if (m_contextData) {
-                QtSSHChannel *channel = static_cast<QtSSHChannel *> (m_contextData);
-                if (size) {
-                    emit channel->writeStdErr(QString::fromLocal8Bit(static_cast<char *>(data), size));
-                }
-            }
-        }
+        virtual void writeOutput(void *data, uint32_t size) final;
+        virtual void writeError(void *data, uint32_t size) final;
     };
 
 public:    
@@ -82,8 +68,8 @@ signals:
     void opened();
     void closed();
     void remoteShellClosed();
-    void writeStdOut(const QString &text);
-    void writeStdErr(const QString &text);
+    void writeStdOutput(const QString &text);
+    void writeStdError(const QString &text);
 
 public slots:
 

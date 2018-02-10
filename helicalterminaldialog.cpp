@@ -53,8 +53,8 @@ HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, int columns, int ro
 
     connect(m_terminalTextArea.data(), &QtTerminal::keySend, this, &HelicalTerminalDialog::keyRecv);
     connect(m_connectionChannel.data(), &QtSSHChannel::remoteShellClosed, this, &HelicalTerminalDialog::remoteShellClosed);
-    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOut, m_terminalTextArea.data(), &QtTerminal::terminalOutput);
-    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdErr, m_terminalTextArea.data(), &QtTerminal::terminalOutput);
+    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOutput, m_terminalTextArea.data(), &QtTerminal::terminalOutput);
+    connect(m_connectionChannel.data(), &QtSSHChannel::writeStdError, m_terminalTextArea.data(), &QtTerminal::terminalOutput);
 
     adjustSize();
 

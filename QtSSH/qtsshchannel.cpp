@@ -21,6 +21,38 @@
 
 #include "qtsshchannel.h"
 
+//
+// Overridden IOContext feedback methods.
+//
+
+/**
+ * @brief QtSSHChannel::QtChannelIOContext::writeOutFn
+ * @param data
+ * @param size
+ */
+void QtSSHChannel::QtChannelIOContext::writeOutput(void *data, uint32_t size) {
+    if (m_contextData) {
+        QtSSHChannel *channel = static_cast<QtSSHChannel *> (m_contextData);
+        if (size) {
+            emit channel->writeStdOutput(QString::fromLocal8Bit(static_cast<char *>(data), size));
+        }
+    }
+}
+
+/**
+ * @brief QtSSHChannel::QtChannelIOContext::writeErrFn
+ * @param data
+ * @param size
+ */
+void QtSSHChannel::QtChannelIOContext::writeError(void *data, uint32_t size)  {
+    if (m_contextData) {
+        QtSSHChannel *channel = static_cast<QtSSHChannel *> (m_contextData);
+        if (size) {
+            emit channel->writeStdError(QString::fromLocal8Bit(static_cast<char *>(data), size));
+        }
+    }
+}
+
 /**
  * @brief QtSSHChannel::QtSSHChannel
  * @param session

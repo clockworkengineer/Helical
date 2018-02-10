@@ -68,7 +68,7 @@ private:
     static void vt100ClearScreen(CTerminal *terminal, const std::string &escapeSequence);
     static void vt100CursorMovement(CTerminal *terminal, const std::string &escapeSequence);
 
-    std::unordered_map<std::string, TerminalFn>  m_vt100FnTable;
+    static std::unordered_map<std::string, TerminalFn>  m_vt100FnTable;
 
     std::unique_ptr<std::uint8_t> m_terminalBuffer;
 
