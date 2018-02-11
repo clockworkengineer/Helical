@@ -328,6 +328,19 @@ void CTerminal::processCharacter(std::deque<std::uint8_t> &charactersToProcess)
 }
 
 /**
+ * @brief CTerminal::scrollUp
+ * @param startRow
+ * @param endRow
+ */
+void CTerminal::scrollUp(int startRow, int endRow)
+{
+    for (auto row=startRow; row < endRow-1; row++) {
+        std::memmove(getBuffer(0, row), getBuffer(0, row+1), m_maxColumns);
+    }
+    std::memset(getBuffer(0, endRow-1),' ', m_maxColumns);
+}
+
+/**
  * @brief CTerminal::getBuffer
  * @param column
  * @param row

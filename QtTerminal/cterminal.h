@@ -50,6 +50,7 @@ public:
 
     void processEscapeSequence(std::deque<std::uint8_t> &sequenceToProcess);
     void processCharacter(std::deque<std::uint8_t> &charactersToProcess);
+    void scrollUp(int startRow, int endRow);
     void scrollScreenlUp(int numberofLines);
 
     std::uint8_t* getBuffer(int column, int row);

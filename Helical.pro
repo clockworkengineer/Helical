@@ -27,32 +27,32 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
+    Client/main.cpp \
+    Client/helicalmainwindow.cpp \
+    Client/helicalserverconnectionsdialog.cpp \
+    Client/helicalterminaldialog.cpp \
+    Client/helicalserverdetailsdialog.cpp \
     QtSSH/qtssh.cpp \
     QtSSH/qtsshchannel.cpp \
-    helicalmainwindow.cpp \
-    helicalserverconnectionsdialog.cpp \
-    helicalterminaldialog.cpp \
-    helicalserverdetailsdialog.cpp \
     QtTerminal/cterminal.cpp \
     QtTerminal/qtterminal.cpp
 
 HEADERS += \
     QtSSH/qtssh.h \
     QtSSH/qtsshchannel.h \
-    qtterminaltext.h \
-    helicalmainwindow.h \
-    helicalserverconnectionsdialog.h \
-    helicalterminaldialog.h \
-    helicalserverdetailsdialog.h \
+    QtTerminal/qtterminaltext.h \
+    Client/helicalmainwindow.h \
+    Client/helicalserverconnectionsdialog.h \
+    Client/helicalterminaldialog.h \
+    Client/helicalserverdetailsdialog.h \
     QtTerminal/cterminal.h \
     QtTerminal/qtterminal.h
 
 FORMS += \
-        heilcalmainwindow.ui \
-    helicalserverconnectionsdialog.ui \
-    helicalterminaldialog.ui \
-    helicalserverdetailsdialog.ui
+    Client/heilcalmainwindow.ui \
+    Client/helicalserverconnectionsdialog.ui \
+    Client/helicalterminaldialog.ui \
+    Client/helicalserverdetailsdialog.ui
 
 INCLUDEPATH += $$PWD/../../NetBeansProjects/Antikythera_mechanism/include
 DEPENDPATH += $$PWD/../../NetBeansProjects/Antikythera_mechanism/include
