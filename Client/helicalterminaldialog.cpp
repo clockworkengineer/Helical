@@ -12,7 +12,10 @@
 //
 // Class: HelicalTerminalDialog
 //
-// Description:
+// Description: Class to create a terminal shell connection dialog to accept all shell
+// input and display all output from it. It utilises class cterminal which is a basic
+// vt100 termianl emulation that uses a character array as a virtaul display (this is
+// flushed to the dialog window at decreet points).
 //
 
 // =============
@@ -26,6 +29,9 @@
 
 /**
  * @brief HelicalTerminalDialog::HelicalTerminalDialog
+ *
+ * Create shell sesion window (dialog).
+ *
  * @param session
  * @param columns
  * @param rows
@@ -61,7 +67,10 @@ HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, int columns, int ro
 }
 
 /**
- * @brief HelicalTerminalDialog::~HelicalTerminalDialog
+ * @brief HelicalTerminalDialog::~
+ *
+ * Destory terminal shell window and terminate its session.
+ *
  */
 
 HelicalTerminalDialog::~HelicalTerminalDialog()
@@ -73,6 +82,9 @@ HelicalTerminalDialog::~HelicalTerminalDialog()
 
 /**
  * @brief HelicalTerminalDialog::keyRecv
+ *
+ * Slot method for sending local key events to shell channel (remote server).
+ *
  * @param keyAscii
  */
 void HelicalTerminalDialog::keyRecv(const QByteArray &keyAscii)
@@ -83,6 +95,9 @@ void HelicalTerminalDialog::keyRecv(const QByteArray &keyAscii)
 
 /**
  * @brief HelicalTerminalDialog::remoteShellClosed
+ *
+ * Slow method for remote shell closed signal (just close window).
+ *
  */
 void HelicalTerminalDialog::remoteShellClosed()
 {
@@ -91,6 +106,9 @@ void HelicalTerminalDialog::remoteShellClosed()
 
 /**
  * @brief HelicalTerminalDialog::closeEvent
+ *
+ * Overrde for window close event. Terminate session and resend event up chain.
+ *
  * @param event
  */
 void HelicalTerminalDialog::closeEvent(QCloseEvent *event)
@@ -103,6 +121,9 @@ void HelicalTerminalDialog::closeEvent(QCloseEvent *event)
 
 /**
  * @brief HelicalTerminalDialog::terminateShell
+ *
+ * Close shell channel and stop its associated thread.
+ *
  */
 void HelicalTerminalDialog::terminateShell()
 {
@@ -117,6 +138,9 @@ void HelicalTerminalDialog::terminateShell()
 
 /**
  * @brief HelicalTerminalDialog::runCommand
+ *
+ * Run command on remote server.
+ *
  * @param command
  */
 void HelicalTerminalDialog::runCommand(const QString &command)
@@ -128,6 +152,9 @@ void HelicalTerminalDialog::runCommand(const QString &command)
 
 /**
  * @brief HelicalTerminalDialog::runShell
+ *
+ * Startup remote shell and its correspding thread.
+ *
  */
 void HelicalTerminalDialog::runShell()
 {

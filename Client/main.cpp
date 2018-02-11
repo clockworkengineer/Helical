@@ -12,7 +12,9 @@
 //
 // Program: Helical
 //
-// Description:
+// Description: A simple Qt based SSH client that uses libssh to connect to a remote
+// reserver and execute single commands, run a shell session and access the remote file system
+// using SFTP to upload/download files. (SFTP currently needs to be implemeted).
 //
 
 // =============

@@ -12,7 +12,8 @@
 //
 // Class: HelicalMainWindow
 //
-// Description:
+// Description: Class to display the main client window and to initiate
+// any SSH sessions.
 //
 
 // =============
@@ -22,15 +23,29 @@
 #include "helicalmainwindow.h"
 #include "ui_heilcalmainwindow.h"
 
+/**
+ * @brief HelicalMainWindow::HelicalMainWindow
+ *
+ * Create and display main client window.
+ *
+ * @param parent
+ */
 HelicalMainWindow::HelicalMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::HeilcalMainWindow)
 
 {
+
+    // Setup Qt Designed UI
+
     ui->setupUi(this);
+
+    // Set Company/Application name
 
     QCoreApplication::setOrganizationName("ClockWorkEngineer");
     QCoreApplication::setApplicationName("Helical");
+
+    // Window to initial disconnected state.
 
     setWindowTitle(QCoreApplication::applicationName());
 
@@ -38,6 +53,12 @@ HelicalMainWindow::HelicalMainWindow(QWidget *parent) :
 
 }
 
+/**
+ * @brief HelicalMainWindow::~HelicalMainWindow
+ *
+ * Closedown main window (including closing any open session).
+ *
+ */
 HelicalMainWindow::~HelicalMainWindow()
 {
 
@@ -47,6 +68,12 @@ HelicalMainWindow::~HelicalMainWindow()
 
 }
 
+/**
+ * @brief HelicalMainWindow::sessionFullyConnected
+ *
+ * Session fully connected update main window status.
+ * s
+ */
 void HelicalMainWindow::sessionFullyConnected()
 {
 
@@ -80,6 +107,12 @@ void HelicalMainWindow::sessionFullyConnected()
 
 }
 
+/**
+ * @brief HelicalMainWindow::terminateSession
+ *
+ * Closedown any SSH session and update main window status accordingly.
+ *
+ */
 void HelicalMainWindow::terminateSession()
 {
 
@@ -107,6 +140,13 @@ void HelicalMainWindow::terminateSession()
 
 }
 
+/**
+ * @brief HelicalMainWindow::connectToServer
+ *
+ * Get connection name parameters and initiate SSH connection.
+ *
+ * @param connectionName
+ */
 void HelicalMainWindow::connectToServer(const QString &connectionName)
 {
 
@@ -147,6 +187,14 @@ void HelicalMainWindow::connectToServer(const QString &connectionName)
 
 }
 
+/**
+ * @brief HelicalMainWindow::error
+ *
+ * Display SSH error messages in main window status bar.
+ *
+ * @param errorMessage
+ * @param errorCode
+ */
 void HelicalMainWindow::error(const QString &errorMessage, int errorCode)
 {
 
@@ -157,6 +205,12 @@ void HelicalMainWindow::error(const QString &errorMessage, int errorCode)
 
 }
 
+/**
+ * @brief HelicalMainWindow::serverVerified
+ *
+ * Server has been verified slot method. Authorize user.
+ *
+ */
 void HelicalMainWindow::serverVerified()
 {
     QtSSH *session { qobject_cast<QtSSH*>(sender()) };
@@ -168,12 +222,24 @@ void HelicalMainWindow::serverVerified()
 
 }
 
+/**
+ * @brief HelicalMainWindow::userAuthorized
+ *
+ * User athorized slot method. Update session status to connected.
+ *
+ */
+
 void HelicalMainWindow::userAuthorized()
 {
     ui->currentStatusLabel->setText("User authorized ...");
     sessionFullyConnected();
 }
 
+/**
+ * @brief HelicalMainWindow::connectedToServer
+ *
+ * Connected to server slot method. Now verify server.
+ */
 void HelicalMainWindow::connectedToServer()
 {
     QtSSH *session { qobject_cast<QtSSH*>(sender()) };
@@ -186,6 +252,12 @@ void HelicalMainWindow::connectedToServer()
 
 }
 
+/**
+ * @brief HelicalMainWindow::commandOutput
+ *
+ * Single command output slot method (write to main window session logging).
+ * @param text
+ */
 void HelicalMainWindow::commandOutput(const QString &text)
 {
     ui->serverSessionLog->insertPlainText(text);
@@ -193,6 +265,77 @@ void HelicalMainWindow::commandOutput(const QString &text)
 
 }
 
+/**
+ * @brief HelicalMainWindow::on_disconnectServerButton_clicked
+ *
+ * Disconnect session button.
+ *
+ */
+void HelicalMainWindow::on_disconnectServerButton_clicked()
+{
+    terminateSession();
+}
+
+/**
+ * @brief HelicalMainWindow::on_terminalButton_clicked
+ *
+ * Run remote shell in window (currently hardencoded size).
+ *
+ */
+void HelicalMainWindow::on_terminalButton_clicked()
+{
+
+    m_connectionWindow.reset(new HelicalTerminalDialog(*m_session.data(), 80, 24));
+    m_connectionWindow->runShell();
+    m_connectionWindow->show();
+
+}
+
+/**
+ * @brief HelicalMainWindow::on_actionConnections_triggered
+ *
+ * Display connection settings creation/editor dialog.
+ *
+ */
+void HelicalMainWindow::on_actionConnections_triggered()
+{
+    if (!m_serverConnections) {
+        m_serverConnections.reset(new HelicalServerConnectionsDialog(this));
+    }
+    ui->statusBar->setStyleSheet("QStatusBar {color: default}");
+    ui->statusBar->clearMessage();
+    m_serverConnections->exec();
+}
+
+/**
+ * @brief HelicalMainWindow::on_executeCommandButton_clicked
+ *
+ * Excute remote shell command (output sent to session logging).
+ *
+ */
+void HelicalMainWindow::on_executeCommandButton_clicked()
+{
+
+    m_connectionChannel.reset(new QtSSHChannel(*m_session));
+    if (m_connectionChannel) {
+        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOutput, this, &HelicalMainWindow::commandOutput);
+        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdError, this, &HelicalMainWindow::commandOutput);
+        m_connectionChannel->open();
+        m_connectionChannel->executeRemoteCommand(m_command);
+        m_connectionChannel->close();
+        m_connectionChannel.reset();
+    }
+
+}
+
+// ===================================
+// SERVER VERFICATION FEEDBACK METHODS
+// ===================================
+
+/**
+ * @brief HelicalMainWindow::serverKnownChanged
+ * @param keyHash
+ */
 void HelicalMainWindow::serverKnownChanged(std::vector<unsigned char> &keyHash)
 {
 
@@ -206,6 +349,9 @@ void HelicalMainWindow::serverKnownChanged(std::vector<unsigned char> &keyHash)
 
 }
 
+/**
+ * @brief HelicalMainWindow::serverFoundOther
+ */
 void HelicalMainWindow::serverFoundOther()
 {
 
@@ -219,6 +365,10 @@ void HelicalMainWindow::serverFoundOther()
 
 }
 
+/**
+ * @brief HelicalMainWindow::serverFileNotFound
+ * @param keyHash
+ */
 void HelicalMainWindow::serverFileNotFound(std::vector<unsigned char> &keyHash)
 {
     QString message { "Could not find known host file.\n"
@@ -229,7 +379,10 @@ void HelicalMainWindow::serverFileNotFound(std::vector<unsigned char> &keyHash)
     serverNotKnown(keyHash);
 
 }
-
+/**
+ * @brief HelicalMainWindow::serverNotKnown
+ * @param keyHash
+ */
 void HelicalMainWindow::serverNotKnown(std::vector<unsigned char> &keyHash)
 {
 
@@ -246,47 +399,10 @@ void HelicalMainWindow::serverNotKnown(std::vector<unsigned char> &keyHash)
     }
 
 }
-
+/**
+ * @brief HelicalMainWindow::serverError
+ */
 void HelicalMainWindow::serverError()
 {
-
-}
-
-void HelicalMainWindow::on_disconnectServerButton_clicked()
-{
-    terminateSession();
-}
-
-void HelicalMainWindow::on_terminalButton_clicked()
-{
-
-    m_connectionWindow.reset(new HelicalTerminalDialog(*m_session.data(), 80, 24));
-    m_connectionWindow->runShell();
-    m_connectionWindow->show();
-
-}
-
-void HelicalMainWindow::on_actionConnections_triggered()
-{
-    if (!m_serverConnections) {
-        m_serverConnections.reset(new HelicalServerConnectionsDialog(this));
-    }
-    ui->statusBar->setStyleSheet("QStatusBar {color: default}");
-    ui->statusBar->clearMessage();
-    m_serverConnections->exec();
-}
-
-void HelicalMainWindow::on_executeCommandButton_clicked()
-{
-
-    m_connectionChannel.reset(new QtSSHChannel(*m_session));
-    if (m_connectionChannel) {
-        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOutput, this, &HelicalMainWindow::commandOutput);
-        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdError, this, &HelicalMainWindow::commandOutput);
-        m_connectionChannel->open();
-        m_connectionChannel->executeRemoteCommand(m_command);
-        m_connectionChannel->close();
-        m_connectionChannel.reset();
-    }
 
 }

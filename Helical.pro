@@ -40,7 +40,6 @@ SOURCES += \
 HEADERS += \
     QtSSH/qtssh.h \
     QtSSH/qtsshchannel.h \
-    QtTerminal/qtterminaltext.h \
     Client/helicalmainwindow.h \
     Client/helicalserverconnectionsdialog.h \
     Client/helicalterminaldialog.h \

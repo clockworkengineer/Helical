@@ -12,7 +12,7 @@
 //
 // Class: HelicalServerDetailsDialog
 //
-// Description:
+// Description: Class to display/edit server connection details dialog.
 //
 
 // =============
@@ -24,6 +24,11 @@
 
 /**
  * @brief HelicalServerDetailsDialog::HelicalServerDetailsDialog
+ *
+ * Create/Display connection details dialog. If connection name is not empty then
+ * the dialog is open for editing of an existing connection otherwise creation of a new
+ * session.
+ *
  * @param connectionName
  * @param parent
  */
@@ -48,6 +53,9 @@ HelicalServerDetailsDialog::HelicalServerDetailsDialog(const QString& connection
 
 /**
  * @brief HelicalServerDetailsDialog::~HelicalServerDetailsDialog
+ *
+ * Destroy server connectiosn details dialog.
+ *
  */
 HelicalServerDetailsDialog::~HelicalServerDetailsDialog()
 {
@@ -56,6 +64,9 @@ HelicalServerDetailsDialog::~HelicalServerDetailsDialog()
 
 /**
  * @brief HelicalServerDetailsDialog::on_cancelButton_clicked
+ *
+ * Cancel edit connection dettails.
+ *
  */
 void HelicalServerDetailsDialog::on_cancelButton_clicked()
 {
@@ -66,6 +77,9 @@ void HelicalServerDetailsDialog::on_cancelButton_clicked()
 
 /**
  * @brief HelicalServerDetailsDialog::on_saveButton_clicked
+ *
+ * Save connection details away to settings.
+ *
  */
 void HelicalServerDetailsDialog::on_saveButton_clicked()
 {
@@ -92,6 +106,9 @@ void HelicalServerDetailsDialog::on_saveButton_clicked()
 
 /**
  * @brief HelicalServerDetailsDialog::connectionName
+ *
+ * Get connection name.
+ *
  * @return
  */
 QString HelicalServerDetailsDialog::connectionName() const
@@ -101,6 +118,9 @@ QString HelicalServerDetailsDialog::connectionName() const
 
 /**
  * @brief HelicalServerDetailsDialog::showEvent
+ *
+ * Intialise dialog from settings for show event.
+ *
  * @param event
  */
 void HelicalServerDetailsDialog::showEvent(QShowEvent *event)

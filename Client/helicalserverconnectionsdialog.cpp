@@ -12,7 +12,7 @@
 //
 // Class: HelicalServerConnectionsDialog
 //
-// Description:
+// Description: Class to create and display server settings creation/editor dialog.
 //
 
 // =============
@@ -27,6 +27,9 @@
 
 /**
  * @brief HelicalServerConnectionsDialog::HelicalServerConnectionsDialog
+ *
+ * Read connections list and display dialog.
+ *
  * @param parent
  */
 HelicalServerConnectionsDialog::HelicalServerConnectionsDialog(QWidget *parent) :
@@ -44,6 +47,9 @@ HelicalServerConnectionsDialog::HelicalServerConnectionsDialog(QWidget *parent) 
 
 /**
  * @brief HelicalServerConnectionsDialog::~HelicalServerConnectionsDialog
+ *
+ * Destroy dialog.
+ * s
  */
 HelicalServerConnectionsDialog::~HelicalServerConnectionsDialog()
 {
@@ -52,6 +58,9 @@ HelicalServerConnectionsDialog::~HelicalServerConnectionsDialog()
 
 /**
  * @brief HelicalServerConnectionsDialog::loadConnectionsList
+ *
+ * Load connections list.
+ *
  */
 void HelicalServerConnectionsDialog::loadConnectionsList()
 {
@@ -65,6 +74,9 @@ void HelicalServerConnectionsDialog::loadConnectionsList()
 
 /**
  * @brief HelicalServerConnectionsDialog::populateConnectionList
+ *
+ * Add current connections list to dialog and save away to settings.
+ *
  */
 void HelicalServerConnectionsDialog::populateConnectionList()
 {
@@ -77,6 +89,9 @@ void HelicalServerConnectionsDialog::populateConnectionList()
 
 /**
  * @brief HelicalServerConnectionsDialog::saveConnectionList
+ *
+ * Save connections list to settings.
+ *
  */
 void HelicalServerConnectionsDialog::saveConnectionList()
 {
@@ -89,6 +104,9 @@ void HelicalServerConnectionsDialog::saveConnectionList()
 
 /**
  * @brief HelicalServerConnectionsDialog::on_newServerButton_clicked
+ *
+ * Display new connection details dialog.
+ *
  */
 void HelicalServerConnectionsDialog::on_newServerButton_clicked()
 {
@@ -106,6 +124,9 @@ void HelicalServerConnectionsDialog::on_newServerButton_clicked()
 
 /**
  * @brief HelicalServerConnectionsDialog::on_editServerButton_clicked
+ *
+ * Display edit connection details dialog.
+ *
  */
 void HelicalServerConnectionsDialog::on_editServerButton_clicked()
 {
@@ -120,6 +141,9 @@ void HelicalServerConnectionsDialog::on_editServerButton_clicked()
 
 /**
  * @brief HelicalServerConnectionsDialog::on_removeServerButton_clicked
+ *
+ * Remove connection from connection list.
+ *
  */
 void HelicalServerConnectionsDialog::on_removeServerButton_clicked()
 {
@@ -143,6 +167,8 @@ void HelicalServerConnectionsDialog::on_removeServerButton_clicked()
 
 /**
  * @brief HelicalServerConnectionsDialog::on_connectServerButton_clicked
+ *
+ * Connect to given SSH server on connection list.
  */
 void HelicalServerConnectionsDialog::on_connectServerButton_clicked()
 {
