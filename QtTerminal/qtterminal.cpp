@@ -12,7 +12,11 @@
 //
 // Class: QtTerminal
 //
-// Description:
+// Description: Class to act as Qt specific wrapper for class CTerminal. It is QListView that
+// is used to display a QStringListModel into which the CTerminal buffer has been flushed. The
+// KeyEvent function os also overridden so that key stokes may be sent down the shell channel to
+// the server. A more efficient way of doing at a later date will be found; through the use
+// of a custom view and model class.
 //
 
 // =============
@@ -21,13 +25,15 @@
 
 #include "qtterminal.h"
 
-#include <QDebug>
 #include <QScrollBar>
+
 #include <cstring>
-#include <iostream>
 
 /**
  * @brief QtTerminal::QtTerminal
+ *
+ * Create ListView area for terminal screen.
+ *
  * @param columns
  * @param rows
  * @param parent
@@ -72,6 +78,10 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
 
 /**
  * @brief QtTerminal::scrollScreenUp
+ *
+ * Scroll list view area up a number of lines offsetting the main screen buffer area
+ * and saving previous content in the process.
+ *
  * @param terminalConext
  * @param numberofLines
  */
@@ -97,6 +107,9 @@ void QtTerminal::scrollScreenUp(void *terminalConext, int numberofLines)
 
 /**
  * @brief QtTerminal::bufferToScreen
+ *
+ * Flush CTerminal buffer to ListView.
+ *
  */
 void QtTerminal::bufferToScreen()
 {
@@ -113,6 +126,10 @@ void QtTerminal::bufferToScreen()
 
 /**
  * @brief QtTerminal::keyPressEvent
+ *
+ * Send ASCII for keypress to server. Arrow keys are translated into the correct escape
+ * sequence for the server.Note : More keys may need to be translated in future.
+ *
  * @param event
  */
 void QtTerminal::keyPressEvent(QKeyEvent *event)
@@ -147,6 +164,9 @@ void QtTerminal::keyPressEvent(QKeyEvent *event)
 
 /**
  * @brief QtTerminal::terminalOutput
+ *
+ * Send recieved characters from remote shell to CTerminal.
+ *
  * @param characters
  */
 void QtTerminal::terminalOutput(const QString &characters)

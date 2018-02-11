@@ -12,7 +12,10 @@
 //
 // Class: CTerminal
 //
-// Description:
+// Description: Class to provide vt100 terminal. It utilizes a local buffer to simualate the
+// terminal screen which may be copied to the host screen at dictated times. The emualation only
+// supports cursor movement, screen clearing and basic character output with no attributes. This
+// may change in he future.
 //
 
 // =============
@@ -24,10 +27,17 @@
 #include <cstring>
 #include <iostream>
 
+//
+// Escape sequence to processing function map.
+//
+
 std::unordered_map<std::string, CTerminal::TerminalFn>  CTerminal::m_vt100FnTable;
 
 /**
  * @brief CTerminal::CTerminal
+ *
+ * Setup terminal.
+ *
  */
 CTerminal::CTerminal()
 {
@@ -122,6 +132,9 @@ CTerminal::CTerminal()
 
 /**
  * @brief CTerminal::initializeTerminal
+ *
+ * Initialse terminal buffer screen.
+ *
  * @param columns
  * @param rows
  */
@@ -136,8 +149,15 @@ void CTerminal::initializeTerminal(int columns, int rows)
 
 }
 
+// ===================================
+// ESCAPE SEQUENCE TRANSLATION METHODS
+// ===================================
+
 /**
  * @brief CTerminal::vt100Unsupported
+ *
+ * Signal not supported.
+ *
  * @param terminal
  * @param escapeSequence
  */
@@ -153,6 +173,9 @@ void CTerminal::vt100Unsupported(CTerminal *terminal, const std::string &escapeS
 
 /**
  * @brief CTerminal::vt100ClearLine
+ *
+ * Clear line.
+ *
  * @param terminal
  * @param escapeSequence
  */
@@ -175,6 +198,9 @@ void CTerminal::vt100ClearLine(CTerminal *terminal, const std::string &escapeSeq
 
 /**
  * @brief CTerminal::vt100ClearScreen
+ *
+ * Clear a area of screen.
+ *
  * @param terminal
  * @param escapeSequence
  */
@@ -202,6 +228,9 @@ void CTerminal::vt100ClearScreen(CTerminal *terminal, const std::string &escapeS
 
 /**
  * @brief CTerminal::vt100CursorMovement
+ *
+ * Various cursor movement functions.
+ *
  * @param terminal
  * @param escapeSequence
  */
@@ -234,6 +263,10 @@ void CTerminal::vt100CursorMovement(CTerminal *terminal, const std::string &esca
 
 /**
  * @brief CTerminal::processEscapeSequence
+ *
+ * Map onto correct escape sequence processing. First it tries to map the full
+ * sequence then a partial sequence that has had its numeric parameters removed.
+ *
  * @param escapeSequence
  */
 void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &sequenceToProcess)
@@ -269,6 +302,9 @@ void CTerminal::processEscapeSequence(std::deque<std::uint8_t> &sequenceToProces
 
 /**
  * @brief CTerminal::scrollScreenlUp
+ *
+ * Scroll buffer up a number of lines.
+ *
  * @param numberofLines
  */
 void CTerminal::scrollScreenlUp(int numberofLines)
@@ -280,6 +316,9 @@ void CTerminal::scrollScreenlUp(int numberofLines)
 
 /**
  * @brief CTerminal::processCharacter
+ *
+ * Process a sequence of characters sent to terminal.
+ *
  * @param charactersToProcess
  */
 void CTerminal::processCharacter(std::deque<std::uint8_t> &charactersToProcess)
@@ -287,11 +326,11 @@ void CTerminal::processCharacter(std::deque<std::uint8_t> &charactersToProcess)
 
     switch(charactersToProcess.front()) {
 
-    case 0x1B:
+    case 0x1B: // ESC
         processEscapeSequence(charactersToProcess);
         break;
 
-    case 0x0A:
+    case 0x0A: // LINEFEED
         m_currentRow++;
         if (m_currentRow==m_maxRows) {
             m_currentRow -=1;
@@ -299,19 +338,19 @@ void CTerminal::processCharacter(std::deque<std::uint8_t> &charactersToProcess)
         }
         break;
 
-    case 0x0D:
+    case 0x0D: // CARRIAGE RETURN
         m_currentColumn=0;
         break;
 
-    case 0x08:
+    case 0x08: // BACKSPACE
         m_currentColumn=std::max(0, m_currentColumn-1);
         break;
 
     case 0x0F:
     case 0x07:
-        break;  //Ignore
+        break;  // Ignore
 
-    default:
+    default:    // NORMAL PRINTABLE ASCII
         if (m_currentColumn==m_maxColumns) {
             m_currentColumn=0;
             m_currentRow++;
@@ -329,6 +368,9 @@ void CTerminal::processCharacter(std::deque<std::uint8_t> &charactersToProcess)
 
 /**
  * @brief CTerminal::scrollUp
+ *
+ * Scroll a section of screen up one line.
+ *
  * @param startRow
  * @param endRow
  */
@@ -342,6 +384,9 @@ void CTerminal::scrollUp(int startRow, int endRow)
 
 /**
  * @brief CTerminal::getBuffer
+ *
+ * Return direct pointer to character position in buffer given column/row.
+ *
  * @param column
  * @param row
  * @return
@@ -352,16 +397,11 @@ std::uint8_t* CTerminal::getBuffer(int column, int row)
 }
 
 /**
- * @brief CTerminal::getCurrentColumn
- * @return
- */
-int CTerminal::getCurrentColumn() const
-{
-    return m_currentColumn;
-}
-
-/**
  * @brief CTerminal::setScreenScroll
+ *
+ * Set screen scroll function. Used to trigger any host specific scroll screen
+ * functionality.
+ *
  * @param screenScrollFn
  * @param screenScrollContext
  */
@@ -373,6 +413,9 @@ void CTerminal::setScreenScroll(ScreenScrollFn screenScrollFn, void *screenScrol
 
 /**
  * @brief CTerminal::extractNumber
+ *
+ * Extract a number from an escape sequence.
+ *
  * @param escapeSequence
  * @return
  */
@@ -396,6 +439,9 @@ int CTerminal::extractNumber(const std::string &escapeSequence)
 
 /**
  * @brief CTerminal::extractCoordinates
+ *
+ * Extract a set of coordinates from an escape sequence.
+ *
  * @param escapeSequence
  * @return
  */
@@ -421,7 +467,22 @@ std::pair<int,int> CTerminal::extractCoordinates(const std::string &escapeSequen
 }
 
 /**
+ * @brief CTerminal::getCurrentColumn
+ *
+ * Get currrent cursor column postion.
+ *
+ * @return
+ */
+int CTerminal::getCurrentColumn() const
+{
+    return m_currentColumn;
+}
+
+/**
  * @brief CTerminal::getCurrentRow
+ *
+ * Get current cursor row position.
+ *
  * @return
  */
 int CTerminal::getCurrentRow() const
@@ -431,6 +492,9 @@ int CTerminal::getCurrentRow() const
 
 /**
  * @brief CTerminal::getMaxColumns
+ *
+ * Get maximum columns for terminal.
+ *
  * @return
  */
 int CTerminal::getMaxColumns() const
@@ -438,6 +502,13 @@ int CTerminal::getMaxColumns() const
     return m_maxColumns;
 }
 
+/**
+ * @brief CTerminal::getMaxRows
+ *
+ * Get maxiumum rows for terminal.
+ *
+ * @return
+ */
 int CTerminal::getMaxRows() const
 {
     return m_maxRows;
