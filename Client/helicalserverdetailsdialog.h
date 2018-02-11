@@ -15,7 +15,7 @@
 //
 // Class: HelicalServerDetailsDialog
 //
-// Description:
+// Description: Class to display/edit server connection details dialog.
 //
 
 // =============
@@ -39,30 +39,38 @@ class HelicalServerDetailsDialog : public QDialog
 
 public:
 
+    // Constructor / Destructor
+
     explicit HelicalServerDetailsDialog(const QString& connectionName, QWidget *parent = 0);
     ~HelicalServerDetailsDialog();
+
+    // Get connection name
 
     QString connectionName() const;
 
 protected:
 
-    void showEvent( QShowEvent* event );
+    // Override shot event
+
+    void showEvent( QShowEvent* event ) override;
 
 private slots:
 
-    void on_cancelButton_clicked();
-    void on_saveButton_clicked();
+    // Dialog controls
+
+    void on_cancelButton_clicked();     // Cancel
+    void on_saveButton_clicked();       // Save connection details
 
 private:
 
-    Ui::HelicalServerDetailsDialog *ui;
+    Ui::HelicalServerDetailsDialog *ui;     // Qt dialog data
 
-    QString m_connectionName;
-    QString m_serverName;
-    QString m_serverPort;
-    QString m_userName;
-    QString m_userPassword;
-    QString m_command;
+    QString m_connectionName;   // SSH connection name
+    QString m_serverName;       // Server name
+    QString m_serverPort;       // Server port
+    QString m_userName;         // User name
+    QString m_userPassword;     // User password
+    QString m_command;          // Remote command to execute on demand.
 
 };
 

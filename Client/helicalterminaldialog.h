@@ -13,9 +13,12 @@
 #define HELICALCONNECTIONDIALOG_H
 
 //
-// Class: HelicalConnectionDialog
+// Class: HelicalTerminalDialog
 //
-// Description:
+// Description: Class to create a terminal shell connection dialog to accept all shell
+// input and display all output from it. It utilises class cterminal which is a basic
+// vt100 terminal emulation that uses a character array as a virtual display (this is
+// flushed to the dialog window at decreet points).
 //
 
 // =============
@@ -42,35 +45,44 @@ class HelicalTerminalDialog : public QDialog
 
 public:
 
+    // Constructor / Destructor
+
     explicit HelicalTerminalDialog(QtSSH &session, int columns, int rows, QWidget *parent = 0);
     ~HelicalTerminalDialog();
 
+    // Run remote shell command
     void runCommand(const QString &command);
+
+    // Run remote shell in window
+
     void runShell();
 
 public slots:
 
-    void keyRecv(const QByteArray &keyAscii);
-    void remoteShellClosed();
+    void keyRecv(const QByteArray &keyAscii);   // Key input recieved
+    void remoteShellClosed();                   // Remote shell closed.
 
 protected:
 
-    void closeEvent(QCloseEvent *event);
+    // Override for dialof close event
+
+    void closeEvent(QCloseEvent *event) override;
 
 private:
 
+    // Terminate shell processing
+
     void terminateShell();
 
-    Ui::HelicalConnectionDialog *ui;
+    Ui::HelicalConnectionDialog *ui;    // Qt dialog data
 
-    QScopedPointer<QtTerminal> m_terminalTextArea {nullptr};
+    QScopedPointer<QtTerminal> m_terminalTextArea {nullptr};    // Pointer to terminal text area (screen)
+    QScopedPointer<QtSSHChannel> m_connectionChannel {nullptr}; // Pointer to shell channel
+    QScopedPointer<QHBoxLayout> m_textAreaLayout {nullptr};     // Pointer to layout for terminal text area.
+    QScopedPointer<std::thread> m_remoteShellThread {nullptr};  // Pointer to remote shell thread
 
-    int m_columns {0};
-    int m_rows {0};
-
-    QScopedPointer<QtSSHChannel> m_connectionChannel {nullptr};
-    QScopedPointer<QHBoxLayout> m_textAreaLayout {nullptr};
-    QScopedPointer<std::thread> m_remoteShellThread {nullptr};
+    int m_columns {0};  // Shell columns
+    int m_rows {0};     // Shell rows
 
 };
 

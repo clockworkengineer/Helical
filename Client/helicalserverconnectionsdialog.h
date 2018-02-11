@@ -15,7 +15,7 @@
 //
 // Class: HelicalServerConnectionsDialog
 //
-// Description:
+// Description: Class to create and display server settings creation/editor dialog.
 //
 
 // =============
@@ -39,29 +39,43 @@ class HelicalServerConnectionsDialog : public QDialog
 
 public:
 
+    // Constructor / Destructor
+
     explicit HelicalServerConnectionsDialog(QWidget *parent = 0);
     ~HelicalServerConnectionsDialog();
 
 signals:
 
+    // Connect to remote server
+
     void connectToServer(const QString &connectionName);
 
 private slots:
 
-    void on_newServerButton_clicked();
-    void on_editServerButton_clicked();
-    void on_removeServerButton_clicked();
-    void on_connectServerButton_clicked();
+    // Window controls
+
+    void on_newServerButton_clicked();      // New connection
+    void on_editServerButton_clicked();     // Edit connection
+    void on_removeServerButton_clicked();   // Remove connection
+    void on_connectServerButton_clicked();  // Connect to server
 
 private:
 
+    // Load connection list from settings
+
     void loadConnectionsList();
+
+    // Polulate connections list in dialog
+
     void populateConnectionList();
+
+    // Save connections list away to settings
+
     void saveConnectionList();
 
-    Ui::HelicalServerConnectionsDialog *ui;
+    Ui::HelicalServerConnectionsDialog *ui;     // Qt dialog data
 
-    QStringList m_connectionList;
+    QStringList m_connectionList;               // Connections list
 
 };
 

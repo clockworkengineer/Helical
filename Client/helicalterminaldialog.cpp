@@ -14,7 +14,7 @@
 //
 // Description: Class to create a terminal shell connection dialog to accept all shell
 // input and display all output from it. It utilises class cterminal which is a basic
-// vt100 termianl emulation that uses a character array as a virtaul display (this is
+// vt100 termianl emulation that uses a character array as a virtual display (this is
 // flushed to the dialog window at decreet points).
 //
 

@@ -13,9 +13,10 @@
 #define HEILCALMAINWINDOW_H
 
 //
-// Class: HeilcalMainWindow
+// Class: HelicalMainWindow
 //
-// Description:
+// Description: Class to display the main client window and to initiate
+// any SSH sessions.
 //
 
 // =============
@@ -46,17 +47,23 @@ class HelicalMainWindow : public QMainWindow
 
 public:
 
+    // Constructor / Destructor
+
     explicit HelicalMainWindow(QWidget *parent = 0);
     ~HelicalMainWindow();
 
 public slots:
 
-    void connectToServer(const QString &connectionName);
-    void error(const QString &errorMessage, int errorCode);
-    void serverVerified();
-    void userAuthorized();
-    void connectedToServer();
-    void commandOutput(const QString &text);
+    // General SSH session
+
+    void connectToServer(const QString &connectionName);        // Connect to server
+    void error(const QString &errorMessage, int errorCode);     // SSH error message
+    void serverVerified();                                      // Server has been verified
+    void userAuthorized();                                      // User has been authurized
+    void connectedToServer();                                   // Conneced to server
+    void commandOutput(const QString &text);                    // Display command output (stdout/stderr)
+
+    // Verify server feedback
 
     void serverKnownChanged(std::vector<unsigned char> &keyHash);
     void serverFoundOther();
@@ -66,30 +73,37 @@ public slots:
 
 private slots:
 
-    void on_disconnectServerButton_clicked();
-    void on_terminalButton_clicked();
-    void on_actionConnections_triggered();
-    void on_executeCommandButton_clicked();
+    // Window controls
+
+    void on_disconnectServerButton_clicked();   // Disconnect SSH session
+    void on_terminalButton_clicked();           // Execute remote shell
+    void on_actionConnections_triggered();      // Connect to remote server
+    void on_executeCommandButton_clicked();     // Execute remote command
 
 private:
 
+    // Session connected processing
+
     void sessionFullyConnected();
+
+    // Terminate session processing
+
     void terminateSession();
 
-    Ui::HeilcalMainWindow *ui;
+    Ui::HeilcalMainWindow *ui;  // Qt window data
 
-    QScopedPointer<QtSSH> m_session {nullptr};
-    QScopedPointer<QtSSHChannel> m_connectionChannel {nullptr};
+    QScopedPointer<QtSSH> m_session {nullptr};                      // Pointer to session
+    QScopedPointer<QtSSHChannel> m_connectionChannel {nullptr};     // Pointer to channel
 
-    QString m_connectionName;
-    QString m_serverName;
-    QString m_serverPort;
-    QString m_userName;
-    QString m_userPassword;
-    QString m_command;
+    QString m_connectionName;   // SSH connection name
+    QString m_serverName;       // Server name
+    QString m_serverPort;       // Server port
+    QString m_userName;         // User name
+    QString m_userPassword;     // User password
+    QString m_command;          // Remote command to execute on demand.
 
-    QScopedPointer<HelicalServerConnectionsDialog> m_serverConnections;
-    QScopedPointer<HelicalTerminalDialog> m_connectionWindow;
+    QScopedPointer<HelicalServerConnectionsDialog> m_serverConnections;     // Pointer to server connection details dialog
+    QScopedPointer<HelicalTerminalDialog> m_connectionWindow;               // Pointer to shell connection window
 
 };
 
