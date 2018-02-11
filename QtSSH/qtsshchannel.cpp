@@ -12,7 +12,9 @@
 //
 // Class: QtSSHChannel
 //
-// Description:
+// Description: Class for client SSH channel connections. Its uses the Antik::CSSH C++
+// wrapper classes for third party library libssh. Its translates to/from Qt to standard
+// C++ data structures as and when needed to keep the whole interface Qt orientated.
 //
 
 // =============
@@ -55,6 +57,9 @@ void QtSSHChannel::QtChannelIOContext::writeError(void *data, uint32_t size)  {
 
 /**
  * @brief QtSSHChannel::QtSSHChannel
+ *
+ * Create channel object.
+ *
  * @param session
  * @param parent
  */
@@ -66,6 +71,9 @@ QtSSHChannel::QtSSHChannel(QtSSH &session, QObject *parent) : QObject {parent},
 
 /**
  * @brief QtSSHChannel::open
+ *
+ * Open an SSH channel over and existing SSH session.
+ *
  */
 void QtSSHChannel::open()
 {
@@ -81,6 +89,9 @@ void QtSSHChannel::open()
 
 /**
  * @brief QtSSHChannel::close
+ *
+ * Close an open channel.
+ *
  */
 void QtSSHChannel::close()
 {
@@ -96,6 +107,9 @@ void QtSSHChannel::close()
 
 /**
  * @brief QtSSHChannel::executeRemoteCommand
+ *
+ * Execute a command on remote server using an open channel.
+ *
  * @param command
  */
 void QtSSHChannel::executeRemoteCommand(const QString &command)
@@ -113,8 +127,13 @@ void QtSSHChannel::executeRemoteCommand(const QString &command)
 
 /**
  * @brief QtSSHChannel::remoteShell
- * @param columns
- * @param rows
+ *
+ * Open a remote shell on server for the execution of commands. At present
+ * it opens a vt100 terminal as thats what is currently supported by the
+ * terminal sumaltion class cterminal.
+ *
+ * @param columns   - terminal columns
+ * @param rows      - terminal rows
  */
 void QtSSHChannel::remoteShell(int columns, int rows)
 {
@@ -132,6 +151,9 @@ void QtSSHChannel::remoteShell(int columns, int rows)
 
 /**
  * @brief QtSSHChannel::write
+ *
+ * Write data over a given channel to server.
+ *
  * @param ioBuffer
  */
 void QtSSHChannel::write(const QByteArray &ioBuffer)
@@ -147,6 +169,9 @@ void QtSSHChannel::write(const QByteArray &ioBuffer)
 
 /**
  * @brief QtSSHChannel::read
+ *
+ * Read data from server over a given channel.
+ *
  * @param ioBuffer
  */
 void QtSSHChannel::read(QByteArray &ioBuffer)
@@ -165,6 +190,9 @@ void QtSSHChannel::read(QByteArray &ioBuffer)
 
 /**
  * @brief QtSSHChannel::sendEndOfFile
+ *
+ * Send end of file to remote server over given channel.
+ *
  */
 void QtSSHChannel::sendEndOfFile()
 {
@@ -173,7 +201,8 @@ void QtSSHChannel::sendEndOfFile()
 
 /**
  * @brief QtSSHChannel::isOpen
- * @return
+ *
+ * @return == true if channelis open
  */
 bool QtSSHChannel::isOpen()
 {
@@ -182,7 +211,8 @@ bool QtSSHChannel::isOpen()
 
 /**
  * @brief QtSSHChannel::isClosed
- * @return
+ *
+ * @return == true if channel closed.
  */
 bool QtSSHChannel::isClosed()
 {
@@ -191,7 +221,8 @@ bool QtSSHChannel::isClosed()
 
 /**
  * @brief QtSSHChannel::isEndOfFile
- * @return
+ *
+ * @return == true if end of file has been sent over channel from server.
  */
 bool QtSSHChannel::isEndOfFile()
 {

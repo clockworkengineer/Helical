@@ -12,7 +12,9 @@
 //
 // Class: QtSSH
 //
-// Description:
+// Description: Class for client SSH to server connections. Its uses the Antik::CSSH C++
+// wrapper classes for third party library libssh. Its translates to/from Qt to standard
+// C++ data structures as and when needed to keep the whole interface Qt orientated.
 //
 
 // =============
@@ -22,11 +24,14 @@
 #include "qtssh.h"
 
 //
-// Overidden Qt server verification methods.
+// Overidden Qt SSH server verification methods.
 //
 
 /**
  * @brief QtSSH::QtServerVerificationContext::serverKnown
+ *
+ * Server known.
+ *
  */
 void QtSSH::QtServerVerificationContext::serverKnown()
 {
@@ -38,6 +43,9 @@ void QtSSH::QtServerVerificationContext::serverKnown()
 
 /**
  * @brief QtSSH::QtServerVerificationContext::serverKnownChanged
+ *
+ * Server known but its key has changed.
+ *
  * @param keyHash
  * @return
  */
@@ -52,6 +60,9 @@ bool QtSSH::QtServerVerificationContext::serverKnownChanged(std::vector<unsigned
 
 /**
  * @brief QtSSH::QtServerVerificationContext::serverFoundOther
+ *
+ * Key not found for server but others exist.
+ *
  * @return
  */
 bool QtSSH::QtServerVerificationContext::serverFoundOther()
@@ -65,6 +76,9 @@ bool QtSSH::QtServerVerificationContext::serverFoundOther()
 
 /**
  * @brief QtSSH::QtServerVerificationContext::serverFileNotFound
+ *
+ * Key not found for server in known hosts file.
+ *
  * @param keyHash
  * @return
  */
@@ -79,6 +93,9 @@ bool QtSSH::QtServerVerificationContext::serverFileNotFound(std::vector<unsigned
 
 /**
  * @brief QtSSH::QtServerVerificationContext::serverNotKnown
+ *
+ * Server not known.
+ *
  * @param keyHash
  * @return
  */
@@ -93,6 +110,9 @@ bool QtSSH::QtServerVerificationContext::serverNotKnown(std::vector<unsigned cha
 
 /**
  * @brief QtSSH::QtServerVerificationContext::serverError
+ *
+ * Verification error.
+ *
  * @return
  */
 bool QtSSH::QtServerVerificationContext::serverError()
@@ -106,6 +126,9 @@ bool QtSSH::QtServerVerificationContext::serverError()
 
 /**
  * @brief QtSSH::QtSSH
+ *
+ * Create SSH session.
+ *
  * @param parent
  */
 QtSSH::QtSSH(QObject *parent) : QObject(parent)
@@ -115,6 +138,9 @@ QtSSH::QtSSH(QObject *parent) : QObject(parent)
 
 /**
  * @brief QtSSH::setSessionDetails
+ *
+ * Set SSH session details.
+ *
  * @param serverName
  * @param serverPort
  * @param userName
@@ -134,6 +160,9 @@ void QtSSH::setSessionDetails(const QString &serverName, const QString &serverPo
 
 /**
  * @brief QtSSH::connectToServer
+ *
+ * Connect to SSH server (open session).
+ *
  */
 void QtSSH::connectToServer()
 {
@@ -148,6 +177,9 @@ void QtSSH::connectToServer()
 
 /**
  * @brief QtSSH::disconnectFromServer
+ *
+ * Disconnect SSH session.
+ *
  */
 void QtSSH::disconnectFromServer()
 {
@@ -155,6 +187,13 @@ void QtSSH::disconnectFromServer()
     emit disconnectedFromServer();
 }
 
+
+/**
+ * @brief QtSSH::verifyServer
+ *
+ * Verify SSH known  server.
+ *
+ */
 void QtSSH::verifyServer()
 {
     QtServerVerificationContext verificationContext {this };
@@ -171,6 +210,9 @@ void QtSSH::verifyServer()
 
 /**
  * @brief QtSSH::authorizeUser
+ *
+ * Perform user authorization.
+ *
  */
 void QtSSH::authorizeUser()
 {
@@ -187,6 +229,9 @@ void QtSSH::authorizeUser()
 
 /**
  * @brief QtSSH::getBanner
+ *
+ * Retrieve server banner.
+ *
  * @return
  */
 QString QtSSH::getBanner()
@@ -205,6 +250,13 @@ QString QtSSH::getBanner()
 
 }
 
+/**
+ * @brief QtSSH::getAuthorizarionType
+ *
+ * Return user authorization type used for session.
+ *
+ * @return
+ */
 quint32 QtSSH::getAuthorizarionType()
 {
     return(m_session.getAuthorizarionType());
@@ -212,7 +264,8 @@ quint32 QtSSH::getAuthorizarionType()
 
 /**
  * @brief QtSSH::isConnected
- * @return
+ *
+ * @return == true of session is connected.
  */
 bool QtSSH::isConnected()
 {
@@ -221,7 +274,8 @@ bool QtSSH::isConnected()
 
 /**
  * @brief QtSSH::isAuthorized
- * @return
+ *
+ * @return == true if session has been authorized.
  */
 bool QtSSH::isAuthorized()
 {
@@ -230,7 +284,7 @@ bool QtSSH::isAuthorized()
 
 /**
  * @brief QtSSH::getSession
- * @return
+ * @return Reference to internal session object.
  */
 CSSHSession& QtSSH::getSession()
 {
