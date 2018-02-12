@@ -179,3 +179,15 @@ void HelicalServerConnectionsDialog::on_connectServerButton_clicked()
         emit connectToServer(connectionToRun->text());
     }
 }
+
+/**
+ * @brief HelicalServerConnectionsDialog::on_connectionList_itemDoubleClicked
+ *
+ * Connect if double click on connection name.
+ *
+ * @param item
+ */
+void HelicalServerConnectionsDialog::on_connectionList_itemDoubleClicked(QListWidgetItem *item)
+{
+    on_connectServerButton_clicked();
+}

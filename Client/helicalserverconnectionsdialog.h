@@ -24,6 +24,7 @@
 
 #include <QDialog>
 #include <QSettings>
+#include <QListWidgetItem>
 
 // =================
 // CLASS DECLARATION
@@ -58,6 +59,8 @@ private slots:
     void on_editServerButton_clicked();     // Edit connection
     void on_removeServerButton_clicked();   // Remove connection
     void on_connectServerButton_clicked();  // Connect to server
+
+    void on_connectionList_itemDoubleClicked(QListWidgetItem *item);
 
 private:
 
