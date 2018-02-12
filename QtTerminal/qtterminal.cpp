@@ -91,14 +91,13 @@ void QtTerminal::scrollScreenUp(void *terminalConext, int numberofLines)
     QtTerminal *terminalText { static_cast<QtTerminal *>(terminalConext) };
 
     terminalText->m_terminalModel.insertRows(terminalText->m_terminalModel.rowCount(), numberofLines);
-    terminalText->m_currentViewOffset+=numberofLines;
-
-    std::uint8_t*screenRow=terminalText->m_terminal.getBuffer(0,0);
-    std::string screenLine { &screenRow[0], &screenRow[terminalText->m_terminal.getMaxColumns()]};
-    terminalText->m_terminalModel.setData(terminalText->m_terminalModel.index(terminalText->m_currentViewOffset-1), QString::fromStdString(screenLine), Qt::DisplayRole);
 
     while (numberofLines--) {
+        std::uint8_t*screenRow=terminalText->m_terminal.getBuffer(0,0);
+        std::string screenLine { &screenRow[0], &screenRow[terminalText->m_terminal.getMaxColumns()]};
+        terminalText->m_terminalModel.setData(terminalText->m_terminalModel.index(terminalText->m_currentViewOffset), QString::fromStdString(screenLine), Qt::DisplayRole);
         terminalText->m_terminal.scrollUp(0, terminalText->m_terminal.getMaxRows());
+        terminalText->m_currentViewOffset++;
     }
 
     terminalText->setCurrentIndex(terminalText->m_terminalModel.index(terminalText->m_currentViewOffset+terminalText->m_terminal.getCurrentRow()));
@@ -118,7 +117,7 @@ void QtTerminal::bufferToScreen()
 
     for (auto row=0; row < m_terminal.getMaxRows(); row++) {
         std::uint8_t*screenRow=m_terminal.getBuffer(0,row);
-        std::string screenLine { &screenRow[0], &screenRow[m_terminal.getMaxColumns()]};
+        const std::string screenLine { &screenRow[0], &screenRow[m_terminal.getMaxColumns()]};
         m_terminalModel.setData(m_terminalModel.index(currentRow++), QString::fromStdString(screenLine), Qt::DisplayRole);
     }
 

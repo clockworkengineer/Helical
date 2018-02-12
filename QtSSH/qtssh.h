@@ -15,7 +15,9 @@
 //
 // Class: QtSSH
 //
-// Description:
+// Description: Class for client SSH to server connections. Its uses the Antik::CSSH C++
+// wrapper classes for third party library libssh. Its translates to/from Qt to standard
+// C++ data structures as and when needed to keep the whole interface Qt orientated.
 //
 
 // =============
@@ -55,27 +57,52 @@ class QtSSH : public QObject
 
 public:
 
+    // Constructor
+
     explicit QtSSH(QObject *parent = nullptr);
+
+    // Set session details
 
     void setSessionDetails(const QString &serverName, const QString &serverPort, const QString &userName, const QString &userPassword);
 
+    // Connect/disconnext from server
+
     void connectToServer();
     void disconnectFromServer();
+
+    // Verify server/ authorize user
+
     void verifyServer();
     void authorizeUser();
+
+    // Get server banner
+
     QString getBanner();
+
+    // Get autorizationtyp finally user.
+
     quint32 getAuthorizarionType();
+
+    // Check if session connected/authorized
+
     bool isConnected();
     bool isAuthorized();
+
+    // Return reference to session object
+
     CSSHSession& getSession();
 
 signals:
 
-    void error(const QString &errorMessage, int errorCode);
-    void connectedToServer();
-    void serverVerified();
-    void userAuthorized();
-    void disconnectedFromServer();
+    // Session status
+
+    void error(const QString &errorMessage, int errorCode); // Session error
+    void connectedToServer();                               // Session conncted to server
+    void serverVerified();                                  // Server has been verified
+    void userAuthorized();                                  // User has been authorized
+    void disconnectedFromServer();                          // Disconnected from server
+
+    // Server verification feedback
 
     void serverKnown();
     void serverKnownChanged(std::vector<unsigned char> &keyHash);
@@ -87,6 +114,8 @@ signals:
 public slots:
 
 private:
+
+    // Session object
 
     CSSHSession m_session;
 
