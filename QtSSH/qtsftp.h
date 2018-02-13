@@ -29,12 +29,25 @@ class QtSFTP : public QObject
     Q_OBJECT
 public:
 
+    typedef CSFTP::Directory Directory;
+    typedef CSFTP::FileAttributes FileAttributes;
+
     // Constructor
 
     explicit QtSFTP(QtSSH &session, QObject *parent = nullptr);
 
     void open();
     void close();
+
+    CSFTP::Directory openDirectory(const QString &directoryPath);
+    bool readDirectory(const Directory &directoryHandle, FileAttributes &fileAttributes);
+    bool endOfDirectory(const Directory &directoryHandle);
+    void closeDirectory(Directory &directoryHandle);
+
+    bool isADirectory(const FileAttributes &fileAttributes);
+     bool isARegularFile(const FileAttributes &fileAttributes);
+     bool isASymbolicLink(const FileAttributes &fileAttributes);
+
 
     CSFTP *sftp() const;
 

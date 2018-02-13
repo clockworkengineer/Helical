@@ -21,17 +21,16 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, QWidget *parent) :
 
     m_localFileSystemModel = new QFileSystemModel(this);
     m_localFileSystemView  = new QTreeView(this);
-
     m_localFileSystemView->setModel(m_localFileSystemModel);
     m_localFileSystemModel->setRootPath(m_localFileSystemRoot);
     m_localFileSystemView->setRootIndex(m_localFileSystemModel->index(m_localFileSystemRoot));
 
-    m_remoteFileSystem = new QListWidget(this);
+    m_remoteFileSystemList = new QListWidget(this);
 
     setLayout(new QVBoxLayout(this));
     splitter = new QSplitter(this);
     splitter->addWidget(m_localFileSystemView);
-    splitter->addWidget(m_remoteFileSystem);
+    splitter->addWidget(m_remoteFileSystemList);
     layout()->addWidget(splitter);
 
     m_sftp.reset(new QtSFTP(session));
@@ -40,7 +39,7 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, QWidget *parent) :
 
     getCurrentDirectoryFiles(m_currentDirectory);
 
-    connect(m_remoteFileSystem, &QListWidget::itemDoubleClicked, this, &HelicalSFTPDialog::fileDoubleClicked);
+    connect(m_remoteFileSystemList, &QListWidget::itemDoubleClicked, this, &HelicalSFTPDialog::fileDoubleClicked);
 
 }
 
@@ -55,17 +54,15 @@ HelicalSFTPDialog::~HelicalSFTPDialog()
 
 void HelicalSFTPDialog::getCurrentDirectoryFiles(const QString &currentDirectory)
 {
-    CSFTP::Directory directoryHandle;
+    QtSFTP::Directory directoryHandle;
     QFileIconProvider iconProvider;
 
-    CSFTP *sftp=m_sftp->sftp();
+    m_remoteFileSystemList->clear();
 
-    m_remoteFileSystem->clear();
-
-    directoryHandle= sftp->openDirectory(m_currentDirectory.toStdString());
-    while(!sftp->endOfDirectory(directoryHandle)) {
-        CSFTP::FileAttributes fileAttributes;
-        sftp->readDirectory(directoryHandle, fileAttributes);
+    directoryHandle= m_sftp->openDirectory(m_currentDirectory);
+    while(!m_sftp->endOfDirectory(directoryHandle)) {
+        QtSFTP::FileAttributes fileAttributes;
+        m_sftp->readDirectory(directoryHandle, fileAttributes);
         if (fileAttributes) {
             if (static_cast<QString>(fileAttributes->name)==".") {
                 continue;
@@ -75,12 +72,12 @@ void HelicalSFTPDialog::getCurrentDirectoryFiles(const QString &currentDirectory
                 continue;
             }
             HelicalFileItem *fileItem;
-            m_remoteFileSystem->addItem(new HelicalFileItem(fileAttributes->name));
-            fileItem=static_cast<HelicalFileItem*>(m_remoteFileSystem->item (m_remoteFileSystem->count()-1));
+            m_remoteFileSystemList->addItem(new HelicalFileItem(fileAttributes->name));
+            fileItem=static_cast<HelicalFileItem*>(m_remoteFileSystemList->item (m_remoteFileSystemList->count()-1));
             fileItem->m_fileAttributes = std::move(fileAttributes);
-            if (sftp->isADirectory(fileItem->m_fileAttributes)) {
+            if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
                 fileItem->setIcon(iconProvider.icon(QFileIconProvider::Folder));
-            } else if (sftp->isARegularFile(fileItem->m_fileAttributes)) {
+            } else if (m_sftp->isARegularFile(fileItem->m_fileAttributes)) {
                 fileItem->setIcon(iconProvider.icon(QFileIconProvider::File));
             }
 
@@ -88,9 +85,9 @@ void HelicalSFTPDialog::getCurrentDirectoryFiles(const QString &currentDirectory
 
     }
 
-    sftp->closeDirectory(directoryHandle);
+    m_sftp->closeDirectory(directoryHandle);
 
-    m_remoteFileSystem->sortItems();
+    m_remoteFileSystemList->sortItems();
 
 
 }
@@ -103,14 +100,15 @@ void HelicalSFTPDialog::populateDirectory()
 void HelicalSFTPDialog::fileDoubleClicked(QListWidgetItem *item)
 {
     HelicalFileItem *fileItem = static_cast<HelicalFileItem*>(item);
-    qDebug() << fileItem->m_fileAttributes->name;
-    if (m_sftp->sftp()->isADirectory(fileItem->m_fileAttributes)) {
+
+    if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
         if (static_cast<QString>(fileItem->m_fileAttributes->name)!="..") {
-        m_currentDirectory = m_currentDirectory+"/"+fileItem->m_fileAttributes->name;
+            m_currentDirectory = m_currentDirectory+"/"+fileItem->m_fileAttributes->name;
         } else {
             while(!m_currentDirectory.endsWith("/"))m_currentDirectory.chop(1);
             m_currentDirectory.chop(1);
         }
         getCurrentDirectoryFiles(m_currentDirectory);
     }
+
 }

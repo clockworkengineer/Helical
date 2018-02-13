@@ -20,7 +20,7 @@ class HelicalSFTPDialog : public QDialog
     class HelicalFileItem : public QListWidgetItem {
     public:
         HelicalFileItem(const QString &name) : QListWidgetItem(name) {}
-        CSFTP::FileAttributes m_fileAttributes;
+        QtSFTP::FileAttributes m_fileAttributes;
     };
 
 public:
@@ -42,7 +42,7 @@ private:
 
     QFileSystemModel *m_localFileSystemModel;
     QTreeView *m_localFileSystemView;
-    QListWidget *m_remoteFileSystem;
+    QListWidget *m_remoteFileSystemList;
 
     QScopedPointer<QtSFTP> m_sftp;
 
