@@ -35,7 +35,9 @@ SOURCES += \
     QtSSH/qtssh.cpp \
     QtSSH/qtsshchannel.cpp \
     QtTerminal/cterminal.cpp \
-    QtTerminal/qtterminal.cpp
+    QtTerminal/qtterminal.cpp \
+    Client/helicalsftpdialog.cpp \
+    QtSSH/qtsftp.cpp
 
 HEADERS += \
     QtSSH/qtssh.h \
@@ -45,13 +47,16 @@ HEADERS += \
     Client/helicalterminaldialog.h \
     Client/helicalserverdetailsdialog.h \
     QtTerminal/cterminal.h \
-    QtTerminal/qtterminal.h
+    QtTerminal/qtterminal.h \
+    Client/helicalsftpdialog.h \
+    QtSSH/qtsftp.h
 
 FORMS += \
     Client/heilcalmainwindow.ui \
     Client/helicalserverconnectionsdialog.ui \
     Client/helicalterminaldialog.ui \
-    Client/helicalserverdetailsdialog.ui
+    Client/helicalserverdetailsdialog.ui \
+    Client/helicalsftpdialog.ui
 
 INCLUDEPATH += $$PWD/../../NetBeansProjects/Antikythera_mechanism/include
 DEPENDPATH += $$PWD/../../NetBeansProjects/Antikythera_mechanism/include

@@ -31,6 +31,7 @@
 
 #include "helicalserverconnectionsdialog.h"
 #include "helicalterminaldialog.h"
+#include "helicalsftpdialog.h"
 #include "QtSSH/qtssh.h"
 
 // =================
@@ -80,6 +81,8 @@ private slots:
     void on_actionConnections_triggered();      // Connect to remote server
     void on_executeCommandButton_clicked();     // Execute remote command
 
+    void on_sftpButton_clicked();
+
 private:
 
     // Session connected processing
@@ -104,6 +107,7 @@ private:
 
     QScopedPointer<HelicalServerConnectionsDialog> m_serverConnections;     // Pointer to server connection details dialog
     QScopedPointer<HelicalTerminalDialog> m_connectionWindow;               // Pointer to shell connection window
+    QScopedPointer<HelicalSFTPDialog> m_sftpWindow;                         // Pointer to SFTP session window
 
 };
 

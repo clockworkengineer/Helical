@@ -189,5 +189,7 @@ void HelicalServerConnectionsDialog::on_connectServerButton_clicked()
  */
 void HelicalServerConnectionsDialog::on_connectionList_itemDoubleClicked(QListWidgetItem *item)
 {
+    Q_UNUSED(item);
+
     on_connectServerButton_clicked();
 }

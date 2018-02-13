@@ -83,6 +83,8 @@ void HelicalMainWindow::sessionFullyConnected()
 
     ui->terminalButton->setEnabled(true);
     ui->disconnectServerButton->setEnabled(true);
+    ui->sftpButton->setEnabled(true);
+
 
     ui->currentStatusLabel->setText("Connected.");
     ui->userNameLabel->setText(m_userName);
@@ -132,6 +134,7 @@ void HelicalMainWindow::terminateSession()
     ui->authorizationTypeLabel->clear();
     ui->terminalButton->setEnabled(false);
     ui->disconnectServerButton->setEnabled(false);
+    ui->sftpButton->setEnabled(false);
     ui->executeCommandButton->setEnabled(false);
     ui->sftpButton->setEnabled(false);
     ui->serverSessionLog->clear();
@@ -328,6 +331,19 @@ void HelicalMainWindow::on_executeCommandButton_clicked()
 
 }
 
+void HelicalMainWindow::on_sftpButton_clicked()
+{
+    if (!m_sftpWindow) {
+        m_sftpWindow.reset(new HelicalSFTPDialog(*m_session,this));
+    }
+    ui->statusBar->setStyleSheet("QStatusBar {color: default}");
+    ui->statusBar->clearMessage();
+    m_sftpWindow->exec();
+    m_sftpWindow.reset();
+
+}
+
+
 // ===================================
 // SERVER VERFICATION FEEDBACK METHODS
 // ===================================
@@ -406,3 +422,4 @@ void HelicalMainWindow::serverError()
 {
 
 }
+
