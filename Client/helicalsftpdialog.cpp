@@ -7,6 +7,8 @@
 #include <QTableWidget>
 #include <QSizePolicy>
 #include <QFileIconProvider>
+//#include <QLabel>
+//#include <QLineEdit>
 
 #include <QDebug>
 
@@ -15,7 +17,14 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, QWidget *parent) :
     ui(new Ui::HelicalSFTPDialog)
 {
 
+
     ui->setupUi(this);
+
+    ui->localLineEdit->setReadOnly(true);
+    ui->localLineEdit->setText(m_currentLocalDirectory);
+
+    ui->remoteLineEdit->setReadOnly(true);
+    ui->remoteLineEdit->setText(m_RemoteFileSystemRoot);
 
     QSplitter *splitter = new QSplitter(this);
 
@@ -27,20 +36,23 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, QWidget *parent) :
 
     m_remoteFileSystemList = new QListWidget(this);
 
-    setLayout(new QVBoxLayout(this));
+    ui->fileViewFrame->setLayout(new QVBoxLayout(this));
     splitter = new QSplitter(this);
     splitter->addWidget(m_localFileSystemView);
     splitter->addWidget(m_remoteFileSystemList);
-    layout()->addWidget(splitter);
+
+    ui->fileViewFrame->layout()->addWidget(splitter);
+
+    adjustSize();
 
     m_sftp.reset(new QtSFTP(session));
 
     m_sftp->open();
 
-    getCurrentDirectoryFiles(m_currentDirectory);
+    updateRemoteFileList(m_currentRemoteDirectory);
 
     connect(m_remoteFileSystemList, &QListWidget::itemDoubleClicked, this, &HelicalSFTPDialog::fileDoubleClicked);
-
+    connect(m_localFileSystemView, &QAbstractItemView::clicked, this, &HelicalSFTPDialog::localFileViewClicked);
 }
 
 HelicalSFTPDialog::~HelicalSFTPDialog()
@@ -52,14 +64,21 @@ HelicalSFTPDialog::~HelicalSFTPDialog()
     delete ui;
 }
 
-void HelicalSFTPDialog::getCurrentDirectoryFiles(const QString &currentDirectory)
+void HelicalSFTPDialog::updateRemoteFileList(const QString &currentDirectory)
 {
     QtSFTP::Directory directoryHandle;
     QFileIconProvider iconProvider;
 
     m_remoteFileSystemList->clear();
 
-    directoryHandle= m_sftp->openDirectory(m_currentDirectory);
+     ui->remoteLineEdit->setText(currentDirectory);
+
+    directoryHandle= m_sftp->openDirectory(m_currentRemoteDirectory);
+
+    if (directoryHandle==nullptr) {
+        return;
+    }
+
     while(!m_sftp->endOfDirectory(directoryHandle)) {
         QtSFTP::FileAttributes fileAttributes;
         m_sftp->readDirectory(directoryHandle, fileAttributes);
@@ -68,7 +87,7 @@ void HelicalSFTPDialog::getCurrentDirectoryFiles(const QString &currentDirectory
                 continue;
             }
             if ((static_cast<QString>(fileAttributes->name)=="..") &&
-                    (m_currentDirectory==m_RemoteFileSystemRoot)){
+                    (m_currentRemoteDirectory==m_RemoteFileSystemRoot)){
                 continue;
             }
             HelicalFileItem *fileItem;
@@ -89,12 +108,6 @@ void HelicalSFTPDialog::getCurrentDirectoryFiles(const QString &currentDirectory
 
     m_remoteFileSystemList->sortItems();
 
-
-}
-
-void HelicalSFTPDialog::populateDirectory()
-{
-
 }
 
 void HelicalSFTPDialog::fileDoubleClicked(QListWidgetItem *item)
@@ -103,12 +116,21 @@ void HelicalSFTPDialog::fileDoubleClicked(QListWidgetItem *item)
 
     if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
         if (static_cast<QString>(fileItem->m_fileAttributes->name)!="..") {
-            m_currentDirectory = m_currentDirectory+"/"+fileItem->m_fileAttributes->name;
+            m_currentRemoteDirectory = m_currentRemoteDirectory+"/"+fileItem->m_fileAttributes->name;
         } else {
-            while(!m_currentDirectory.endsWith("/"))m_currentDirectory.chop(1);
-            m_currentDirectory.chop(1);
+            while(!m_currentRemoteDirectory.endsWith("/"))m_currentRemoteDirectory.chop(1);
+            m_currentRemoteDirectory.chop(1);
         }
-        getCurrentDirectoryFiles(m_currentDirectory);
+
+        updateRemoteFileList(m_currentRemoteDirectory);
     }
 
+}
+
+void HelicalSFTPDialog::localFileViewClicked(const QModelIndex &index)
+{
+    if (m_localFileSystemModel->isDir(index)) {
+        m_currentLocalDirectory = m_localFileSystemModel->filePath(index);
+          ui->localLineEdit->setText(m_currentLocalDirectory);
+    }
 }

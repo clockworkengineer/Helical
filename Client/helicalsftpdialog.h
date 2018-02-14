@@ -27,18 +27,19 @@ public:
     explicit HelicalSFTPDialog(QtSSH &session, QWidget *parent = 0);
     ~HelicalSFTPDialog();
 
-    void getCurrentDirectoryFiles(const QString &currentDirectory);
-    void populateDirectory();
+    void updateRemoteFileList(const QString &currentDirectory);
 
 public slots:
     void fileDoubleClicked(QListWidgetItem * item);
+    void localFileViewClicked(const QModelIndex &index);
 
 private:
     Ui::HelicalSFTPDialog *ui;
 
     QString m_localFileSystemRoot {"/home/robt"};
     QString m_RemoteFileSystemRoot {"/home/pi"};
-    QString m_currentDirectory {m_RemoteFileSystemRoot};
+    QString m_currentRemoteDirectory {m_RemoteFileSystemRoot};
+    QString m_currentLocalDirectory {m_localFileSystemRoot};
 
     QFileSystemModel *m_localFileSystemModel;
     QTreeView *m_localFileSystemView;
