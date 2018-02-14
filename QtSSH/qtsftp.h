@@ -48,6 +48,8 @@ public:
      bool isARegularFile(const FileAttributes &fileAttributes);
      bool isASymbolicLink(const FileAttributes &fileAttributes);
 
+     void getRemoteFile(const QString &sourceFile, const QString &destinationFile);
+     void putFile(CSFTP &sftpServer, const std::string &sourceFile, QString &destinationFile);
 
     CSFTP *sftp() const;
 

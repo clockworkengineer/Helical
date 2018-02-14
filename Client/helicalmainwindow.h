@@ -63,6 +63,8 @@ public slots:
     void userAuthorized();                                      // User has been authurized
     void connectedToServer();                                   // Conneced to server
     void commandOutput(const QString &text);                    // Display command output (stdout/stderr)
+    void saveCommandOutput(const QString &text);                // Save command output
+    void setUserHome();
 
     // Verify server feedback
 
@@ -104,10 +106,13 @@ private:
     QString m_userName;         // User name
     QString m_userPassword;     // User password
     QString m_command;          // Remote command to execute on demand.
+    QString m_userHome;         // User home directory
 
     QScopedPointer<HelicalServerConnectionsDialog> m_serverConnections;     // Pointer to server connection details dialog
     QScopedPointer<HelicalTerminalDialog> m_connectionWindow;               // Pointer to shell connection window
     QScopedPointer<HelicalSFTPDialog> m_sftpWindow;                         // Pointer to SFTP session window
+
+    QStringList m_savedCommandOutput;                                       // Save command output
 
 };
 

@@ -107,6 +107,8 @@ void HelicalMainWindow::sessionFullyConnected()
 
     ui->serverSessionLog->insertPlainText(m_session->getBanner());
 
+    setUserHome();
+
 }
 
 /**
@@ -269,6 +271,44 @@ void HelicalMainWindow::commandOutput(const QString &text)
 }
 
 /**
+ * @brief HelicalMainWindow::saveCommandOutput
+ *
+ * Save command output to local buffer for processing.
+ *
+ * @param text
+ */
+void HelicalMainWindow::saveCommandOutput(const QString &text)
+{
+
+   m_savedCommandOutput.push_back(text);
+
+}
+
+/**
+ * @brief HelicalMainWindow::setUserHome
+ *
+ * Use channel execute command to get $HOME value. Set to empty if there is an error.
+ *
+ */
+void HelicalMainWindow::setUserHome()
+{
+    m_connectionChannel.reset(new QtSSHChannel(*m_session));
+    if (m_connectionChannel) {
+        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOutput, this, &HelicalMainWindow::saveCommandOutput);
+        m_connectionChannel->open();
+        m_connectionChannel->executeRemoteCommand("echo $HOME");
+        m_connectionChannel->close();
+        m_connectionChannel.reset();
+        if (!m_savedCommandOutput.isEmpty()) {
+            m_userHome = m_savedCommandOutput[0];
+            m_userHome.chop(1);
+            m_savedCommandOutput.clear();
+        }
+    }
+
+}
+
+/**
  * @brief HelicalMainWindow::on_disconnectServerButton_clicked
  *
  * Disconnect session button.
@@ -334,7 +374,7 @@ void HelicalMainWindow::on_executeCommandButton_clicked()
 void HelicalMainWindow::on_sftpButton_clicked()
 {
     if (!m_sftpWindow) {
-        m_sftpWindow.reset(new HelicalSFTPDialog(*m_session,this));
+        m_sftpWindow.reset(new HelicalSFTPDialog(*m_session, m_userHome, this));
     }
     ui->statusBar->setStyleSheet("QStatusBar {color: default}");
     ui->statusBar->clearMessage();

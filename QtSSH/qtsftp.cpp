@@ -108,6 +108,20 @@ bool QtSFTP::isASymbolicLink(const QtSFTP::FileAttributes &fileAttributes)
     return(false);
 }
 
+void QtSFTP::getRemoteFile(const QString &sourceFile, const QString &destinationFile)
+{
+    try {
+        getFile(*m_sftp, sourceFile.toStdString(), destinationFile.toStdString());
+    }catch(const CSFTP::Exception &e) {
+        emit error(QString::fromStdString(e.getMessage()),e.getCode());
+    }
+}
+
+void QtSFTP::putFile(CSFTP &sftpServer, const std::string &sourceFile, QString &destinationFile)
+{
+
+}
+
 CSFTP *QtSFTP::sftp() const
 {
     return m_sftp;

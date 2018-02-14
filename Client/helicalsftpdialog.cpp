@@ -7,16 +7,16 @@
 #include <QTableWidget>
 #include <QSizePolicy>
 #include <QFileIconProvider>
-//#include <QLabel>
-//#include <QLineEdit>
-
+#include <QMenu>
+#include <QDesktopServices>
+#include <QUrl>
 #include <QDebug>
 
-HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, QWidget *parent) :
+HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &userHome, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::HelicalSFTPDialog)
+    ui(new Ui::HelicalSFTPDialog),
+    m_RemoteFileSystemRoot {userHome}
 {
-
 
     ui->setupUi(this);
 
@@ -35,6 +35,7 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, QWidget *parent) :
     m_localFileSystemView->setRootIndex(m_localFileSystemModel->index(m_localFileSystemRoot));
 
     m_remoteFileSystemList = new QListWidget(this);
+    m_remoteFileSystemList->setContextMenuPolicy(Qt::CustomContextMenu);
 
     ui->fileViewFrame->setLayout(new QVBoxLayout(this));
     splitter = new QSplitter(this);
@@ -51,6 +52,7 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, QWidget *parent) :
 
     updateRemoteFileList(m_currentRemoteDirectory);
 
+    connect(m_remoteFileSystemList, &QListWidget::customContextMenuRequested, this, &HelicalSFTPDialog::showRemoteFileContextMenu);
     connect(m_remoteFileSystemList, &QListWidget::itemDoubleClicked, this, &HelicalSFTPDialog::fileDoubleClicked);
     connect(m_localFileSystemView, &QAbstractItemView::clicked, this, &HelicalSFTPDialog::localFileViewClicked);
 }
@@ -71,7 +73,7 @@ void HelicalSFTPDialog::updateRemoteFileList(const QString &currentDirectory)
 
     m_remoteFileSystemList->clear();
 
-     ui->remoteLineEdit->setText(currentDirectory);
+    ui->remoteLineEdit->setText(currentDirectory);
 
     directoryHandle= m_sftp->openDirectory(m_currentRemoteDirectory);
 
@@ -131,6 +133,34 @@ void HelicalSFTPDialog::localFileViewClicked(const QModelIndex &index)
 {
     if (m_localFileSystemModel->isDir(index)) {
         m_currentLocalDirectory = m_localFileSystemModel->filePath(index);
-          ui->localLineEdit->setText(m_currentLocalDirectory);
+        ui->localLineEdit->setText(m_currentLocalDirectory);
     }
+}
+
+void HelicalSFTPDialog::showRemoteFileContextMenu(const QPoint &pos)
+{
+
+    HelicalFileItem *fileItem = static_cast<HelicalFileItem*>(m_remoteFileSystemList->currentItem());
+
+    if (m_sftp->isARegularFile(fileItem->m_fileAttributes)) {
+        QMenu contextMenu("Context menu", this);
+        contextMenu.addAction(new QAction("View", this));
+        contextMenu.addAction(new QAction("Download", this));
+        QAction* selectedItem = contextMenu.exec(m_remoteFileSystemList->mapToGlobal(pos));
+        if (selectedItem){
+            QString remoteFile { m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name};
+            QString localFile;
+            if (selectedItem->text()=="View") {
+                localFile =  QDir::tempPath() + "/"+ fileItem->m_fileAttributes->name;
+            } else {
+                localFile =  m_currentLocalDirectory + "/"+ fileItem->m_fileAttributes->name;
+            }
+            qDebug() << selectedItem->text() << " " << remoteFile+  " " + localFile;
+            m_sftp->getRemoteFile(remoteFile, localFile);
+            if (selectedItem->text()=="View") {
+                QDesktopServices::openUrl(QUrl(localFile));
+            }
+        }
+    }
+
 }
