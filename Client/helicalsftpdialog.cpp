@@ -80,38 +80,39 @@ void HelicalSFTPDialog::updateRemoteFileList(const QString &currentDirectory)
 
     directoryHandle= m_sftp->openDirectory(m_currentRemoteDirectory);
 
-    if (directoryHandle==nullptr) {
-        return;
-    }
+    if (directoryHandle!=nullptr) {
 
-    while(!m_sftp->endOfDirectory(directoryHandle)) {
-        QtSFTP::FileAttributes fileAttributes;
-        m_sftp->readDirectory(directoryHandle, fileAttributes);
-        if (fileAttributes) {
-            if (static_cast<QString>(fileAttributes->name)==".") {
-                continue;
-            }
-            if ((static_cast<QString>(fileAttributes->name)=="..") &&
-                    (m_currentRemoteDirectory==m_RemoteFileSystemRoot)){
-                continue;
-            }
-            HelicalFileItem *fileItem;
-            m_remoteFileSystemList->addItem(new HelicalFileItem(fileAttributes->name));
-            fileItem=dynamic_cast<HelicalFileItem*>(m_remoteFileSystemList->item (m_remoteFileSystemList->count()-1));
-            fileItem->m_fileAttributes = std::move(fileAttributes);
-            if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
-                fileItem->setIcon(iconProvider.icon(QFileIconProvider::Folder));
-            } else if (m_sftp->isARegularFile(fileItem->m_fileAttributes)) {
-                fileItem->setIcon(iconProvider.icon(QFileIconProvider::File));
+        while(!m_sftp->endOfDirectory(directoryHandle)) {
+            QtSFTP::FileAttributes fileAttributes;
+            m_sftp->readDirectory(directoryHandle, fileAttributes);
+            if (fileAttributes) {
+                if ((static_cast<QString>(fileAttributes->name)==".")||
+                        (static_cast<QString>(fileAttributes->name)=="..")) {
+                    continue;
+                }
+                HelicalFileItem *fileItem;
+                m_remoteFileSystemList->addItem(new HelicalFileItem(fileAttributes->name));
+                fileItem=dynamic_cast<HelicalFileItem*>(m_remoteFileSystemList->item (m_remoteFileSystemList->count()-1));
+                fileItem->m_fileAttributes = std::move(fileAttributes);
+                if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
+                    fileItem->setIcon(iconProvider.icon(QFileIconProvider::Folder));
+                } else if (m_sftp->isARegularFile(fileItem->m_fileAttributes)) {
+                    fileItem->setIcon(iconProvider.icon(QFileIconProvider::File));
+                }
+
             }
 
         }
 
+        m_sftp->closeDirectory(directoryHandle);
+
+        m_remoteFileSystemList->sortItems();
+
     }
 
-    m_sftp->closeDirectory(directoryHandle);
-
-    m_remoteFileSystemList->sortItems();
+    if (m_currentRemoteDirectory!=m_RemoteFileSystemRoot){
+        m_remoteFileSystemList->insertItem(0, new HelicalFileItem(".."));
+    }
 
 }
 
@@ -119,14 +120,16 @@ void HelicalSFTPDialog::fileDoubleClicked(QListWidgetItem *item)
 {
     HelicalFileItem *fileItem = dynamic_cast<HelicalFileItem*>(item);
 
-    if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
-        if (static_cast<QString>(fileItem->m_fileAttributes->name)!="..") {
-            m_currentRemoteDirectory = m_currentRemoteDirectory+"/"+fileItem->m_fileAttributes->name;
-        } else {
-            while(!m_currentRemoteDirectory.endsWith("/"))m_currentRemoteDirectory.chop(1);
-            m_currentRemoteDirectory.chop(1);
-        }
+    if (fileItem->text()=="..") {
+        while(!m_currentRemoteDirectory.endsWith("/"))m_currentRemoteDirectory.chop(1);
+        if (m_currentRemoteDirectory.size()!=1)m_currentRemoteDirectory.chop(1);
+        updateRemoteFileList(m_currentRemoteDirectory);
+        return;
+    }
 
+    if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
+        if(m_currentRemoteDirectory.endsWith("/"))m_currentRemoteDirectory.chop(1);
+        m_currentRemoteDirectory = m_currentRemoteDirectory+"/"+fileItem->m_fileAttributes->name;
         updateRemoteFileList(m_currentRemoteDirectory);
     }
 
