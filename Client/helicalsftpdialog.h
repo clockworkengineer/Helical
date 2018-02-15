@@ -33,6 +33,7 @@ public slots:
     void fileDoubleClicked(QListWidgetItem * item);
     void localFileViewClicked(const QModelIndex &index);
     void showRemoteFileContextMenu(const QPoint &pos);
+    void showLocalFileContextMenu(const QPoint &pos);
 
 private:
     Ui::HelicalSFTPDialog *ui;

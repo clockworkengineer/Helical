@@ -41,7 +41,7 @@ HelicalServerConnectionsDialog::HelicalServerConnectionsDialog(QWidget *parent) 
     loadConnectionsList();
     populateConnectionList();
 
-    connect(this, &HelicalServerConnectionsDialog::connectToServer, static_cast<HelicalMainWindow*>(parent), &HelicalMainWindow::connectToServer);
+    connect(this, &HelicalServerConnectionsDialog::connectToServer, dynamic_cast<HelicalMainWindow*>(parent), &HelicalMainWindow::connectToServer);
 
 }
 

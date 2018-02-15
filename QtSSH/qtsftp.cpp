@@ -117,9 +117,13 @@ void QtSFTP::getRemoteFile(const QString &sourceFile, const QString &destination
     }
 }
 
-void QtSFTP::putFile(CSFTP &sftpServer, const std::string &sourceFile, QString &destinationFile)
+void QtSFTP::putLocalFile(const QString &sourceFile, QString &destinationFile)
 {
-
+    try {
+        putFile(*m_sftp, sourceFile.toStdString(), destinationFile.toStdString());
+    }catch(const CSFTP::Exception &e) {
+        emit error(QString::fromStdString(e.getMessage()),e.getCode());
+    }
 }
 
 CSFTP *QtSFTP::sftp() const

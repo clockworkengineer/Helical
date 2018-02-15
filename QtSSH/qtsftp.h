@@ -49,7 +49,7 @@ public:
      bool isASymbolicLink(const FileAttributes &fileAttributes);
 
      void getRemoteFile(const QString &sourceFile, const QString &destinationFile);
-     void putFile(CSFTP &sftpServer, const std::string &sourceFile, QString &destinationFile);
+     void putLocalFile(const QString &sourceFile, QString &destinationFile);
 
     CSFTP *sftp() const;
 

@@ -287,7 +287,7 @@ void HelicalMainWindow::saveCommandOutput(const QString &text)
 /**
  * @brief HelicalMainWindow::setUserHome
  *
- * Use channel execute command to get $HOME value. Set to empty if there is an error.
+ * Use channel execute command to get PWD value. Set to empty if there is an error.
  *
  */
 void HelicalMainWindow::setUserHome()
@@ -296,7 +296,7 @@ void HelicalMainWindow::setUserHome()
     if (m_connectionChannel) {
         connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOutput, this, &HelicalMainWindow::saveCommandOutput);
         m_connectionChannel->open();
-        m_connectionChannel->executeRemoteCommand("echo $HOME");
+        m_connectionChannel->executeRemoteCommand("pwd");
         m_connectionChannel->close();
         m_connectionChannel.reset();
         if (!m_savedCommandOutput.isEmpty()) {
