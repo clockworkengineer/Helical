@@ -1,6 +1,7 @@
-#**Helical: A Simple Qt Based SSH Client**
+**Helical: A Simple Qt Based SSH Client**
+***
 
-Helical is a Qt based SSH client for connecting to SSH servers and allowing the execution of remote commands , running of a remote shell or accessing the remote filesystem using SFTP. It supports password and public key user authorization and public key server verification though ".ssh/known_hosts".
+Helical is a Qt based SSH client for connecting to SSH servers and allowing the execution of remote commands , running of a remote shell or accessing the remote filesystem using SFTP. It supports password and public key user authorization and public key server verification through ".ssh/known_hosts".
 
 The client is written mostly in Qt/C++ but it uses a set of Antik wrapper classes for talking to 'C' library [libssh](https://www.libssh.org/)  which provides the client side SSH support.
 
@@ -8,8 +9,9 @@ A remote shell session takes place inside a window that emulates a vt100 termina
 
 The SFTP file browser component is yet to be unimplemented.
 
-#**To Do List**
-
+**To Do List**
+***
 - SFTP client
 - Custom view/model implementaiton for vt100 to support character attributes/color.
-- Support for more than running session.
+- Support for more than one running session.
+- SCP client.
