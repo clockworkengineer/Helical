@@ -29,6 +29,8 @@ class QtSFTP : public QObject
     Q_OBJECT
 public:
 
+   // typedef std::function<void(const QString &, const QString &)> FileCompletionFn;
+
     typedef CSFTP::Directory Directory;
     typedef CSFTP::FileAttributes FileAttributes;
 
@@ -44,6 +46,8 @@ public:
     bool endOfDirectory(const Directory &directoryHandle);
     void closeDirectory(Directory &directoryHandle);
 
+    void removeLink(const QString &filePath);
+
     bool isADirectory(const FileAttributes &fileAttributes);
      bool isARegularFile(const FileAttributes &fileAttributes);
      bool isASymbolicLink(const FileAttributes &fileAttributes);
@@ -58,6 +62,9 @@ signals:
     void error(const QString &errorMessage, int errorCode);
     void opened();
     void closed();
+    void uploadFinished(const QString &sourceFile, const QString &destinationFile);
+    void downloadFinished(const QString &sourceFile, const QString &destinationFile);
+    void removedLink(const QString &filePath);
 
 public slots:
 

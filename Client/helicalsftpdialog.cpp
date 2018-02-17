@@ -57,6 +57,11 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &userHome, QW
 
     updateRemoteFileList(m_currentRemoteDirectory);
 
+    connect(m_sftp.data(), &QtSFTP::downloadFinished, this, &HelicalSFTPDialog::downloadFinished);
+    connect(m_sftp.data(), &QtSFTP::uploadFinished, this, &HelicalSFTPDialog::uploadFinished);
+    connect(m_sftp.data(), &QtSFTP::removedLink, this, &HelicalSFTPDialog::fileDeleted);
+    connect(m_sftp.data(), &QtSFTP::error, this, &HelicalSFTPDialog::error);
+
     connect(m_remoteFileSystemList, &QListWidget::customContextMenuRequested, this, &HelicalSFTPDialog::showRemoteFileContextMenu);
     connect(m_remoteFileSystemList, &QListWidget::itemDoubleClicked, this, &HelicalSFTPDialog::fileDoubleClicked);
     connect(m_localFileSystemView, &QTreeView::clicked, this, &HelicalSFTPDialog::localFileViewClicked);
@@ -161,6 +166,7 @@ void HelicalSFTPDialog::showRemoteFileContextMenu(const QPoint &pos)
         if (m_sftp->isARegularFile(fileItem->m_fileAttributes)) {
             contextMenu.addAction(new QAction("View", this));
             contextMenu.addAction(new QAction("Download", this));
+            contextMenu.addAction(new QAction("Delete", this));
         } else if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
             contextMenu.addAction(new QAction("Open", this));
         }
@@ -179,11 +185,15 @@ void HelicalSFTPDialog::showRemoteFileContextMenu(const QPoint &pos)
             m_sftp->getRemoteFile(remoteFile, localFile);
             QDesktopServices::openUrl(QUrl(localFile));
         } else if (selectedItem->text()=="Download") {
-            localFile =  m_currentLocalDirectory + "/"+ fileItem->m_fileAttributes->name;
+            localFile =  m_currentLocalDirectory + "/" + fileItem->m_fileAttributes->name;
             remoteFile = m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name;
             m_sftp->getRemoteFile(remoteFile, localFile);
         } else if (selectedItem->text()=="Open") {
             m_currentRemoteDirectory = m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name;
+            updateRemoteFileList(m_currentRemoteDirectory);
+        }  else if (selectedItem->text()=="Delete") {
+            remoteFile = m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name;
+            m_sftp->removeLink(remoteFile);
             updateRemoteFileList(m_currentRemoteDirectory);
         }  else if (selectedItem->text()=="Refresh") {
             updateRemoteFileList(m_currentRemoteDirectory);
@@ -200,6 +210,7 @@ void HelicalSFTPDialog::showLocalFileContextMenu(const QPoint &pos)
     if(!m_localFileSystemModel->isDir(m_localFileSystemView->currentIndex())) {
         contextMenu.addAction(new QAction("Upload", this));
     }
+
     QAction* selectedItem = contextMenu.exec(m_localFileSystemView->mapToGlobal(pos));
 
     if (selectedItem->text()=="Upload") {
@@ -207,6 +218,32 @@ void HelicalSFTPDialog::showLocalFileContextMenu(const QPoint &pos)
         QString remoteFile {m_currentRemoteDirectory + "/" + m_localFileSystemModel->fileName(m_localFileSystemView->currentIndex())};
         m_sftp->putLocalFile(localFile, remoteFile);
     }
+
+}
+
+void HelicalSFTPDialog::error(const QString &errorMessage, int errorCode)
+{
+    ui->statusMessages->insertPlainText(errorMessage+"\n");
+    ui->statusMessages->moveCursor(QTextCursor::End);
+}
+
+void HelicalSFTPDialog::uploadFinished(const QString &sourceFile, const QString &destinationFile)
+{
+    ui->statusMessages->insertPlainText(QString("Uploaded File \"%1\" to \"%2\".\n").arg(sourceFile).arg(destinationFile));
+    ui->statusMessages->moveCursor(QTextCursor::End);
+    updateRemoteFileList(m_currentRemoteDirectory);
+}
+
+void HelicalSFTPDialog::downloadFinished(const QString &sourceFile, const QString &destinationFile)
+{
+    ui->statusMessages->insertPlainText(QString("Downloaded File \"%1\" to \"%2\".\n").arg(sourceFile).arg(destinationFile));
+    ui->statusMessages->moveCursor(QTextCursor::End);
+}
+
+void HelicalSFTPDialog::fileDeleted(const QString &filePath)
+{
+      ui->statusMessages->insertPlainText(QString("Deleted File \"%1\".\n").arg(filePath));
+      ui->statusMessages->moveCursor(QTextCursor::End);
 }
 
 

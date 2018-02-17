@@ -74,6 +74,16 @@ void QtSFTP::closeDirectory(QtSFTP::Directory &directoryHandle)
 
 }
 
+void QtSFTP::removeLink(const QString &filePath)
+{
+    try {
+        m_sftp->removeLink(filePath.toStdString());
+        emit removedLink(filePath);
+    }catch(const CSFTP::Exception &e) {
+        emit error(QString::fromStdString(e.getMessage()),e.getCode());
+    }
+}
+
 bool QtSFTP::isADirectory(const QtSFTP::FileAttributes &fileAttributes)
 {
 
@@ -112,6 +122,7 @@ void QtSFTP::getRemoteFile(const QString &sourceFile, const QString &destination
 {
     try {
         getFile(*m_sftp, sourceFile.toStdString(), destinationFile.toStdString());
+        emit downloadFinished(sourceFile, destinationFile);
     }catch(const CSFTP::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
     }
@@ -121,6 +132,7 @@ void QtSFTP::putLocalFile(const QString &sourceFile, QString &destinationFile)
 {
     try {
         putFile(*m_sftp, sourceFile.toStdString(), destinationFile.toStdString());
+        emit uploadFinished(sourceFile, destinationFile);
     }catch(const CSFTP::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
     }

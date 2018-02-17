@@ -29,11 +29,16 @@ public:
 
     void updateRemoteFileList(const QString &currentDirectory);
 
-public slots:
+private slots:
     void fileDoubleClicked(QListWidgetItem * item);
     void localFileViewClicked(const QModelIndex &index);
     void showRemoteFileContextMenu(const QPoint &pos);
     void showLocalFileContextMenu(const QPoint &pos);
+    void error(const QString &errorMessage, int errorCode);
+    void uploadFinished(const QString &sourceFile, const QString &destinationFile);
+    void downloadFinished(const QString &sourceFile, const QString &destinationFile);
+    void fileDeleted(const QString &filePath);
+
 
 private:
     Ui::HelicalSFTPDialog *ui;
