@@ -48,6 +48,8 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
 
     ui->setupUi(this);
 
+    setWindowTitle("SFTP");
+
     ui->localLineEdit->setReadOnly(true);
     ui->localLineEdit->setText(m_currentLocalDirectory);
 

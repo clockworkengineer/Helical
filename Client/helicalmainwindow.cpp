@@ -49,6 +49,8 @@ HelicalMainWindow::HelicalMainWindow(QWidget *parent) :
 
     setWindowTitle(QCoreApplication::applicationName());
 
+    ui->serverSessionLog->setReadOnly(true);
+
     terminateSession();
 
 }

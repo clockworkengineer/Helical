@@ -1,11 +1,42 @@
+/*
+ * File:   qtssh.cpp
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
+//
+// Class: QtSFTP
+//
+// Description: Class for client SSH SFTP server connections. Its uses the Antik::CSSH C++
+// wrapper classes for third party library libssh. Its translates to/from Qt to standard
+// C++ data structures as and when needed to keep the whole interface Qt orientated.
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
 #include "qtsftp.h"
 
+/**
+ * @brief QtSFTP::QtSFTP
+ * @param session
+ * @param parent
+ */
 QtSFTP::QtSFTP(QtSSH &session, QObject *parent) : QObject {parent},
     m_sftp { new CSFTP (session.getSession()) }
 {
 
 }
 
+/**
+ * @brief QtSFTP::open
+ */
 void QtSFTP::open()
 {
 
@@ -18,6 +49,9 @@ void QtSFTP::open()
 
 }
 
+/**
+ * @brief QtSFTP::close
+ */
 void QtSFTP::close()
 {
 
@@ -30,6 +64,11 @@ void QtSFTP::close()
 
 }
 
+/**
+ * @brief QtSFTP::openDirectory
+ * @param directoryPath
+ * @return
+ */
 CSFTP::Directory QtSFTP::openDirectory(const QString &directoryPath)
 {
     try {
@@ -41,6 +80,12 @@ CSFTP::Directory QtSFTP::openDirectory(const QString &directoryPath)
     return(CSFTP::Directory());
 }
 
+/**
+ * @brief QtSFTP::readDirectory
+ * @param directoryHandle
+ * @param fileAttributes
+ * @return
+ */
 bool QtSFTP::readDirectory(const QtSFTP::Directory &directoryHandle, QtSFTP::FileAttributes &fileAttributes)
 {
     try {
@@ -52,6 +97,11 @@ bool QtSFTP::readDirectory(const QtSFTP::Directory &directoryHandle, QtSFTP::Fil
     return(false);
 }
 
+/**
+ * @brief QtSFTP::endOfDirectory
+ * @param directoryHandle
+ * @return
+ */
 bool QtSFTP::endOfDirectory(const QtSFTP::Directory &directoryHandle)
 {
     try {
@@ -64,6 +114,10 @@ bool QtSFTP::endOfDirectory(const QtSFTP::Directory &directoryHandle)
     return(false);
 }
 
+/**
+ * @brief QtSFTP::closeDirectory
+ * @param directoryHandle
+ */
 void QtSFTP::closeDirectory(QtSFTP::Directory &directoryHandle)
 {
     try {
@@ -74,6 +128,10 @@ void QtSFTP::closeDirectory(QtSFTP::Directory &directoryHandle)
 
 }
 
+/**
+ * @brief QtSFTP::removeLink
+ * @param filePath
+ */
 void QtSFTP::removeLink(const QString &filePath)
 {
     try {
@@ -84,6 +142,11 @@ void QtSFTP::removeLink(const QString &filePath)
     }
 }
 
+/**
+ * @brief QtSFTP::isADirectory
+ * @param fileAttributes
+ * @return
+ */
 bool QtSFTP::isADirectory(const QtSFTP::FileAttributes &fileAttributes)
 {
 
@@ -96,6 +159,11 @@ bool QtSFTP::isADirectory(const QtSFTP::FileAttributes &fileAttributes)
     return(false);
 }
 
+/**
+ * @brief QtSFTP::isARegularFile
+ * @param fileAttributes
+ * @return
+ */
 bool QtSFTP::isARegularFile(const QtSFTP::FileAttributes &fileAttributes)
 {
     try {
@@ -107,6 +175,11 @@ bool QtSFTP::isARegularFile(const QtSFTP::FileAttributes &fileAttributes)
     return(false);
 }
 
+/**
+ * @brief QtSFTP::isASymbolicLink
+ * @param fileAttributes
+ * @return
+ */
 bool QtSFTP::isASymbolicLink(const QtSFTP::FileAttributes &fileAttributes)
 {
     try {
@@ -118,6 +191,11 @@ bool QtSFTP::isASymbolicLink(const QtSFTP::FileAttributes &fileAttributes)
     return(false);
 }
 
+/**
+ * @brief QtSFTP::getRemoteFile
+ * @param sourceFile
+ * @param destinationFile
+ */
 void QtSFTP::getRemoteFile(const QString &sourceFile, const QString &destinationFile)
 {
     try {
@@ -128,6 +206,11 @@ void QtSFTP::getRemoteFile(const QString &sourceFile, const QString &destination
     }
 }
 
+/**
+ * @brief QtSFTP::putLocalFile
+ * @param sourceFile
+ * @param destinationFile
+ */
 void QtSFTP::putLocalFile(const QString &sourceFile, QString &destinationFile)
 {
     try {
@@ -138,6 +221,10 @@ void QtSFTP::putLocalFile(const QString &sourceFile, QString &destinationFile)
     }
 }
 
+/**
+ * @brief QtSFTP::sftp
+ * @return
+ */
 CSFTP *QtSFTP::sftp() const
 {
     return m_sftp;
