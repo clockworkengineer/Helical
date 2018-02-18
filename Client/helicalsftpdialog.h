@@ -1,5 +1,26 @@
+/*
+ * File:   helicalsftpdialog.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
 #ifndef HELICALSFTPDIALOG_H
 #define HELICALSFTPDIALOG_H
+
+//
+// Class: HelicalSFTPDialog
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
 
 #include <QDialog>
 #include <QFileSystemModel>
@@ -8,6 +29,10 @@
 #include <QScopedPointer>
 #include <QDebug>
 #include "QtSSH/qtsftp.h"
+
+// =================
+// CLASS DECLARATION
+// =================
 
 namespace Ui {
 class HelicalSFTPDialog;
@@ -24,7 +49,7 @@ class HelicalSFTPDialog : public QDialog
     };
 
 public:
-    explicit HelicalSFTPDialog(QtSSH &session, const QString &userHome, QWidget *parent = 0);
+    explicit HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHome,  const QString &localUserHome, QWidget *parent = 0);
     ~HelicalSFTPDialog();
 
     void updateRemoteFileList(const QString &currentDirectory);
@@ -43,10 +68,10 @@ private slots:
 private:
     Ui::HelicalSFTPDialog *ui;
 
-    QString m_localFileSystemRoot {"/home/robt"};
-    QString m_RemoteFileSystemRoot;
-    QString m_currentRemoteDirectory {m_RemoteFileSystemRoot};
-    QString m_currentLocalDirectory {m_localFileSystemRoot};
+    QString m_remoteFileSystemRoot;
+    QString m_localFileSystemRoot;
+    QString m_currentRemoteDirectory {m_remoteFileSystemRoot};
+    QString m_currentLocalDirectory { m_localFileSystemRoot};
 
     QFileSystemModel *m_localFileSystemModel;
     QTreeView *m_localFileSystemView;

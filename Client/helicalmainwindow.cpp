@@ -374,7 +374,7 @@ void HelicalMainWindow::on_executeCommandButton_clicked()
 void HelicalMainWindow::on_sftpButton_clicked()
 {
     if (!m_sftpWindow) {
-        m_sftpWindow.reset(new HelicalSFTPDialog(*m_session, m_userHome, this));
+        m_sftpWindow.reset(new HelicalSFTPDialog(*m_session, m_userHome, QDir::homePath(), this));
     }
     ui->statusBar->setStyleSheet("QStatusBar {color: default}");
     ui->statusBar->clearMessage();
