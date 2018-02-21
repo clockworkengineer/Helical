@@ -29,6 +29,7 @@
 #include <QScopedPointer>
 #include <QDebug>
 #include "QtSSH/qtsftp.h"
+#include "helicalfiletransfertask.h"
 
 // =================
 // CLASS DECLARATION
@@ -53,6 +54,14 @@ public:
     ~HelicalSFTPDialog();
 
     void updateRemoteFileList(const QString &currentDirectory);
+    void createFileTransferTask();
+    void destroyFileTransferTask();
+
+signals:
+    void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
+    void closeSession();
+    void uploadFile(const QString &sourceFile, const QString &destinationFile);
+    void downloadFile(const QString &sourceFile, const QString &destinationFile);
 
 private slots:
     void fileDoubleClicked(QListWidgetItem * item);
@@ -78,6 +87,7 @@ private:
     QListWidget *m_remoteFileSystemList;
 
     QScopedPointer<QtSFTP> m_sftp;
+    QScopedPointer<HelicalFileTransferTask> m_fileTrasnferTask;
 
 };
 

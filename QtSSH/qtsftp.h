@@ -64,7 +64,7 @@ public:
     bool isASymbolicLink(const FileAttributes &fileAttributes);
 
     void getRemoteFile(const QString &sourceFile, const QString &destinationFile);
-    void putLocalFile(const QString &sourceFile, QString &destinationFile);
+    void putLocalFile(const QString &sourceFile, const QString &destinationFile);
 
     CSFTP *sftp() const;
 

@@ -87,8 +87,10 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
 
     updateRemoteFileList(m_currentRemoteDirectory);
 
-    connect(m_sftp.data(), &QtSFTP::downloadFinished, this, &HelicalSFTPDialog::downloadFinished);
-    connect(m_sftp.data(), &QtSFTP::uploadFinished, this, &HelicalSFTPDialog::uploadFinished);
+    createFileTransferTask();
+
+//    connect(m_sftp.data(), &QtSFTP::downloadFinished, this, &HelicalSFTPDialog::downloadFinished);
+//    connect(m_sftp.data(), &QtSFTP::uploadFinished, this, &HelicalSFTPDialog::uploadFinished);
     connect(m_sftp.data(), &QtSFTP::removedLink, this, &HelicalSFTPDialog::fileDeleted);
     connect(m_sftp.data(), &QtSFTP::error, this, &HelicalSFTPDialog::error);
 
@@ -160,6 +162,32 @@ void HelicalSFTPDialog::updateRemoteFileList(const QString &currentDirectory)
         m_remoteFileSystemList->insertItem(0, new HelicalFileItem(".."));
     }
 
+}
+
+void HelicalSFTPDialog::createFileTransferTask()
+{
+    QScopedPointer<QThread> fileTransferThread { new QThread() };
+
+    m_fileTrasnferTask.reset(new HelicalFileTransferTask());
+    m_fileTrasnferTask->setFileTaskThread(fileTransferThread.take());
+    m_fileTrasnferTask->moveToThread(m_fileTrasnferTask->fileTaskThread());
+    m_fileTrasnferTask->fileTaskThread()->start();
+
+    connect(this,&HelicalSFTPDialog::openSession, m_fileTrasnferTask.data(), &HelicalFileTransferTask::openSession);
+    connect(this,&HelicalSFTPDialog::closeSession, m_fileTrasnferTask.data(), &HelicalFileTransferTask::closeSession);
+    connect(this,&HelicalSFTPDialog::uploadFile, m_fileTrasnferTask.data(), &HelicalFileTransferTask::uploadFile);
+    connect(this,&HelicalSFTPDialog::downloadFile, m_fileTrasnferTask.data(), &HelicalFileTransferTask::downloadFile);
+    connect(m_fileTrasnferTask.data(), &HelicalFileTransferTask::downloadFinished, this, &HelicalSFTPDialog::downloadFinished);
+    connect(m_fileTrasnferTask.data(), &HelicalFileTransferTask::uploadFinished, this, &HelicalSFTPDialog::uploadFinished);
+
+    emit openSession("", "", "","");
+
+}
+
+void HelicalSFTPDialog::destroyFileTransferTask()
+{
+
+    emit closeSession();
 }
 
 /**
@@ -236,7 +264,8 @@ void HelicalSFTPDialog::showRemoteFileContextMenu(const QPoint &pos)
         } else if (selectedItem->text()=="Download") {
             localFile =  m_currentLocalDirectory + "/" + fileItem->m_fileAttributes->name;
             remoteFile = m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name;
-            m_sftp->getRemoteFile(remoteFile, localFile);
+           // m_sftp->getRemoteFile(remoteFile, localFile);
+            emit downloadFile(remoteFile, localFile);
         } else if (selectedItem->text()=="Open") {
             m_currentRemoteDirectory = m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name;
             updateRemoteFileList(m_currentRemoteDirectory);
@@ -270,7 +299,8 @@ void HelicalSFTPDialog::showLocalFileContextMenu(const QPoint &pos)
         if (selectedItem->text()=="Upload") {
             QString localFile{m_localFileSystemModel->filePath(m_localFileSystemView->currentIndex())};
             QString remoteFile {m_currentRemoteDirectory + "/" + m_localFileSystemModel->fileName(m_localFileSystemView->currentIndex())};
-            m_sftp->putLocalFile(localFile, remoteFile);
+           // m_sftp->putLocalFile(localFile, remoteFile);
+             emit uploadFile(localFile, remoteFile);
         }
     }
 

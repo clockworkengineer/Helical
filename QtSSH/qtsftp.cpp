@@ -211,7 +211,7 @@ void QtSFTP::getRemoteFile(const QString &sourceFile, const QString &destination
  * @param sourceFile
  * @param destinationFile
  */
-void QtSFTP::putLocalFile(const QString &sourceFile, QString &destinationFile)
+void QtSFTP::putLocalFile(const QString &sourceFile, const QString &destinationFile)
 {
     try {
         putFile(*m_sftp, sourceFile.toStdString(), destinationFile.toStdString());
