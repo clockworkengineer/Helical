@@ -87,10 +87,8 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
 
     updateRemoteFileList(m_currentRemoteDirectory);
 
-    createFileTransferTask();
+    createFileTransferTask(session);
 
-//    connect(m_sftp.data(), &QtSFTP::downloadFinished, this, &HelicalSFTPDialog::downloadFinished);
-//    connect(m_sftp.data(), &QtSFTP::uploadFinished, this, &HelicalSFTPDialog::uploadFinished);
     connect(m_sftp.data(), &QtSFTP::removedLink, this, &HelicalSFTPDialog::fileDeleted);
     connect(m_sftp.data(), &QtSFTP::error, this, &HelicalSFTPDialog::error);
 
@@ -164,23 +162,23 @@ void HelicalSFTPDialog::updateRemoteFileList(const QString &currentDirectory)
 
 }
 
-void HelicalSFTPDialog::createFileTransferTask()
+void HelicalSFTPDialog::createFileTransferTask(QtSSH &session)
 {
     QScopedPointer<QThread> fileTransferThread { new QThread() };
 
-    m_fileTrasnferTask.reset(new HelicalFileTransferTask());
-    m_fileTrasnferTask->setFileTaskThread(fileTransferThread.take());
-    m_fileTrasnferTask->moveToThread(m_fileTrasnferTask->fileTaskThread());
-    m_fileTrasnferTask->fileTaskThread()->start();
+    m_fileTransferTask.reset(new HelicalFileTransferTask());
+    m_fileTransferTask->setFileTaskThread(fileTransferThread.take());
+    m_fileTransferTask->moveToThread(m_fileTransferTask->fileTaskThread());
+    m_fileTransferTask->fileTaskThread()->start();
 
-    connect(this,&HelicalSFTPDialog::openSession, m_fileTrasnferTask.data(), &HelicalFileTransferTask::openSession);
-    connect(this,&HelicalSFTPDialog::closeSession, m_fileTrasnferTask.data(), &HelicalFileTransferTask::closeSession);
-    connect(this,&HelicalSFTPDialog::uploadFile, m_fileTrasnferTask.data(), &HelicalFileTransferTask::uploadFile);
-    connect(this,&HelicalSFTPDialog::downloadFile, m_fileTrasnferTask.data(), &HelicalFileTransferTask::downloadFile);
-    connect(m_fileTrasnferTask.data(), &HelicalFileTransferTask::downloadFinished, this, &HelicalSFTPDialog::downloadFinished);
-    connect(m_fileTrasnferTask.data(), &HelicalFileTransferTask::uploadFinished, this, &HelicalSFTPDialog::uploadFinished);
+    connect(this,&HelicalSFTPDialog::openSession, m_fileTransferTask.data(), &HelicalFileTransferTask::openSession);
+    connect(this,&HelicalSFTPDialog::closeSession, m_fileTransferTask.data(), &HelicalFileTransferTask::closeSession);
+    connect(this,&HelicalSFTPDialog::uploadFile, m_fileTransferTask.data(), &HelicalFileTransferTask::uploadFile);
+    connect(this,&HelicalSFTPDialog::downloadFile, m_fileTransferTask.data(), &HelicalFileTransferTask::downloadFile);
+    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::downloadFinished, this, &HelicalSFTPDialog::downloadFinished);
+    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::uploadFinished, this, &HelicalSFTPDialog::uploadFinished);
 
-    emit openSession("", "", "","");
+    emit openSession(session.getServerName(), session.getServerPort(), session.getUserName(), session.getUserPassword());
 
 }
 
@@ -264,7 +262,6 @@ void HelicalSFTPDialog::showRemoteFileContextMenu(const QPoint &pos)
         } else if (selectedItem->text()=="Download") {
             localFile =  m_currentLocalDirectory + "/" + fileItem->m_fileAttributes->name;
             remoteFile = m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name;
-           // m_sftp->getRemoteFile(remoteFile, localFile);
             emit downloadFile(remoteFile, localFile);
         } else if (selectedItem->text()=="Open") {
             m_currentRemoteDirectory = m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name;
@@ -299,8 +296,7 @@ void HelicalSFTPDialog::showLocalFileContextMenu(const QPoint &pos)
         if (selectedItem->text()=="Upload") {
             QString localFile{m_localFileSystemModel->filePath(m_localFileSystemView->currentIndex())};
             QString remoteFile {m_currentRemoteDirectory + "/" + m_localFileSystemModel->fileName(m_localFileSystemView->currentIndex())};
-           // m_sftp->putLocalFile(localFile, remoteFile);
-             emit uploadFile(localFile, remoteFile);
+            emit uploadFile(localFile, remoteFile);
         }
     }
 

@@ -29,6 +29,7 @@
 #include <QSettings>
 #include <QMessageBox>
 
+#include "helicalserverconnectionsettings.h"
 #include "helicalserverconnectionsdialog.h"
 #include "helicalterminaldialog.h"
 #include "helicalsftpdialog.h"
@@ -100,12 +101,8 @@ private:
     QScopedPointer<QtSSH> m_session {nullptr};                      // Pointer to session
     QScopedPointer<QtSSHChannel> m_connectionChannel {nullptr};     // Pointer to channel
 
-    QString m_connectionName;   // SSH connection name
-    QString m_serverName;       // Server name
-    QString m_serverPort;       // Server port
-    QString m_userName;         // User name
-    QString m_userPassword;     // User password
-    QString m_command;          // Remote command to execute on demand.
+    HelicalServerConnectionSettings m_serverConnectionSettings;
+
     QString m_userHome;         // User home directory
 
     QScopedPointer<HelicalServerConnectionsDialog> m_serverConnections;     // Pointer to server connection details dialog

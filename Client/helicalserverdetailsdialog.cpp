@@ -34,21 +34,15 @@
  */
 HelicalServerDetailsDialog::HelicalServerDetailsDialog(const QString& connectionName, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::HelicalServerDetailsDialog),
-    m_connectionName{connectionName}
+    ui(new Ui::HelicalServerDetailsDialog)
+
 {
     ui->setupUi(this);
 
     if (!connectionName.isEmpty()) {
-        QSettings helicalSettings;
-        helicalSettings.beginGroup(m_connectionName);
-        m_serverName= helicalSettings.value("server").toString();
-        m_serverPort = helicalSettings.value("port").toString();
-        m_userName = helicalSettings.value("user").toString();
-        m_userPassword =  helicalSettings.value("password").toString();
-        m_command =  helicalSettings.value("command").toString();
-        helicalSettings.endGroup();
+        m_serverConnectionSettings.load(connectionName);
     }
+
 }
 
 /**
@@ -84,21 +78,13 @@ void HelicalServerDetailsDialog::on_cancelButton_clicked()
 void HelicalServerDetailsDialog::on_saveButton_clicked()
 {
 
-    m_connectionName = ui->connectionNameLineEdit->text();
-    m_serverName = ui->serverNameLineEdit->text();
-    m_serverPort = ui->serverPortLineEdit->text();
-    m_userName   = ui->userNameLineEdit->text();
-    m_userPassword = ui->userPasswordLineEdit->text();
-    m_command = ui->commandLineEdit->text();
-
-    QSettings helicalSettings;
-    helicalSettings.beginGroup(m_connectionName);
-    helicalSettings.setValue("server",m_serverName);
-    helicalSettings.setValue("port",m_serverPort);
-    helicalSettings.setValue("user",m_userName);
-    helicalSettings.setValue("password",m_userPassword);
-    helicalSettings.setValue("command",m_command);
-    helicalSettings.endGroup();
+    m_serverConnectionSettings.setConnectionName(ui->connectionNameLineEdit->text());
+    m_serverConnectionSettings.setServerName(ui->serverNameLineEdit->text());
+    m_serverConnectionSettings.setServerPort(ui->serverPortLineEdit->text());
+    m_serverConnectionSettings.setUserName(ui->userNameLineEdit->text());
+    m_serverConnectionSettings.setUserPassword(ui->userPasswordLineEdit->text());
+    m_serverConnectionSettings.setCommand(ui->commandLineEdit->text());
+    m_serverConnectionSettings.save();
 
     close();
 
@@ -113,7 +99,7 @@ void HelicalServerDetailsDialog::on_saveButton_clicked()
  */
 QString HelicalServerDetailsDialog::connectionName() const
 {
-    return m_connectionName;
+    return m_serverConnectionSettings.connectionName();
 }
 
 /**
@@ -128,16 +114,16 @@ void HelicalServerDetailsDialog::showEvent(QShowEvent *event)
 
         QWidget::showEvent( event );
 
-        if (!m_connectionName.isEmpty()) {
+        if (!m_serverConnectionSettings.connectionName().isEmpty()) {
             ui->connectionNameLineEdit->setEnabled(false);
         }
 
-        ui->connectionNameLineEdit->setText(m_connectionName);
-        ui->serverNameLineEdit->setText(m_serverName);
-        ui->serverPortLineEdit->setText(m_serverPort);
-        ui->userNameLineEdit->setText(m_userName);
-        ui->userPasswordLineEdit->setText(m_userPassword);
-        ui->commandLineEdit->setText(this->m_command);
+        ui->connectionNameLineEdit->setText(m_serverConnectionSettings.connectionName());
+        ui->serverNameLineEdit->setText(m_serverConnectionSettings.serverName());
+        ui->serverPortLineEdit->setText(m_serverConnectionSettings.serverPort());
+        ui->userNameLineEdit->setText(m_serverConnectionSettings.userName());
+        ui->userPasswordLineEdit->setText(m_serverConnectionSettings.userPassword());
+        ui->commandLineEdit->setText(m_serverConnectionSettings.command());
 
 }
 

@@ -92,6 +92,15 @@ public:
 
     CSSHSession& getSession();
 
+    QString getServerName() const;
+    void setServerName(const QString &serverName);
+    QString getServerPort() const;
+    void setServerPort(const QString &serverPort);
+    QString getUserName() const;
+    void setUserName(const QString &userName);
+    QString getUserPassword() const;
+    void setUserPassword(const QString &userPassword);
+
 signals:
 
     // Session status
@@ -118,6 +127,11 @@ private:
     // Session object
 
     CSSHSession m_session;
+
+    QString m_serverName;       // Server name
+    QString m_serverPort;       // Server port
+    QString m_userName;         // User name
+    QString m_userPassword;     // User password
 
 };
 

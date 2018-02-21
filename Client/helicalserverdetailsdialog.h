@@ -25,6 +25,8 @@
 #include <QDialog>
 #include <QSettings>
 
+#include "helicalserverconnectionsettings.h"
+
 // =================
 // CLASS DECLARATION
 // =================
@@ -65,12 +67,8 @@ private:
 
     Ui::HelicalServerDetailsDialog *ui;     // Qt dialog data
 
-    QString m_connectionName;   // SSH connection name
-    QString m_serverName;       // Server name
-    QString m_serverPort;       // Server port
-    QString m_userName;         // User name
-    QString m_userPassword;     // User password
-    QString m_command;          // Remote command to execute on demand.
+    HelicalServerConnectionSettings m_serverConnectionSettings;
+
 
 };
 

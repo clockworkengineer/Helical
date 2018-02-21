@@ -151,9 +151,13 @@ void QtSSH::setSessionDetails(const QString &serverName, const QString &serverPo
 
     // Set session details
 
+    m_serverName = serverName;
     m_session.setServer(serverName.toStdString());
+    m_serverPort  = serverPort;
     m_session.setPort(std::stoi(serverPort.toStdString()));
+    m_userName = userName;
     m_session.setUser(userName.toStdString());
+    m_userPassword = userPassword;
     m_session.setUserPassword(userPassword.toStdString());
 
 }
@@ -289,4 +293,44 @@ bool QtSSH::isAuthorized()
 CSSHSession& QtSSH::getSession()
 {
     return m_session;
+}
+
+QString QtSSH::getServerName() const
+{
+    return m_serverName;
+}
+
+void QtSSH::setServerName(const QString &serverName)
+{
+    m_serverName = serverName;
+}
+
+QString QtSSH::getServerPort() const
+{
+    return m_serverPort;
+}
+
+void QtSSH::setServerPort(const QString &serverPort)
+{
+    m_serverPort = serverPort;
+}
+
+QString QtSSH::getUserName() const
+{
+    return m_userName;
+}
+
+void QtSSH::setUserName(const QString &userName)
+{
+    m_userName = userName;
+}
+
+QString QtSSH::getUserPassword() const
+{
+    return m_userPassword;
+}
+
+void QtSSH::setUserPassword(const QString &userPassword)
+{
+    m_userPassword = userPassword;
 }

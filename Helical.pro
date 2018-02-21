@@ -38,7 +38,8 @@ SOURCES += \
     QtTerminal/qtterminal.cpp \
     Client/helicalsftpdialog.cpp \
     QtSSH/qtsftp.cpp \
-    Client/helicalfiletransfertask.cpp
+    Client/helicalfiletransfertask.cpp \
+    Client/helicalserverconnectionsettings.cpp
 
 HEADERS += \
     QtSSH/qtssh.h \
@@ -51,7 +52,8 @@ HEADERS += \
     QtTerminal/qtterminal.h \
     Client/helicalsftpdialog.h \
     QtSSH/qtsftp.h \
-    Client/helicalfiletransfertask.h
+    Client/helicalfiletransfertask.h \
+    Client/helicalserverconnectionsettings.h
 
 FORMS += \
     Client/heilcalmainwindow.ui \

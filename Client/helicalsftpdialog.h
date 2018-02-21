@@ -54,7 +54,7 @@ public:
     ~HelicalSFTPDialog();
 
     void updateRemoteFileList(const QString &currentDirectory);
-    void createFileTransferTask();
+    void createFileTransferTask(QtSSH &session);
     void destroyFileTransferTask();
 
 signals:
@@ -87,7 +87,7 @@ private:
     QListWidget *m_remoteFileSystemList;
 
     QScopedPointer<QtSFTP> m_sftp;
-    QScopedPointer<HelicalFileTransferTask> m_fileTrasnferTask;
+    QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;
 
 };
 

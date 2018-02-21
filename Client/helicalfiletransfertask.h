@@ -12,6 +12,17 @@ class HelicalFileTransferTask : public QObject
 {
     Q_OBJECT
 public:
+
+    // Class exception
+
+    struct Exception : public std::runtime_error {
+
+        Exception(const QString & messageStr)
+            : std::runtime_error(static_cast<QString>("HelicalFileTransferTask Failure: " + messageStr).toStdString()) {
+        }
+
+    };
+
     explicit HelicalFileTransferTask(QObject *parent = nullptr);
 
     QThread *fileTaskThread() const;

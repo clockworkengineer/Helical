@@ -79,7 +79,7 @@ HelicalMainWindow::~HelicalMainWindow()
 void HelicalMainWindow::sessionFullyConnected()
 {
 
-    if (!m_command.isEmpty()){
+    if (!m_serverConnectionSettings.command().isEmpty()){
         ui->executeCommandButton->setEnabled(true);
     }
 
@@ -89,7 +89,7 @@ void HelicalMainWindow::sessionFullyConnected()
 
 
     ui->currentStatusLabel->setText("Connected.");
-    ui->userNameLabel->setText(m_userName);
+    ui->userNameLabel->setText(m_serverConnectionSettings.userName());
 
     quint32 authorizationType=m_session->getAuthorizarionType();
     switch (authorizationType) {
@@ -157,14 +157,16 @@ void HelicalMainWindow::terminateSession()
 void HelicalMainWindow::connectToServer(const QString &connectionName)
 {
 
-    QSettings helicalSettings;
-    helicalSettings.beginGroup(connectionName);
-    m_serverName = helicalSettings.value("server").toString();
-    m_serverPort = helicalSettings.value("port").toString();
-    m_userName = helicalSettings.value("user").toString();
-    m_userPassword = helicalSettings.value("password").toString();
-    m_command = helicalSettings.value("command").toString();
-    helicalSettings.endGroup();
+//    QSettings helicalSettings;
+//    helicalSettings.beginGroup(connectionName);
+//    m_serverName = helicalSettings.value("server").toString();
+//    m_serverPort = helicalSettings.value("port").toString();
+//    m_userName = helicalSettings.value("user").toString();
+//    m_userPassword = helicalSettings.value("password").toString();
+//    m_command = helicalSettings.value("command").toString();
+//    helicalSettings.endGroup();
+
+    m_serverConnectionSettings.load(connectionName);
 
     m_session.reset(new QtSSH);
 
@@ -184,10 +186,11 @@ void HelicalMainWindow::connectToServer(const QString &connectionName)
         m_serverConnections->hide();
         ui->statusBar->showMessage("Connecting to server ...");
 
-        m_session->setSessionDetails(m_serverName,m_serverPort, m_userName, m_userPassword);
+        m_session->setSessionDetails(m_serverConnectionSettings.serverName(),m_serverConnectionSettings.serverPort(),
+                                     m_serverConnectionSettings.userName(), m_serverConnectionSettings.userPassword());
         m_session->connectToServer();
         if (m_session->isConnected() && m_session->isAuthorized()) {
-            ui->serverNameLabel->setText(m_serverName);
+            ui->serverNameLabel->setText(m_serverConnectionSettings.serverName());
         }
 
     }
@@ -366,7 +369,7 @@ void HelicalMainWindow::on_executeCommandButton_clicked()
         connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOutput, this, &HelicalMainWindow::commandOutput);
         connect(m_connectionChannel.data(), &QtSSHChannel::writeStdError, this, &HelicalMainWindow::commandOutput);
         m_connectionChannel->open();
-        m_connectionChannel->executeRemoteCommand(m_command);
+        m_connectionChannel->executeRemoteCommand(m_serverConnectionSettings.command());
         m_connectionChannel->close();
         m_connectionChannel.reset();
     }
