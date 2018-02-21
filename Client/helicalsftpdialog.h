@@ -73,6 +73,11 @@ private slots:
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
     void fileDeleted(const QString &filePath);
 
+protected:
+
+    // Override for dialog close event
+
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::HelicalSFTPDialog *ui;
@@ -88,6 +93,7 @@ private:
 
     QScopedPointer<QtSFTP> m_sftp;
     QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;
+    int m_qeuedFiles  {0};
 
 };
 

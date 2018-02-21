@@ -111,6 +111,7 @@ HelicalSFTPDialog::~HelicalSFTPDialog()
     delete ui;
 }
 
+
 /**
  * @brief HelicalSFTPDialog::updateRemoteFileList
  * @param currentDirectory
@@ -178,14 +179,18 @@ void HelicalSFTPDialog::createFileTransferTask(QtSSH &session)
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::downloadFinished, this, &HelicalSFTPDialog::downloadFinished);
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::uploadFinished, this, &HelicalSFTPDialog::uploadFinished);
 
+    // Delete thread when it is finished
+
+    connect(m_fileTransferTask->fileTaskThread(),&QThread::finished,m_fileTransferTask->fileTaskThread(), &QThread::deleteLater );
+
     emit openSession(session.getServerName(), session.getServerPort(), session.getUserName(), session.getUserPassword());
 
 }
 
 void HelicalSFTPDialog::destroyFileTransferTask()
 {
-
     emit closeSession();
+
 }
 
 /**
@@ -262,6 +267,8 @@ void HelicalSFTPDialog::showRemoteFileContextMenu(const QPoint &pos)
         } else if (selectedItem->text()=="Download") {
             localFile =  m_currentLocalDirectory + "/" + fileItem->m_fileAttributes->name;
             remoteFile = m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name;
+            ui->statusMessages->insertPlainText(QString("File \"%1\" queued for download.\n").arg(remoteFile));
+            m_qeuedFiles++;
             emit downloadFile(remoteFile, localFile);
         } else if (selectedItem->text()=="Open") {
             m_currentRemoteDirectory = m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name;
@@ -296,6 +303,8 @@ void HelicalSFTPDialog::showLocalFileContextMenu(const QPoint &pos)
         if (selectedItem->text()=="Upload") {
             QString localFile{m_localFileSystemModel->filePath(m_localFileSystemView->currentIndex())};
             QString remoteFile {m_currentRemoteDirectory + "/" + m_localFileSystemModel->fileName(m_localFileSystemView->currentIndex())};
+            ui->statusMessages->insertPlainText(QString("File \"%1\" queued for upload.\n").arg(localFile));
+            m_qeuedFiles++;
             emit uploadFile(localFile, remoteFile);
         }
     }
@@ -325,6 +334,10 @@ void HelicalSFTPDialog::uploadFinished(const QString &sourceFile, const QString 
     ui->statusMessages->insertPlainText(QString("Uploaded File \"%1\" to \"%2\".\n").arg(sourceFile).arg(destinationFile));
     ui->statusMessages->moveCursor(QTextCursor::End);
     updateRemoteFileList(m_currentRemoteDirectory);
+    m_qeuedFiles--;
+    if (m_qeuedFiles==0) {
+         ui->statusMessages->insertPlainText("Queue cleared.");
+    }
 }
 
 /**
@@ -336,6 +349,10 @@ void HelicalSFTPDialog::downloadFinished(const QString &sourceFile, const QStrin
 {
     ui->statusMessages->insertPlainText(QString("Downloaded File \"%1\" to \"%2\".\n").arg(sourceFile).arg(destinationFile));
     ui->statusMessages->moveCursor(QTextCursor::End);
+    m_qeuedFiles++;
+    if (m_qeuedFiles==0) {
+         ui->statusMessages->insertPlainText("Queue cleared.");
+    }
 }
 
 /**
@@ -348,4 +365,17 @@ void HelicalSFTPDialog::fileDeleted(const QString &filePath)
     ui->statusMessages->moveCursor(QTextCursor::End);
 }
 
+/**
+ * @brief HelicalSFTPDialog::closeEvent
+ *
+ * Overrde for window close event.
+ *
+ * @param event
+ */
+void HelicalSFTPDialog::closeEvent(QCloseEvent *event)
+{
 
+    destroyFileTransferTask();
+    QDialog::closeEvent(event);
+
+}
