@@ -7,6 +7,30 @@
 
 #include "QtSSH/qtssh.h"
 #include "QtSSH/qtsftp.h"
+/*
+ * File:   helicalfiletransfertask.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
+//
+// Class: HelicalFileTransferTask
+//
+// Description:
+//
+
+// =============
+// INCLUDE FILES
+// =============
+
+// =================
+// CLASS DECLARATION
+// =================
 
 class HelicalFileTransferTask : public QObject
 {

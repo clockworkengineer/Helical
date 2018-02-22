@@ -73,6 +73,13 @@ private slots:
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
     void fileDeleted(const QString &filePath);
 
+    void viewSelectedFiles();
+    void downloadSelectedFile();
+    void deleteSelectedFiles();
+    void enterSelectedDirectory();
+    void refreshSelectedDirectory();
+    void uploadSelectedFiles();
+
 protected:
 
     // Override for dialog close event
