@@ -92,7 +92,20 @@ void HelicalFileTransferTask::downloadFile(const QString &sourceFile, const QStr
     }
 //    if (m_terminate) {
 //        closeSession();
-//    }
+    //    }
+}
+
+void HelicalFileTransferTask::listLocalDirectoryRecursive(const QString &directoryPath)
+{
+
+    Antik::FileList localFileList;
+    Antik::RemoteFileListFn localFileNameFeedback = [this]
+            (const std::string &fileName) { emit listedLocalFileName(QString::fromStdString(fileName));};
+
+    Antik::listLocalRecursive(directoryPath.toStdString(), localFileList, localFileNameFeedback);
+
+    emit startUploading();
+
 }
 
 void HelicalFileTransferTask::listRemoteDirectoryRecursive(const QString &directoryPath)

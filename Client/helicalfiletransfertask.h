@@ -56,7 +56,9 @@ signals:
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
     void listedRemoteFileName(const QString &fileName);
+    void listedLocalFileName(const QString &fileName);
     void startDownloading();
+    void startUploading();
 
 public slots:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
@@ -64,6 +66,7 @@ public slots:
     void uploadFile(const QString &sourceFile, const QString &destinationFile);
     void downloadFile(const QString &sourceFile, const QString &destinationFile);
     void listRemoteDirectoryRecursive(const QString &directoryPath);
+    void listLocalDirectoryRecursive(const QString &directoryPath);
 
 private:
     QThread *m_fileTaskThread;

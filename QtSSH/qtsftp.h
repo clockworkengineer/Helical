@@ -52,7 +52,7 @@ public:
 
         QString toRemote(const QString &filePath)
         {
-            return(QString::fromStdString(m_mapper.toLocal(filePath.toStdString())));
+            return(QString::fromStdString(m_mapper.toRemote(filePath.toStdString())));
         }
 
     private:

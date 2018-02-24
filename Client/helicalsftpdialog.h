@@ -66,13 +66,16 @@ signals:
     void closeSession();
     void uploadFile(const QString &sourceFile, const QString &destinationFile);
     void downloadFile(const QString &sourceFile, const QString &destinationFile);
-    void listRemoteDirectoryRecursive(const QString &remoteFile);
+    void listRemoteDirectoryRecursive(const QString &directoryPath);
     void listedRemoteFileName(const QString &fileName);
+    void listLocalDirectoryRecursive(const QString &directoryPath);
 
 private slots:
     void remoteFileClicked(QListWidgetItem *item);
     void remoteFileDoubleClicked(QListWidgetItem * item);
     void localFileViewClicked(const QModelIndex &index);
+    void localFileDoubleClicked(const QModelIndex &index);
+
     void showRemoteFileContextMenu(const QPoint &pos);
     void showLocalFileContextMenu(const QPoint &pos);
     void error(const QString &errorMessage, int errorCode);
@@ -87,6 +90,7 @@ private slots:
     void refreshSelectedDirectory();
     void uploadSelectedFiles();
     void queueFileForDownload(const QString &fileName);
+    void queueFileForUpload(const QString &fileName);
     void downloadNextFile();
     void uploadNextFile();
 

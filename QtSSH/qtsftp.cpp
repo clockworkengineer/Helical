@@ -227,11 +227,11 @@ void QtSFTP::listRemoteDirectoryRecursive(const QString &directoryPath)
 {
     try {
 
-        Antik::FileList remoteFiles;
+        Antik::FileList remoteFileList;
         Antik::RemoteFileListFn remoteFileNameFeedback = [this]
                 (const std::string &fileName) { emit listedRemoteFileName(QString::fromStdString(fileName));};
 
-        listRemoteRecursive(*m_sftp, directoryPath.toStdString(), remoteFiles, remoteFileNameFeedback);
+        listRemoteRecursive(*m_sftp, directoryPath.toStdString(), remoteFileList, remoteFileNameFeedback);
 
     }catch(const CSFTP::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
