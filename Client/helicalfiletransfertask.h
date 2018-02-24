@@ -55,17 +55,23 @@ public:
 signals:
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
+    void listedRemoteFileName(const QString &fileName);
+    void startDownloading();
 
 public slots:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
     void uploadFile(const QString &sourceFile, const QString &destinationFile);
     void downloadFile(const QString &sourceFile, const QString &destinationFile);
+    void listRemoteDirectoryRecursive(const QString &directoryPath);
 
+public:
+        bool m_terminate {false};
 private:
     QThread *m_fileTaskThread;
     QScopedPointer<QtSSH> m_session;
     QScopedPointer<QtSFTP> m_sftp;
+
 };
 
 #endif // HELICALFILETRANSFERTASK_H

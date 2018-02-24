@@ -23,6 +23,8 @@
 
 #include "qtsftp.h"
 
+#include <functional>
+
 /**
  * @brief QtSFTP::QtSFTP
  * @param session
@@ -219,6 +221,22 @@ void QtSFTP::putLocalFile(const QString &sourceFile, const QString &destinationF
     }catch(const CSFTP::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
     }
+}
+
+void QtSFTP::listRemoteDirectoryRecursive(const QString &directoryPath)
+{
+    try {
+
+        Antik::FileList remoteFiles;
+        Antik::RemoteFileListFn remoteFileNameFeedback = [this]
+                (const std::string &fileName) { emit listedRemoteFileName(QString::fromStdString(fileName));};
+
+        listRemoteRecursive(*m_sftp, directoryPath.toStdString(), remoteFiles, remoteFileNameFeedback);
+
+    }catch(const CSFTP::Exception &e) {
+        emit error(QString::fromStdString(e.getMessage()),e.getCode());
+    }
+
 }
 
 /**

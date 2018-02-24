@@ -40,7 +40,25 @@ class QtSFTP : public QObject
     Q_OBJECT
 public:
 
-    // typedef std::function<void(const QString &, const QString &)> FileCompletionFn;
+    class FileMapper {
+    public:
+        FileMapper(const QString &localDirectory, const QString &remoteDirectory) :
+            m_mapper {Antik::FileMapper(localDirectory.toStdString(),remoteDirectory.toStdString())} {}
+
+        QString toLocal(const QString &filePath)
+        {
+            return(QString::fromStdString(m_mapper.toLocal(filePath.toStdString())));
+        }
+
+        QString toRemote(const QString &filePath)
+        {
+            return(QString::fromStdString(m_mapper.toLocal(filePath.toStdString())));
+        }
+
+    private:
+        Antik::FileMapper m_mapper;
+
+    };
 
     typedef CSFTP::Directory Directory;
     typedef CSFTP::FileAttributes FileAttributes;
@@ -66,6 +84,8 @@ public:
     void getRemoteFile(const QString &sourceFile, const QString &destinationFile);
     void putLocalFile(const QString &sourceFile, const QString &destinationFile);
 
+    void listRemoteDirectoryRecursive(const QString &directoryPath);
+
     CSFTP *sftp() const;
 
 signals:
@@ -76,6 +96,8 @@ signals:
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
     void removedLink(const QString &filePath);
+
+    void listedRemoteFileName(const QString &fileName);
 
 public slots:
 

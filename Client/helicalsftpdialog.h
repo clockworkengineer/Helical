@@ -43,10 +43,13 @@ class HelicalSFTPDialog : public QDialog
 {
     Q_OBJECT
 
+    typedef std::pair<QString, QString> FileTransferPair;
+
     class HelicalFileItem : public QListWidgetItem {
     public:
         HelicalFileItem(const QString &name) : QListWidgetItem(name) {}
         QtSFTP::FileAttributes m_fileAttributes;
+        QString m_remoteFilePath;
     };
 
 public:
@@ -56,15 +59,19 @@ public:
     void updateRemoteFileList(const QString &currentDirectory);
     void createFileTransferTask(QtSSH &session);
     void destroyFileTransferTask();
+    void statusMessage(const QString &message);
 
 signals:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
     void uploadFile(const QString &sourceFile, const QString &destinationFile);
     void downloadFile(const QString &sourceFile, const QString &destinationFile);
+    void listRemoteDirectoryRecursive(const QString &remoteFile);
+    void listedRemoteFileName(const QString &fileName);
 
 private slots:
-    void fileDoubleClicked(QListWidgetItem * item);
+    void remoteFileClicked(QListWidgetItem *item);
+    void remoteFileDoubleClicked(QListWidgetItem * item);
     void localFileViewClicked(const QModelIndex &index);
     void showRemoteFileContextMenu(const QPoint &pos);
     void showLocalFileContextMenu(const QPoint &pos);
@@ -79,6 +86,9 @@ private slots:
     void enterSelectedDirectory();
     void refreshSelectedDirectory();
     void uploadSelectedFiles();
+    void queueFileForDownload(const QString &fileName);
+    void downloadNextFile();
+    void uploadNextFile();
 
 protected:
 
@@ -100,7 +110,11 @@ private:
 
     QScopedPointer<QtSFTP> m_sftp;
     QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;
-    int m_qeuedFiles  {0};
+ //   int m_qeuedFiles  {0};
+    QScopedPointer<QtSFTP::FileMapper> m_fileMapper;
+
+    QList<FileTransferPair> m_downloadQueue;
+    QList<FileTransferPair> m_uploadQueue;
 
 };
 

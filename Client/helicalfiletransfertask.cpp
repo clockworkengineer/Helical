@@ -53,25 +53,54 @@ void HelicalFileTransferTask::openSession(const QString &serverName, const QStri
         m_sftp->open();
         connect(m_sftp.data(), &QtSFTP::uploadFinished, this,  &HelicalFileTransferTask::uploadFinished);
         connect(m_sftp.data(), &QtSFTP::downloadFinished, this,  &HelicalFileTransferTask::downloadFinished);
+        connect(m_sftp.data(), &QtSFTP::listedRemoteFileName, this,  &HelicalFileTransferTask::listedRemoteFileName);
     }
 }
 
 void HelicalFileTransferTask::closeSession()
 {
-    m_sftp->close();
-    m_sftp.reset();
-    m_session->disconnectFromServer();
-    m_session.reset();
+    qDebug() << "CLOSEDOWN";
+    if (m_sftp) {
+        m_sftp->close();
+        m_sftp.reset();
+    }
+    if (m_session) {
+        m_session->disconnectFromServer();
+        m_session.reset();
+    }
+    deleteLater();
+    m_terminate=false;
+
 }
 
 void HelicalFileTransferTask::uploadFile(const QString &sourceFile, const QString &destinationFile)
 {
-    qDebug() << "UPLOAD " << sourceFile;
-    m_sftp->putLocalFile(sourceFile, destinationFile);
+    if (m_sftp) {
+        m_sftp->putLocalFile(sourceFile, destinationFile);
+    }
+    if (m_terminate) {
+        closeSession();
+    }
 }
 
 void HelicalFileTransferTask::downloadFile(const QString &sourceFile, const QString &destinationFile)
 {
     qDebug() << "DOWNLOAD " << sourceFile;
-    m_sftp->getRemoteFile(sourceFile, destinationFile);
+    if (m_sftp) {
+        m_sftp->getRemoteFile(sourceFile, destinationFile);
+    }
+    if (m_terminate) {
+        closeSession();
+    }
+}
+
+void HelicalFileTransferTask::listRemoteDirectoryRecursive(const QString &directoryPath)
+{
+    if (m_sftp) {
+        m_sftp->listRemoteDirectoryRecursive(directoryPath);
+        emit startDownloading();
+    }
+    if (m_terminate) {
+        closeSession();
+    }
 }
