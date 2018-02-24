@@ -65,8 +65,6 @@ public slots:
     void downloadFile(const QString &sourceFile, const QString &destinationFile);
     void listRemoteDirectoryRecursive(const QString &directoryPath);
 
-public:
-        bool m_terminate {false};
 private:
     QThread *m_fileTaskThread;
     QScopedPointer<QtSSH> m_session;

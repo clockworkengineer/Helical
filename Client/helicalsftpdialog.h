@@ -110,7 +110,7 @@ private:
 
     QScopedPointer<QtSFTP> m_sftp;
     QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;
- //   int m_qeuedFiles  {0};
+
     QScopedPointer<QtSFTP::FileMapper> m_fileMapper;
 
     QList<FileTransferPair> m_downloadQueue;

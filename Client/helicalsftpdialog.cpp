@@ -203,7 +203,9 @@ void HelicalSFTPDialog::createFileTransferTask(QtSSH &session)
 void HelicalSFTPDialog::destroyFileTransferTask()
 {
 
-    m_fileTransferTask->m_terminate=true;
+    m_downloadQueue.clear();
+    m_uploadQueue.clear();
+
     emit closeSession();
     m_fileTransferTask.take();
 
@@ -488,6 +490,9 @@ void HelicalSFTPDialog::queueFileForDownload(const QString &fileName)
 
 }
 
+/**
+ * @brief HelicalSFTPDialog::downloadNextFile
+ */
 void HelicalSFTPDialog::downloadNextFile()
 {
     if (!m_downloadQueue.isEmpty()) {
@@ -498,6 +503,9 @@ void HelicalSFTPDialog::downloadNextFile()
     }
 }
 
+/**
+ * @brief HelicalSFTPDialog::uploadNextFile
+ */
 void HelicalSFTPDialog::uploadNextFile()
 {
     if (!m_uploadQueue.isEmpty()) {
@@ -517,7 +525,6 @@ void HelicalSFTPDialog::uploadNextFile()
  */
 void HelicalSFTPDialog::closeEvent(QCloseEvent *event)
 {
-
     destroyFileTransferTask();
     QDialog::closeEvent(event);
 }

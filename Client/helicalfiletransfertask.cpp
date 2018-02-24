@@ -69,18 +69,19 @@ void HelicalFileTransferTask::closeSession()
         m_session.reset();
     }
     deleteLater();
-    m_terminate=false;
+  //  m_terminate=false;
 
 }
 
 void HelicalFileTransferTask::uploadFile(const QString &sourceFile, const QString &destinationFile)
 {
+    qDebug() << "UPLOAD " << sourceFile;
     if (m_sftp) {
         m_sftp->putLocalFile(sourceFile, destinationFile);
     }
-    if (m_terminate) {
-        closeSession();
-    }
+//    if (m_terminate) {
+//        closeSession();
+//    }
 }
 
 void HelicalFileTransferTask::downloadFile(const QString &sourceFile, const QString &destinationFile)
@@ -89,18 +90,19 @@ void HelicalFileTransferTask::downloadFile(const QString &sourceFile, const QStr
     if (m_sftp) {
         m_sftp->getRemoteFile(sourceFile, destinationFile);
     }
-    if (m_terminate) {
-        closeSession();
-    }
+//    if (m_terminate) {
+//        closeSession();
+//    }
 }
 
 void HelicalFileTransferTask::listRemoteDirectoryRecursive(const QString &directoryPath)
 {
+
     if (m_sftp) {
         m_sftp->listRemoteDirectoryRecursive(directoryPath);
         emit startDownloading();
     }
-    if (m_terminate) {
-        closeSession();
-    }
+//    if (m_terminate) {
+//        closeSession();
+//    }
 }
