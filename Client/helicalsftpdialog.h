@@ -79,11 +79,14 @@ signals:
 private slots:
     void remoteFileClicked(QListWidgetItem *item);
     void remoteFileDoubleClicked(QListWidgetItem * item);
+    void localFileSystemViewClicked(const QModelIndex &index);
+    void localFileSystemViewDoubleClicked(const QModelIndex &index);
     void localFileViewClicked(const QModelIndex &index);
-    void localFileDoubleClicked(const QModelIndex &index);
+    void localFileViewDoubleClicked(const QModelIndex &index);
 
     void showRemoteFileContextMenu(const QPoint &pos);
-    void showLocalFileContextMenu(const QPoint &pos);
+    void showLocalFileFiewSystemContextMenu(const QPoint &pos);
+    void showLocalFileViewContextMenu(const QPoint &pos);
     void error(const QString &errorMessage, int errorCode);
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
@@ -94,6 +97,7 @@ private slots:
     void deleteSelectedFiles();
     void enterSelectedDirectory();
     void refreshSelectedDirectory();
+    void uploadSelectedFolder();
     void uploadSelectedFiles();
     void queueFileForDownload(const QString &fileName);
     void queueFileForUpload(const QString &fileName);
@@ -116,6 +120,8 @@ private:
 
     QFileSystemModel *m_localFileSystemModel;
     QTreeView *m_localFileSystemView;
+    QListView *m_localFileView;
+    QFileSystemModel *m_localFileModel;
     QListWidget *m_remoteFileSystemList;
 
     QScopedPointer<QtSFTP> m_sftp;
