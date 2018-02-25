@@ -28,6 +28,10 @@
 #include <QListWidget>
 #include <QScopedPointer>
 #include <QDebug>
+#include <QFileIconProvider>
+#include <QMenu>
+#include <QDesktopServices>
+
 #include "QtSSH/qtsftp.h"
 #include "helicalfiletransfertask.h"
 

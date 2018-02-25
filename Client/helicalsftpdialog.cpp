@@ -23,17 +23,6 @@
 #include "helicalsftpdialog.h"
 #include "ui_helicalsftpdialog.h"
 
-#include <QSplitter>
-#include <QVBoxLayout>
-#include <QListWidget>
-#include <QTableWidget>
-#include <QSizePolicy>
-#include <QFileIconProvider>
-#include <QMenu>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QCloseEvent>
-#include <QMessageBox>
 
 /**
  * @brief HelicalSFTPDialog::HelicalSFTPDialog
@@ -60,8 +49,6 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
 
     m_fileMapper.reset(new QtSFTP::FileMapper(m_currentLocalDirectory, m_currentRemoteDirectory));
 
-    QSplitter *splitter = new QSplitter(this);
-
     m_localFileSystemModel = new QFileSystemModel(this);
     m_localFileSystemView  = new QTreeView(this);
     m_localFileSystemView->setModel(m_localFileSystemModel);
@@ -74,12 +61,11 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
     m_remoteFileSystemList->setContextMenuPolicy(Qt::CustomContextMenu);
     m_remoteFileSystemList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    ui->fileViewFrame->setLayout(new QVBoxLayout(this));
-    splitter = new QSplitter(this);
-    splitter->addWidget(m_localFileSystemView);
-    splitter->addWidget(m_remoteFileSystemList);
+    ui->localFileViewFrame->setLayout(new QHBoxLayout(this));
+    ui->localFileViewFrame->layout()->addWidget(m_localFileSystemView);
 
-    ui->fileViewFrame->layout()->addWidget(splitter);
+    ui->remoteFileViewFrame->setLayout(new QHBoxLayout(this));
+    ui->remoteFileViewFrame->layout()->addWidget(m_remoteFileSystemList);
 
     m_localFileSystemView->hideColumn(1);
     m_localFileSystemView->hideColumn(2);
