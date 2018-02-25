@@ -70,6 +70,8 @@ signals:
     void listedRemoteFileName(const QString &fileName);
     void listLocalDirectoryRecursive(const QString &directoryPath);
 
+    public slots:
+
 private slots:
     void remoteFileClicked(QListWidgetItem *item);
     void remoteFileDoubleClicked(QListWidgetItem * item);

@@ -203,8 +203,10 @@ void QtSFTP::getRemoteFile(const QString &sourceFile, const QString &destination
     try {
         getFile(*m_sftp, sourceFile.toStdString(), destinationFile.toStdString());
         emit downloadFinished(sourceFile, destinationFile);
-    }catch(const CSFTP::Exception &e) {
+    } catch(const CSFTP::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
+    } catch(const std::system_error &e) {
+        emit error(QString::fromStdString(e.what()),e.code().value());
     }
 }
 
@@ -218,8 +220,10 @@ void QtSFTP::putLocalFile(const QString &sourceFile, const QString &destinationF
     try {
         putFile(*m_sftp, sourceFile.toStdString(), destinationFile.toStdString());
         emit uploadFinished(sourceFile, destinationFile);
-    }catch(const CSFTP::Exception &e) {
+    } catch(const CSFTP::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
+    } catch(const std::system_error &e) {
+        emit error(QString::fromStdString(e.what()),e.code().value());
     }
 }
 

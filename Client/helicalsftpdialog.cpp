@@ -194,6 +194,7 @@ void HelicalSFTPDialog::createFileTransferTask(QtSSH &session)
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::listedLocalFileName, this, &HelicalSFTPDialog::queueFileForUpload);
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startDownloading, this, &HelicalSFTPDialog::downloadNextFile);
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startUploading, this, &HelicalSFTPDialog::uploadNextFile);
+    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::error, this, &HelicalSFTPDialog::error);
 
     // Delete thread when it is finished
 
@@ -274,9 +275,7 @@ void HelicalSFTPDialog::remoteFileClicked(QListWidgetItem *item)
 void HelicalSFTPDialog::localFileViewClicked(const QModelIndex &index)
 {
     if (m_localFileSystemModel->isDir(index)) {
- //       m_currentLocalDirectory = m_localFileSystemModel->filePath(index);
-//        m_fileMapper.reset(new  QtSFTP::FileMapper(m_currentLocalDirectory, m_currentRemoteDirectory));
-        ui->localLineEdit->setText(m_currentLocalDirectory);
+         ui->localLineEdit->setText(m_currentLocalDirectory);
     }
 }
 
@@ -359,6 +358,9 @@ void HelicalSFTPDialog::error(const QString &errorMessage, int errorCode)
 
     statusMessage(errorMessage+"\n");
 
+    uploadNextFile();
+    downloadNextFile();
+
 }
 
 /**
@@ -406,8 +408,7 @@ void HelicalSFTPDialog::viewSelectedFiles()
         if (fileItem->m_fileAttributes) {
             if (m_sftp->isARegularFile(fileItem->m_fileAttributes)) {
                 QString localFile {QDir::tempPath() + "/"+ fileItem->m_fileAttributes->name};
-                QString remoteFile { m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name};
-                m_sftp->getRemoteFile(remoteFile, localFile);
+                m_sftp->getRemoteFile(fileItem->m_remoteFilePath, localFile);
                 QDesktopServices::openUrl(QUrl::fromLocalFile(localFile.toUtf8()));
             }
         }
@@ -423,9 +424,8 @@ void HelicalSFTPDialog::downloadSelectedFile()
         HelicalFileItem *fileItem = dynamic_cast<HelicalFileItem*>(listItem);
         if (fileItem->m_fileAttributes) {
             if (m_sftp->isARegularFile(fileItem->m_fileAttributes)) {
-                QString localFile {m_currentLocalDirectory + "/" + fileItem->m_fileAttributes->name};
                 ui->statusMessages->insertPlainText(QString("File \"%1\" queued for download.\n").arg(fileItem->m_remoteFilePath));
-                m_downloadQueue.push_back({fileItem->m_remoteFilePath, localFile});
+                m_downloadQueue.push_back({fileItem->m_remoteFilePath, m_fileMapper->toLocal(fileItem->m_remoteFilePath)});
             } else if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
                 emit listRemoteDirectoryRecursive(fileItem->m_remoteFilePath);
             }
@@ -443,8 +443,7 @@ void HelicalSFTPDialog::deleteSelectedFiles()
         HelicalFileItem *fileItem = dynamic_cast<HelicalFileItem*>(listItem);
         if (fileItem->m_fileAttributes) {
             if (m_sftp->isARegularFile(fileItem->m_fileAttributes)) {
-                QString remoteFile { m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name} ;
-                m_sftp->removeLink(remoteFile);
+                m_sftp->removeLink(fileItem->m_remoteFilePath);
             }
         }
     }
@@ -458,7 +457,7 @@ void HelicalSFTPDialog::enterSelectedDirectory()
 {
     HelicalFileItem *fileItem = dynamic_cast<HelicalFileItem*>(m_remoteFileSystemList->currentItem());
     if (fileItem->m_fileAttributes) {
-        m_currentRemoteDirectory = m_currentRemoteDirectory + "/" + fileItem->m_fileAttributes->name;
+        m_currentRemoteDirectory = fileItem->m_remoteFilePath;
         updateRemoteFileList(m_currentRemoteDirectory);
     }
 }
@@ -477,22 +476,26 @@ void HelicalSFTPDialog::refreshSelectedDirectory()
 void HelicalSFTPDialog::uploadSelectedFiles()
 {
     QModelIndexList indexList = m_localFileSystemView->selectionModel()->selectedIndexes();
+    bool deferUpload=false;
 
     for (auto rowIndex : indexList) {
         if (rowIndex.column()==0) {
             if (!m_localFileSystemModel->isDir(rowIndex)) {
                 QString localFile{m_localFileSystemModel->filePath(rowIndex)};
-                QString remoteFile {m_currentRemoteDirectory + "/" + m_localFileSystemModel->fileName(rowIndex)};
+       //         QString remoteFile {m_currentRemoteDirectory + "/" + m_localFileSystemModel->fileName(rowIndex)};
                 statusMessage(QString("File \"%1\" queued for upload.\n").arg(localFile));
-                m_uploadQueue.push_back({localFile, remoteFile});
+                m_uploadQueue.push_back({localFile, m_fileMapper->toRemote(localFile)});
             } else {
                 QString localFile{m_localFileSystemModel->filePath(rowIndex)};
                 emit listLocalDirectoryRecursive(localFile);
+                deferUpload=true;
             }
         }
     }
 
-    uploadNextFile();
+    if (!deferUpload) {
+        uploadNextFile();
+    }
 
 }
 

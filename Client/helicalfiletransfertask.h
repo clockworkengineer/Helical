@@ -59,6 +59,7 @@ signals:
     void listedLocalFileName(const QString &fileName);
     void startDownloading();
     void startUploading();
+    void error(const QString &errorMessage, int errorCode);
 
 public slots:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
