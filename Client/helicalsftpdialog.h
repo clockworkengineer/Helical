@@ -118,10 +118,10 @@ private:
     QString m_currentRemoteDirectory {m_remoteFileSystemRoot};
     QString m_currentLocalDirectory { m_localFileSystemRoot};
 
-    QFileSystemModel *m_localFileSystemModel;
-    QTreeView *m_localFileSystemView;
-    QListView *m_localFileView;
-    QFileSystemModel *m_localFileModel;
+    QFileSystemModel *m_localFoldersModel;
+    QTreeView *m_localFoldersView;
+    QListView *m_localFilesView;
+    QFileSystemModel *m_localFilesModel;
     QListWidget *m_remoteFileSystemList;
 
     QScopedPointer<QtSFTP> m_sftp;
