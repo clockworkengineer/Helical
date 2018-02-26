@@ -73,6 +73,7 @@ private:
     QThread *m_fileTaskThread;
     QScopedPointer<QtSSH> m_session;
     QScopedPointer<QtSFTP> m_sftp;
+    std::atomic_bool m_busy {false};
 
 };
 

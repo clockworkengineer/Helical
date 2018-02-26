@@ -157,15 +157,6 @@ void HelicalMainWindow::terminateSession()
 void HelicalMainWindow::connectToServer(const QString &connectionName)
 {
 
-//    QSettings helicalSettings;
-//    helicalSettings.beginGroup(connectionName);
-//    m_serverName = helicalSettings.value("server").toString();
-//    m_serverPort = helicalSettings.value("port").toString();
-//    m_userName = helicalSettings.value("user").toString();
-//    m_userPassword = helicalSettings.value("password").toString();
-//    m_command = helicalSettings.value("command").toString();
-//    helicalSettings.endGroup();
-
     m_serverConnectionSettings.load(connectionName);
 
     m_session.reset(new QtSSH);
@@ -297,18 +288,22 @@ void HelicalMainWindow::saveCommandOutput(const QString &text)
  */
 void HelicalMainWindow::setUserHome()
 {
-    m_connectionChannel.reset(new QtSSHChannel(*m_session));
-    if (m_connectionChannel) {
-        connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOutput, this, &HelicalMainWindow::saveCommandOutput);
-        m_connectionChannel->open();
-        m_connectionChannel->executeRemoteCommand("pwd");
-        m_connectionChannel->close();
-        m_connectionChannel.reset();
-        if (!m_savedCommandOutput.isEmpty()) {
-            m_userHome = m_savedCommandOutput[0];
-            m_userHome.chop(1);
-            m_savedCommandOutput.clear();
+    if (m_serverConnectionSettings.userHome().isEmpty()) {
+        m_connectionChannel.reset(new QtSSHChannel(*m_session));
+        if (m_connectionChannel) {
+            connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOutput, this, &HelicalMainWindow::saveCommandOutput);
+            m_connectionChannel->open();
+            m_connectionChannel->executeRemoteCommand("pwd");
+            m_connectionChannel->close();
+            m_connectionChannel.reset();
+            if (!m_savedCommandOutput.isEmpty()) {
+                m_userHome = m_savedCommandOutput[0];
+                m_userHome.chop(1);
+                m_savedCommandOutput.clear();
+            }
         }
+    } else {
+        m_userHome = m_serverConnectionSettings.userHome();
     }
 
 }

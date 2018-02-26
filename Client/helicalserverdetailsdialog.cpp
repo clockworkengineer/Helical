@@ -83,6 +83,7 @@ void HelicalServerDetailsDialog::on_saveButton_clicked()
     m_serverConnectionSettings.setServerPort(ui->serverPortLineEdit->text());
     m_serverConnectionSettings.setUserName(ui->userNameLineEdit->text());
     m_serverConnectionSettings.setUserPassword(ui->userPasswordLineEdit->text());
+    m_serverConnectionSettings.setUserHome(ui->userHomeLineEdit->text());
     m_serverConnectionSettings.setCommand(ui->commandLineEdit->text());
     m_serverConnectionSettings.save();
 
@@ -123,6 +124,7 @@ void HelicalServerDetailsDialog::showEvent(QShowEvent *event)
         ui->serverPortLineEdit->setText(m_serverConnectionSettings.serverPort());
         ui->userNameLineEdit->setText(m_serverConnectionSettings.userName());
         ui->userPasswordLineEdit->setText(m_serverConnectionSettings.userPassword());
+        ui->userHomeLineEdit->setText(m_serverConnectionSettings.userHome());
         ui->commandLineEdit->setText(m_serverConnectionSettings.command());
 
 }

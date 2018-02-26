@@ -49,9 +49,9 @@ class HelicalSFTPDialog : public QDialog
 
     typedef std::pair<QString, QString> FileTransferPair;
 
-    class HelicalFileItem : public QListWidgetItem {
+    class HelicalRemoteFileItem : public QListWidgetItem {
     public:
-        HelicalFileItem(const QString &name) : QListWidgetItem(name) {}
+        HelicalRemoteFileItem(const QString &name) : QListWidgetItem(name) {}
         QtSFTP::FileAttributes m_fileAttributes;
         QString m_remoteFilePath;
     };
@@ -74,18 +74,16 @@ signals:
     void listedRemoteFileName(const QString &fileName);
     void listLocalDirectoryRecursive(const QString &directoryPath);
 
-    public slots:
-
 private slots:
     void remoteFileClicked(QListWidgetItem *item);
     void remoteFileDoubleClicked(QListWidgetItem * item);
-    void localFileSystemViewClicked(const QModelIndex &index);
-    void localFileSystemViewDoubleClicked(const QModelIndex &index);
+    void localFolderViewClicked(const QModelIndex &index);
+    void localFolderViewDoubleClicked(const QModelIndex &index);
     void localFileViewClicked(const QModelIndex &index);
     void localFileViewDoubleClicked(const QModelIndex &index);
 
     void showRemoteFileContextMenu(const QPoint &pos);
-    void showLocalFileFiewSystemContextMenu(const QPoint &pos);
+    void showLocalFolderViewContextMenu(const QPoint &pos);
     void showLocalFileViewContextMenu(const QPoint &pos);
     void error(const QString &errorMessage, int errorCode);
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
@@ -113,10 +111,10 @@ protected:
 private:
     Ui::HelicalSFTPDialog *ui;
 
-    QString m_remoteFileSystemRoot;
-    QString m_localFileSystemRoot;
-    QString m_currentRemoteDirectory {m_remoteFileSystemRoot};
-    QString m_currentLocalDirectory { m_localFileSystemRoot};
+    QString m_remoteSystemRoot;
+    QString m_localSystemRoot;
+    QString m_currentRemoteDirectory {m_remoteSystemRoot};
+    QString m_currentLocalDirectory { m_localSystemRoot};
 
     QFileSystemModel *m_localFoldersModel;
     QTreeView *m_localFoldersView;

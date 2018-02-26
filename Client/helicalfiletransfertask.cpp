@@ -83,7 +83,8 @@ void HelicalFileTransferTask::openSession(const QString &serverName, const QStri
  */
 void HelicalFileTransferTask::closeSession()
 {
-    qDebug() << "CLOSEDOWN";
+    qDebug() << "CLOSEDOWN FILE TRANSFER TASK";
+
     if (m_sftp) {
         m_sftp->close();
         m_sftp.reset();
@@ -103,7 +104,7 @@ void HelicalFileTransferTask::closeSession()
  */
 void HelicalFileTransferTask::uploadFile(const QString &sourceFile, const QString &destinationFile)
 {
-    qDebug() << "UPLOAD " << sourceFile;
+    qDebug() << "UPLOAD FILE " << sourceFile;
     if (m_sftp) {
         m_sftp->putLocalFile(sourceFile, destinationFile);
     }
@@ -116,7 +117,7 @@ void HelicalFileTransferTask::uploadFile(const QString &sourceFile, const QStrin
  */
 void HelicalFileTransferTask::downloadFile(const QString &sourceFile, const QString &destinationFile)
 {
-    qDebug() << "DOWNLOAD " << sourceFile;
+    qDebug() << "DOWNLOAD FILE" << sourceFile;
     if (m_sftp) {
         m_sftp->getRemoteFile(sourceFile, destinationFile);
     }

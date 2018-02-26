@@ -16,6 +16,7 @@ void HelicalServerConnectionSettings::load(const QString &connectionName)
     m_serverPort = helicalSettings.value("port").toString();
     m_userName = helicalSettings.value("user").toString();
     m_userPassword =  helicalSettings.value("password").toString();
+    m_userHome =  helicalSettings.value("home").toString();
     m_command =  helicalSettings.value("command").toString();
     helicalSettings.endGroup();
 }
@@ -28,6 +29,7 @@ void HelicalServerConnectionSettings::save()
     helicalSettings.setValue("port",m_serverPort);
     helicalSettings.setValue("user",m_userName);
     helicalSettings.setValue("password",m_userPassword);
+    helicalSettings.setValue("home",m_userHome);
     helicalSettings.setValue("command",m_command);
     helicalSettings.endGroup();
 }
@@ -90,4 +92,14 @@ QString HelicalServerConnectionSettings::command() const
 void HelicalServerConnectionSettings::setCommand(const QString &command)
 {
     m_command = command;
+}
+
+QString HelicalServerConnectionSettings::userHome() const
+{
+    return m_userHome;
+}
+
+void HelicalServerConnectionSettings::setUserHome(const QString &userHome)
+{
+    m_userHome = userHome;
 }

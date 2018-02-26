@@ -34,6 +34,8 @@ public:
     void setUserPassword(const QString &userPassword);
     QString command() const;
     void setCommand(const QString &command);
+    QString userHome() const;
+    void setUserHome(const QString &userHome);
 
 private:
     QString m_connectionName;   // SSH connection name
@@ -41,6 +43,7 @@ private:
     QString m_serverPort;       // Server port
     QString m_userName;         // User name
     QString m_userPassword;     // User password
+    QString m_userHome;         // User Home
     QString m_command;          // Remote command to execute on demand.
 };
 

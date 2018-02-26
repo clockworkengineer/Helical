@@ -19,49 +19,31 @@
      <x>40</x>
      <y>49</y>
      <width>351</width>
-     <height>182</height>
+     <height>213</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="3" column="0">
-     <widget class="QLabel" name="userNameLabel">
-      <property name="text">
-       <string>User:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="userPasswordLabel">
-      <property name="text">
-       <string>Password:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QLineEdit" name="userNameLineEdit"/>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="connectionNameLineEdit"/>
     </item>
     <item row="2" column="1">
      <widget class="QLineEdit" name="serverPortLineEdit"/>
     </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="connectionNameLabel">
+    <item row="6" column="0">
+     <widget class="QLabel" name="commandLabel">
       <property name="text">
-       <string>Connection Name:</string>
+       <string>Command:</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="serverNameLineEdit"/>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="serverNameLabel">
-      <property name="text">
-       <string>Server:</string>
-      </property>
-     </widget>
+    <item row="6" column="1">
+     <widget class="QLineEdit" name="commandLineEdit"/>
     </item>
     <item row="4" column="1">
      <widget class="QLineEdit" name="userPasswordLineEdit"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="serverNameLineEdit"/>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="serverPortLabel">
@@ -70,18 +52,46 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="connectionNameLineEdit"/>
-    </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="commandLabel">
+    <item row="0" column="0">
+     <widget class="QLabel" name="connectionNameLabel">
       <property name="text">
-       <string>Command:</string>
+       <string>Connection Name:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="serverNameLabel">
+      <property name="text">
+       <string>Server:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="userNameLineEdit"/>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="userPasswordLabel">
+      <property name="text">
+       <string>Password:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="userNameLabel">
+      <property name="text">
+       <string>User:</string>
       </property>
      </widget>
     </item>
     <item row="5" column="1">
-     <widget class="QLineEdit" name="commandLineEdit"/>
+     <widget class="QLineEdit" name="userHomeLineEdit"/>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="userHomeLabel">
+      <property name="text">
+       <string>Home:</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -89,7 +99,7 @@
    <property name="geometry">
     <rect>
      <x>220</x>
-     <y>250</y>
+     <y>270</y>
      <width>168</width>
      <height>31</height>
     </rect>
