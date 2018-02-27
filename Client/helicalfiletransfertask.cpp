@@ -73,7 +73,7 @@ void HelicalFileTransferTask::openSession(const QString &serverName, const QStri
         m_sftp->open();
         connect(m_sftp.data(), &QtSFTP::uploadFinished, this,  &HelicalFileTransferTask::uploadFinished);
         connect(m_sftp.data(), &QtSFTP::downloadFinished, this,  &HelicalFileTransferTask::downloadFinished);
-        connect(m_sftp.data(), &QtSFTP::listedRemoteFileName, this,  &HelicalFileTransferTask::listedRemoteFileName);
+        connect(m_sftp.data(), &QtSFTP::removedLink, this,  &HelicalFileTransferTask::deleteFileFinised);
         connect(m_sftp.data(), &QtSFTP::error, this,  &HelicalFileTransferTask::error);
     }
 }
@@ -110,6 +110,14 @@ void HelicalFileTransferTask::uploadFile(const QString &sourceFile, const QStrin
     }
 }
 
+void HelicalFileTransferTask::deleteFile(const QString &fileName)
+{
+    qDebug() << "DELETE FILE " << fileName;
+    if (m_sftp) {
+        m_sftp->removeLink(fileName);
+    }
+}
+
 /**
  * @brief HelicalFileTransferTask::downloadFile
  * @param sourceFile
@@ -127,16 +135,30 @@ void HelicalFileTransferTask::downloadFile(const QString &sourceFile, const QStr
  * @brief HelicalFileTransferTask::listLocalDirectoryRecursive
  * @param directoryPath
  */
-void HelicalFileTransferTask::listLocalDirectoryRecursive(const QString &directoryPath)
+void HelicalFileTransferTask::uploadDirectory(const QString &directoryPath)
 {
 
     Antik::FileList localFileList;
-    Antik::RemoteFileListFn localFileNameFeedback = [this]
-            (const std::string &fileName) { emit listedLocalFileName(QString::fromStdString(fileName));};
+    Antik::FileFeedBackFn localFileFeedBackFn = [this]
+            (const std::string &fileName) { emit queueFileForUpload(QString::fromStdString(fileName));};
 
-    Antik::listLocalRecursive(directoryPath.toStdString(), localFileList, localFileNameFeedback);
+    Antik::listLocalRecursive(directoryPath.toStdString(), localFileList, localFileFeedBackFn);
 
     emit startUploading();
+
+}
+
+void HelicalFileTransferTask::deleteDirectory(const QString &directoryPath)
+{
+
+    if (m_sftp) {
+        Antik::FileList localFileList;
+        Antik::FileFeedBackFn localFileFeedBackFn = [this]
+                (const std::string &fileName) { emit queueFileForDelete(QString::fromStdString(fileName));};
+        m_sftp->listRemoteDirectoryRecursive(directoryPath, localFileFeedBackFn);
+        emit startDeleting();
+
+    }
 
 }
 
@@ -144,11 +166,13 @@ void HelicalFileTransferTask::listLocalDirectoryRecursive(const QString &directo
  * @brief HelicalFileTransferTask::listRemoteDirectoryRecursive
  * @param directoryPath
  */
-void HelicalFileTransferTask::listRemoteDirectoryRecursive(const QString &directoryPath)
+void HelicalFileTransferTask::downloadDirectory(const QString &directoryPath)
 {
 
     if (m_sftp) {
-        m_sftp->listRemoteDirectoryRecursive(directoryPath);
+        Antik::FileFeedBackFn remoteFileFeedBackFn = [this]
+                (const std::string &fileName) { emit queueFileForDownload(QString::fromStdString(fileName));};
+        m_sftp->listRemoteDirectoryRecursive(directoryPath, remoteFileFeedBackFn);
         emit startDownloading();
     }
 

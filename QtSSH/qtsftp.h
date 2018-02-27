@@ -60,6 +60,7 @@ public:
 
     };
 
+    typedef Antik::FileFeedBackFn FileFeedBackFn;
     typedef CSFTP::Directory Directory;
     typedef CSFTP::FileAttributes FileAttributes;
 
@@ -84,7 +85,7 @@ public:
     void getRemoteFile(const QString &sourceFile, const QString &destinationFile);
     void putLocalFile(const QString &sourceFile, const QString &destinationFile);
 
-    void listRemoteDirectoryRecursive(const QString &directoryPath);
+    void listRemoteDirectoryRecursive(const QString &directoryPath, FileFeedBackFn remoteFileFeedbackFn = nullptr);
 
     CSFTP *sftp() const;
 

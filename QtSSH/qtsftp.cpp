@@ -227,13 +227,11 @@ void QtSFTP::putLocalFile(const QString &sourceFile, const QString &destinationF
     }
 }
 
-void QtSFTP::listRemoteDirectoryRecursive(const QString &directoryPath)
+void QtSFTP::listRemoteDirectoryRecursive(const QString &directoryPath, FileFeedBackFn remoteFileNameFeedback)
 {
     try {
 
         Antik::FileList remoteFileList;
-        Antik::RemoteFileListFn remoteFileNameFeedback = [this]
-                (const std::string &fileName) { emit listedRemoteFileName(QString::fromStdString(fileName));};
 
         listRemoteRecursive(*m_sftp, directoryPath.toStdString(), remoteFileList, remoteFileNameFeedback);
 
