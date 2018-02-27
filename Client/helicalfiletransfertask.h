@@ -37,6 +37,8 @@ class HelicalFileTransferTask : public QObject
     Q_OBJECT
 public:
 
+    typedef std::pair<QString, QString> FileMappingPair;
+
     // Class exception
 
     struct Exception : public std::runtime_error {
@@ -56,8 +58,8 @@ signals:
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
     void deleteFileFinised(const QString &fileName);
-    void queueFileForDownload(const QString &fileName);
-    void queueFileForUpload(const QString &fileName);
+    void queueFileForDownload(const QString &sourceFile, const QString &destinationFile);
+    void queueFileForUpload(const QString &sourceFile, const QString &destinationFile);
     void queueFileForDelete(const QString &fileName);
     void startDownloading();
     void startUploading();
@@ -70,8 +72,8 @@ public slots:
     void uploadFile(const QString &sourceFile, const QString &destinationFile);
     void deleteFile(const QString &fileName);
     void downloadFile(const QString &sourceFile, const QString &destinationFile);
-    void downloadDirectory(const QString &directoryPath);
-    void uploadDirectory(const QString &directoryPath);
+    void downloadDirectory(const FileMappingPair &fileMappingPair, const QString &directoryPath);
+    void uploadDirectory(const FileMappingPair &fileMappingPair, const QString &directoryPath);
     void deleteDirectory(const QString &directoryPath);
 
 private:
@@ -81,5 +83,7 @@ private:
     std::atomic_bool m_busy {false};
 
 };
+
+Q_DECLARE_METATYPE(HelicalFileTransferTask::FileMappingPair);
 
 #endif // HELICALFILETRANSFERTASK_H

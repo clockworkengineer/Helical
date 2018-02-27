@@ -71,8 +71,8 @@ signals:
     void uploadFile(const QString &sourceFile, const QString &destinationFile);
     void downloadFile(const QString &sourceFile, const QString &destinationFile);
     void deleteFile(const QString &directoryPath);
-    void downloadDirectory(const QString &directoryPath);
-    void uploadDirectory(const QString &directoryPath);
+    void downloadDirectory(const HelicalFileTransferTask::FileMappingPair &fileMappinegPair, const QString &directoryPath);
+    void uploadDirectory(const HelicalFileTransferTask::FileMappingPair &fileMappinegPair, const QString &directoryPath);
     void deleteDirectory(const QString &directoryPath);
 
 private slots:
@@ -98,8 +98,8 @@ private slots:
     void refreshSelectedDirectory();
     void uploadSelectedFolder();
     void uploadSelectedFiles();
-    void queueFileForDownload(const QString &fileName);
-    void queueFileForUpload(const QString &fileName);
+    void queueFileForDownload(const QString &sourceFile, const QString &destinationFile);
+    void queueFileForUpload(const QString &sourceFile, const QString &destinationFile);
     void queueFileForDelete(const QString &fileName);
     void downloadNextFile();
     void uploadNextFile();

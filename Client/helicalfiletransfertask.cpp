@@ -139,15 +139,19 @@ void HelicalFileTransferTask::downloadFile(const QString &sourceFile, const QStr
 }
 
 /**
- * @brief HelicalFileTransferTask::listLocalDirectoryRecursive
+ * @brief HelicalFileTransferTask::uploadDirectory
  * @param directoryPath
  */
-void HelicalFileTransferTask::uploadDirectory(const QString &directoryPath)
+void HelicalFileTransferTask::uploadDirectory(const FileMappingPair &fileMappingPair, const QString &directoryPath)
 {
 
+    QtSFTP::FileMapper fileMapper {fileMappingPair.first, fileMappingPair.second};
+
     Antik::FileList localFileList;
-    Antik::FileFeedBackFn localFileFeedBackFn = [this]
-            (const std::string &fileName) { emit queueFileForUpload(QString::fromStdString(fileName));};
+    Antik::FileFeedBackFn localFileFeedBackFn = [this, &fileMapper]
+            (const std::string &fileName) {
+        emit queueFileForUpload(QString::fromStdString(fileName),fileMapper.toRemote(QString::fromStdString(fileName)));
+    };
 
     Antik::listLocalRecursive(directoryPath.toStdString(), localFileList, localFileFeedBackFn);
 
@@ -175,15 +179,18 @@ void HelicalFileTransferTask::deleteDirectory(const QString &directoryPath)
 }
 
 /**
- * @brief HelicalFileTransferTask::listRemoteDirectoryRecursive
+ * @brief HelicalFileTransferTask::downloadDirectory
  * @param directoryPath
  */
-void HelicalFileTransferTask::downloadDirectory(const QString &directoryPath)
+void HelicalFileTransferTask::downloadDirectory(const FileMappingPair &fileMappingPair, const QString &directoryPath)
 {
+    QtSFTP::FileMapper fileMapper {fileMappingPair.first, fileMappingPair.second};
 
     if (m_sftp) {
-        Antik::FileFeedBackFn remoteFileFeedBackFn = [this]
-                (const std::string &fileName) { emit queueFileForDownload(QString::fromStdString(fileName));};
+        Antik::FileFeedBackFn remoteFileFeedBackFn = [this, &fileMapper]
+                (const std::string &fileName) {
+            emit queueFileForDownload(QString::fromStdString(fileName), fileMapper.toLocal(QString::fromStdString(fileName)));
+        };
         m_sftp->listRemoteDirectoryRecursive(directoryPath, remoteFileFeedBackFn);
         emit startDownloading();
     }
