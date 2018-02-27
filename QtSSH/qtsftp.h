@@ -77,6 +77,9 @@ public:
     void closeDirectory(Directory &directoryHandle);
 
     void removeLink(const QString &filePath);
+    void removeDirectory(const QString &directoryPath);
+
+    void getFileAttributes(const QString &filePath, FileAttributes &fileAttributes);
 
     bool isADirectory(const FileAttributes &fileAttributes);
     bool isARegularFile(const FileAttributes &fileAttributes);
@@ -97,6 +100,7 @@ signals:
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
     void removedLink(const QString &filePath);
+    void removedDirectory(const QString &directoryPath);
 
     void listedRemoteFileName(const QString &fileName);
 

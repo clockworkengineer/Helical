@@ -89,7 +89,7 @@ private slots:
     void error(const QString &errorMessage, int errorCode);
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
-    void fileDeleted(const QString &filePath);
+    void deleteFileFinised(const QString &filePath);
 
     void viewSelectedFiles();
     void downloadSelectedFile();

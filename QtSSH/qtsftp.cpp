@@ -112,7 +112,6 @@ bool QtSFTP::endOfDirectory(const QtSFTP::Directory &directoryHandle)
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
     }
 
-
     return(false);
 }
 
@@ -139,6 +138,34 @@ void QtSFTP::removeLink(const QString &filePath)
     try {
         m_sftp->removeLink(filePath.toStdString());
         emit removedLink(filePath);
+    }catch(const CSFTP::Exception &e) {
+        emit error(QString::fromStdString(e.getMessage()),e.getCode());
+    }
+}
+
+/**
+ * @brief QtSFTP::removeDirectory
+ * @param directoryPath
+ */
+void QtSFTP::removeDirectory(const QString &directoryPath)
+{
+    try {
+        m_sftp->removeDirectory(directoryPath.toStdString());
+        emit removedDirectory(directoryPath);
+    }catch(const CSFTP::Exception &e) {
+        emit error(QString::fromStdString(e.getMessage()),e.getCode());
+    }
+}
+
+/**
+ * @brief QtSFTP::getFileAttributes
+ * @param filePath
+ * @param fileAttributes
+ */
+void QtSFTP::getFileAttributes(const QString &filePath, QtSFTP::FileAttributes &fileAttributes)
+{
+    try {
+        m_sftp->getFileAttributes(filePath.toStdString(), fileAttributes);
     }catch(const CSFTP::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
     }

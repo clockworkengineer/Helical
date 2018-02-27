@@ -74,6 +74,7 @@ void HelicalFileTransferTask::openSession(const QString &serverName, const QStri
         connect(m_sftp.data(), &QtSFTP::uploadFinished, this,  &HelicalFileTransferTask::uploadFinished);
         connect(m_sftp.data(), &QtSFTP::downloadFinished, this,  &HelicalFileTransferTask::downloadFinished);
         connect(m_sftp.data(), &QtSFTP::removedLink, this,  &HelicalFileTransferTask::deleteFileFinised);
+        connect(m_sftp.data(), &QtSFTP::removedDirectory, this,  &HelicalFileTransferTask::deleteFileFinised);
         connect(m_sftp.data(), &QtSFTP::error, this,  &HelicalFileTransferTask::error);
     }
 }
@@ -114,7 +115,13 @@ void HelicalFileTransferTask::deleteFile(const QString &fileName)
 {
     qDebug() << "DELETE FILE " << fileName;
     if (m_sftp) {
-        m_sftp->removeLink(fileName);
+        QtSFTP::FileAttributes filAttributes;
+        m_sftp->getFileAttributes(fileName, filAttributes);
+        if (m_sftp->isARegularFile(filAttributes)) {
+            m_sftp->removeLink(fileName);
+        } else if (m_sftp->isADirectory(filAttributes)) {
+            m_sftp->removeDirectory(fileName);
+        }
     }
 }
 
@@ -148,6 +155,10 @@ void HelicalFileTransferTask::uploadDirectory(const QString &directoryPath)
 
 }
 
+/**
+ * @brief HelicalFileTransferTask::deleteDirectory
+ * @param directoryPath
+ */
 void HelicalFileTransferTask::deleteDirectory(const QString &directoryPath)
 {
 
@@ -156,6 +167,7 @@ void HelicalFileTransferTask::deleteDirectory(const QString &directoryPath)
         Antik::FileFeedBackFn localFileFeedBackFn = [this]
                 (const std::string &fileName) { emit queueFileForDelete(QString::fromStdString(fileName));};
         m_sftp->listRemoteDirectoryRecursive(directoryPath, localFileFeedBackFn);
+        emit queueFileForDelete(directoryPath);
         emit startDeleting();
 
     }
