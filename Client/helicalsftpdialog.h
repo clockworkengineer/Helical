@@ -49,8 +49,6 @@ class HelicalSFTPDialog : public QDialog
 {
     Q_OBJECT
 
-//    typedef std::pair<QString, QString> FileTransferPair;
-
     class HelicalRemoteFileItem : public QListWidgetItem {
     public:
         HelicalRemoteFileItem(const QString &name) : QListWidgetItem(name) {}
@@ -62,11 +60,6 @@ public:
     explicit HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHome,  const QString &localUserHome, QWidget *parent = 0);
     ~HelicalSFTPDialog();
 
-
-//    void createFileTransferTask(QtSSH &session);
-//    void destroyFileTransferTask();
-//    void statusMessage(const QString &message);
-
 signals:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
@@ -76,12 +69,10 @@ signals:
     void downloadDirectory(const HelicalFileTransferTask::FileMappingPair &fileMappinegPair, const QString &directoryPath);
     void uploadDirectory(const HelicalFileTransferTask::FileMappingPair &fileMappinegPair, const QString &directoryPath);
     void deleteDirectory(const QString &directoryPath);
-    void queueFileForDownload(const QString &sourceFile, const QString &destinationFile);
-    void queueFileForUpload(const QString &sourceFile, const QString &destinationFile);
-    void queueFileForDelete(const QString &fileName);
-    void downloadNextFile();
-    void uploadNextFile();
-    void deleteNextFile();
+    void queueFileForProcessing(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile="");
+   // void queueFileForUpload(const QString &sourceFile, const QString &destinationFile);
+   // void queueFileForDelete(const QString &fileName, const QString &unused);
+    void processNextFile(HelicalFileTransferTask::FileAction action);
 
 public slots:
     void error(const QString &errorMessage, int errorCode);

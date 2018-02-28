@@ -19,7 +19,6 @@
 // INCLUDE FILES
 // =============
 
-#include "helicalsftpdialog.h"
 #include "helicalfiletransfercontroller.h"
 
 HelicalFileTransferController::HelicalFileTransferController(QObject *parent) : QObject(parent)
@@ -57,12 +56,12 @@ void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::downloadFinished, this, &HelicalFileTransferController::downloadFinished);
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::uploadFinished, this, &HelicalFileTransferController::uploadFinished);
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::deleteFileFinised, this, &HelicalFileTransferController::deleteFileFinised);
-    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForDownload, this, &HelicalFileTransferController::queueFileForDownload);
-    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForUpload, this, &HelicalFileTransferController::queueFileForUpload);
-    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForDelete, this, &HelicalFileTransferController::queueFileForDelete);
-    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startDownloading, this, &HelicalFileTransferController::downloadNextFile);
-    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startUploading, this, &HelicalFileTransferController::uploadNextFile);
-    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startDeleting, this, &HelicalFileTransferController::deleteNextFile);
+    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForProcessing, this, &HelicalFileTransferController::queueFileForProcessing);
+ //   connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForUpload, this, &HelicalFileTransferController::queueFileForUpload);
+ //   connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForDelete, this, &HelicalFileTransferController::queueFileForDelete);
+    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startFileProcessing, this, &HelicalFileTransferController::processNextFile);
+    //    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startUploading, this, &HelicalFileTransferController::uploadNextFile);
+    //   connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startDeleting, this, &HelicalFileTransferController::deleteNextFile);
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::error, this, &HelicalFileTransferController::error);
 
     // Delete thread when it is finished
@@ -99,7 +98,7 @@ void HelicalFileTransferController::uploadFinished(const QString &sourceFile, co
 
     emit statusMessage(QString("Uploaded File \"%1\" to \"%2\".\n").arg(sourceFile).arg(destinationFile));
 
-    uploadNextFile();
+    processNextFile(HelicalFileTransferTask::UPLOAD);
 
 }
 
@@ -112,7 +111,7 @@ void HelicalFileTransferController::downloadFinished(const QString &sourceFile, 
 {
     emit statusMessage(QString("Downloaded File \"%1\" to \"%2\".\n").arg(sourceFile).arg(destinationFile));
 
-    downloadNextFile();
+    processNextFile(HelicalFileTransferTask::DOWNLOAD);
 
 }
 
@@ -124,78 +123,70 @@ void HelicalFileTransferController::deleteFileFinised(const QString &filePath)
 {
     emit statusMessage(QString("Deleted File \"%1\".\n").arg(filePath));
 
-    deleteNextFile();
+    processNextFile(HelicalFileTransferTask::DELETE);
 
 }
 
 /**
- * @brief HelicalFileTransferController::queueFileForDownload
+ * @brief HelicalFileTransferController::queueFileForProcessing
  * @param fileName
  */
-void HelicalFileTransferController::queueFileForDownload(const QString &sourceFile, const QString &destinationFile)
+void HelicalFileTransferController::queueFileForProcessing(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile)
 {
-    emit statusMessage(QString("File \"%1\" queued for download.\n").arg(sourceFile));
-    m_downloadQueue.push_back({sourceFile, destinationFile});
-}
+    switch (action) {
 
-/**
- * @brief HelicalFileTransferController::queueFileForUpload
- * @param fileName
- */
-void HelicalFileTransferController::queueFileForUpload(const QString &sourceFile, const QString &destinationFile)
-{
-    emit statusMessage(QString("File \"%1\" queued for upload.\n").arg(sourceFile));
-    m_uploadQueue.push_back({sourceFile, destinationFile});
-}
+    case HelicalFileTransferTask::DOWNLOAD:
+        emit statusMessage(QString("File \"%1\" queued for download.\n").arg(sourceFile));
+        m_downloadQueue.push_back({sourceFile, destinationFile});
+        break;
 
-/**
- * @brief HelicalFileTransferController::queueFileForDelete
- * @param fileName
- */
-void HelicalFileTransferController::queueFileForDelete(const QString &fileName)
-{
-    emit statusMessage(QString("File \"%1\" queued for delete.\n").arg(fileName));
-    m_deleteQueue.push_back(fileName);
-}
+    case HelicalFileTransferTask::UPLOAD:
+        emit statusMessage(QString("File \"%1\" queued for upload.\n").arg(sourceFile));
+        m_uploadQueue.push_back({sourceFile, destinationFile});
+        break;
 
-/**
- * @brief HelicalFileTransferController::downloadNextFile
- */
-void HelicalFileTransferController::downloadNextFile()
-{
-    if (!m_downloadQueue.isEmpty()) {
-        emit downloadFile(m_downloadQueue.front().first, m_downloadQueue.front().second);
-        m_downloadQueue.pop_front();
-    } else {
-        emit statusMessage("Download queue cleared.\n");
-        emit updateRemoteFileList();
+    case HelicalFileTransferTask::DELETE:
+        emit statusMessage(QString("File \"%1\" queued for delete.\n").arg(sourceFile));
+        m_deleteQueue.push_back(sourceFile);
+        break;
+
     }
 }
 
 /**
- * @brief HelicalFileTransferController::uploadNextFile
+ * @brief HelicalFileTransferController::processNextFile
  */
-void HelicalFileTransferController::uploadNextFile()
+void HelicalFileTransferController::processNextFile(HelicalFileTransferTask::FileAction action)
 {
-    if (!m_uploadQueue.isEmpty()) {
-        emit uploadFile(m_uploadQueue.front().first, m_uploadQueue.front().second);
-        m_uploadQueue.pop_front();
-    } else {
-        emit statusMessage("Upload queue cleared.\n");
-        emit updateRemoteFileList();
+    switch(action) {
+
+    case HelicalFileTransferTask::DOWNLOAD:
+        if (!m_downloadQueue.isEmpty()) {
+            emit downloadFile(m_downloadQueue.front().first, m_downloadQueue.front().second);
+            m_downloadQueue.pop_front();
+        } else {
+            emit statusMessage("Download queue clear.\n");
+            emit updateRemoteFileList();
+        }
+        break;
+    case HelicalFileTransferTask::UPLOAD:
+        if (!m_uploadQueue.isEmpty()) {
+            emit uploadFile(m_uploadQueue.front().first, m_uploadQueue.front().second);
+            m_uploadQueue.pop_front();
+        } else {
+            emit statusMessage("Upload queue clear.\n");
+            emit updateRemoteFileList();
+        }
+        break;
+    case HelicalFileTransferTask::DELETE:
+        if (!m_deleteQueue.isEmpty()) {
+            emit deleteFile(m_deleteQueue.front());
+            m_deleteQueue.pop_front();
+        } else {
+            emit statusMessage("Delete queue clear\n");
+            emit updateRemoteFileList();
+        }
+        break;
     }
 }
 
-/**
- * @brief HelicalFileTransferController::deleteNextFile
- */
-void HelicalFileTransferController::deleteNextFile()
-{
-    if (!m_deleteQueue.isEmpty()) {
-        emit deleteFile(m_deleteQueue.front());
-        m_deleteQueue.pop_front();
-    } else {
-        emit statusMessage("Delete queue cleared.\n");
-        emit updateRemoteFileList();
-    }
-}

@@ -41,6 +41,12 @@ public:
 
     typedef std::pair<QString, QString> FileMappingPair;
 
+    enum FileAction {
+        UPLOAD,
+        DOWNLOAD,
+        DELETE
+    };
+
     // Class exception
 
     struct Exception : public std::runtime_error {
@@ -60,12 +66,9 @@ signals:
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
     void deleteFileFinised(const QString &fileName);
-    void queueFileForDownload(const QString &sourceFile, const QString &destinationFile);
-    void queueFileForUpload(const QString &sourceFile, const QString &destinationFile);
-    void queueFileForDelete(const QString &fileName);
-    void startDownloading();
-    void startUploading();
-    void startDeleting();
+    void queueFileForProcessing(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile="");
+    void startFileProcessing(HelicalFileTransferTask::FileAction action);
+
     void error(const QString &errorMessage, int errorCode);
 
 public slots:
@@ -87,5 +90,6 @@ private:
 };
 
 Q_DECLARE_METATYPE(HelicalFileTransferTask::FileMappingPair);
+Q_DECLARE_METATYPE(HelicalFileTransferTask::FileAction);
 
 #endif // HELICALFILETRANSFERTASK_H

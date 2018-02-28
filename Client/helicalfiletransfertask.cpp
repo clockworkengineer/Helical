@@ -150,12 +150,12 @@ void HelicalFileTransferTask::uploadDirectory(const FileMappingPair &fileMapping
     Antik::FileList localFileList;
     Antik::FileFeedBackFn localFileFeedBackFn = [this, &fileMapper]
             (const std::string &fileName) {
-        emit queueFileForUpload(QString::fromStdString(fileName),fileMapper.toRemote(QString::fromStdString(fileName)));
+        emit queueFileForProcessing(HelicalFileTransferTask::UPLOAD, QString::fromStdString(fileName),fileMapper.toRemote(QString::fromStdString(fileName)));
     };
 
     Antik::listLocalRecursive(directoryPath.toStdString(), localFileList, localFileFeedBackFn);
 
-    emit startUploading();
+    emit startFileProcessing(HelicalFileTransferTask::UPLOAD);
 
 }
 
@@ -169,10 +169,10 @@ void HelicalFileTransferTask::deleteDirectory(const QString &directoryPath)
     if (m_sftp) {
         Antik::FileList localFileList;
         Antik::FileFeedBackFn localFileFeedBackFn = [this]
-                (const std::string &fileName) { emit queueFileForDelete(QString::fromStdString(fileName));};
+                (const std::string &fileName) { emit queueFileForProcessing(HelicalFileTransferTask::DELETE, QString::fromStdString(fileName));};
         m_sftp->listRemoteDirectoryRecursive(directoryPath, localFileFeedBackFn);
-        emit queueFileForDelete(directoryPath);
-        emit startDeleting();
+        emit queueFileForProcessing(HelicalFileTransferTask::DELETE, directoryPath);
+        emit startFileProcessing(HelicalFileTransferTask::DELETE);
 
     }
 
@@ -189,10 +189,10 @@ void HelicalFileTransferTask::downloadDirectory(const FileMappingPair &fileMappi
     if (m_sftp) {
         Antik::FileFeedBackFn remoteFileFeedBackFn = [this, &fileMapper]
                 (const std::string &fileName) {
-            emit queueFileForDownload(QString::fromStdString(fileName), fileMapper.toLocal(QString::fromStdString(fileName)));
+            emit queueFileForProcessing(HelicalFileTransferTask::DOWNLOAD, QString::fromStdString(fileName), fileMapper.toLocal(QString::fromStdString(fileName)));
         };
         m_sftp->listRemoteDirectoryRecursive(directoryPath, remoteFileFeedBackFn);
-        emit startDownloading();
+        emit startFileProcessing(HelicalFileTransferTask::DOWNLOAD);
     }
 
 }
