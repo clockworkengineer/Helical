@@ -1,14 +1,9 @@
 #ifndef HELICALFILETRANSFERTASK_H
 #define HELICALFILETRANSFERTASK_H
 
-#include <QObject>
-#include <QThread>
-#include <QScopedPointer>
-
-#include "QtSSH/qtssh.h"
-#include "QtSSH/qtsftp.h"
 /*
  * File:   helicalfiletransfertask.h
+ *
  *
  * Author: Robert Tizzard
  *
@@ -27,6 +22,13 @@
 // =============
 // INCLUDE FILES
 // =============
+
+#include <QObject>
+#include <QThread>
+#include <QScopedPointer>
+
+#include "QtSSH/qtssh.h"
+#include "QtSSH/qtsftp.h"
 
 // =================
 // CLASS DECLARATION

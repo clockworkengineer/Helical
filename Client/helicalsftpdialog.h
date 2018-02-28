@@ -33,7 +33,9 @@
 #include <QDesktopServices>
 
 #include "QtSSH/qtsftp.h"
+
 #include "helicalfiletransfertask.h"
+#include "helicalfiletransfercontroller.h"
 
 // =================
 // CLASS DECLARATION
@@ -61,8 +63,8 @@ public:
     ~HelicalSFTPDialog();
 
     void updateRemoteFileList(const QString &currentDirectory);
-    void createFileTransferTask(QtSSH &session);
-    void destroyFileTransferTask();
+//    void createFileTransferTask(QtSSH &session);
+//    void destroyFileTransferTask();
     void statusMessage(const QString &message);
 
 signals:
@@ -75,6 +77,18 @@ signals:
     void uploadDirectory(const HelicalFileTransferTask::FileMappingPair &fileMappinegPair, const QString &directoryPath);
     void deleteDirectory(const QString &directoryPath);
 
+public slots:
+    void error(const QString &errorMessage, int errorCode);
+    void uploadFinished(const QString &sourceFile, const QString &destinationFile);
+    void downloadFinished(const QString &sourceFile, const QString &destinationFile);
+    void deleteFileFinised(const QString &filePath);
+    void queueFileForDownload(const QString &sourceFile, const QString &destinationFile);
+    void queueFileForUpload(const QString &sourceFile, const QString &destinationFile);
+    void queueFileForDelete(const QString &fileName);
+    void downloadNextFile();
+    void uploadNextFile();
+    void deleteNextFile();
+
 private slots:
     void remoteFileClicked(QListWidgetItem *item);
     void remoteFileDoubleClicked(QListWidgetItem * item);
@@ -86,10 +100,6 @@ private slots:
     void showRemoteFileContextMenu(const QPoint &pos);
     void showLocalFolderViewContextMenu(const QPoint &pos);
     void showLocalFileViewContextMenu(const QPoint &pos);
-    void error(const QString &errorMessage, int errorCode);
-    void uploadFinished(const QString &sourceFile, const QString &destinationFile);
-    void downloadFinished(const QString &sourceFile, const QString &destinationFile);
-    void deleteFileFinised(const QString &filePath);
 
     void viewSelectedFiles();
     void downloadSelectedFile();
@@ -98,12 +108,7 @@ private slots:
     void refreshSelectedDirectory();
     void uploadSelectedFolder();
     void uploadSelectedFiles();
-    void queueFileForDownload(const QString &sourceFile, const QString &destinationFile);
-    void queueFileForUpload(const QString &sourceFile, const QString &destinationFile);
-    void queueFileForDelete(const QString &fileName);
-    void downloadNextFile();
-    void uploadNextFile();
-    void deleteNextFile();
+
 
 protected:
 
@@ -126,13 +131,15 @@ private:
     QListWidget *m_remoteFileSystemList;
 
     QScopedPointer<QtSFTP> m_sftp;
-    QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;
+//    QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;
 
     QScopedPointer<QtSFTP::FileMapper> m_fileMapper;
 
     QList<FileTransferPair> m_downloadQueue;
     QList<FileTransferPair> m_uploadQueue;
     QList<QString> m_deleteQueue;
+
+    HelicalFileTransferController m_helicalTransferController {this};
 
 };
 
