@@ -142,7 +142,7 @@ void HelicalFileTransferTask::downloadFile(const QString &sourceFile, const QStr
  * @brief HelicalFileTransferTask::uploadDirectory
  * @param directoryPath
  */
-void HelicalFileTransferTask::uploadDirectory(const FileMappingPair &fileMappingPair, const QString &directoryPath)
+void HelicalFileTransferTask::uploadDirectory(const QString &directoryPath, const FileMappingPair &fileMappingPair)
 {
 
     QtSFTP::FileMapper fileMapper {fileMappingPair.first, fileMappingPair.second};
@@ -182,7 +182,7 @@ void HelicalFileTransferTask::deleteDirectory(const QString &directoryPath)
  * @brief HelicalFileTransferTask::downloadDirectory
  * @param directoryPath
  */
-void HelicalFileTransferTask::downloadDirectory(const FileMappingPair &fileMappingPair, const QString &directoryPath)
+void HelicalFileTransferTask::downloadDirectory(const QString &directoryPath, const FileMappingPair &fileMappingPair)
 {
     QtSFTP::FileMapper fileMapper {fileMappingPair.first, fileMappingPair.second};
 

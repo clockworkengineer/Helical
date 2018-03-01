@@ -77,8 +77,8 @@ public slots:
     void uploadFile(const QString &sourceFile, const QString &destinationFile);
     void deleteFile(const QString &fileName);
     void downloadFile(const QString &sourceFile, const QString &destinationFile);
-    void downloadDirectory(const FileMappingPair &fileMappingPair, const QString &directoryPath);
-    void uploadDirectory(const FileMappingPair &fileMappingPair, const QString &directoryPath);
+    void downloadDirectory(const QString &directoryPath, const FileMappingPair &fileMappingPair);
+    void uploadDirectory(const QString &directoryPath, const FileMappingPair &fileMappingPair);
     void deleteDirectory(const QString &directoryPath);
 
 private:
