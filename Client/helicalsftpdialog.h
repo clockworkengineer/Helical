@@ -32,6 +32,7 @@
 #include <QMenu>
 #include <QDesktopServices>
 
+#include "helical.h"
 #include "QtSSH/qtsftp.h"
 
 #include "helicalfiletransfertask.h"
@@ -63,12 +64,10 @@ public:
 signals:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
-    void processFile(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile="");
-    void downloadDirectory(const QString &directoryPath, const HelicalFileTransferTask::FileMappingPair &fileMappinegPair);
-    void uploadDirectory(const QString &directoryPathconst, const HelicalFileTransferTask::FileMappingPair &fileMappinegPair);
-    void deleteDirectory(const QString &directoryPath);
-    void queueFileForProcessing(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile="");
-    void processNextFile(HelicalFileTransferTask::FileAction action);
+    void processFile(FileAction action, const QString &sourceFile, const QString &destinationFile="");
+    void processDirectory(FileAction action,const QString &directoryPath, const FileMappingPair &FileMappingPair=FileMappingPair());
+    void queueFileForProcessing(FileAction action, const QString &sourceFile, const QString &destinationFile="");
+    void processNextFile(FileAction action);
 
 public slots:
     void error(const QString &errorMessage, int errorCode);

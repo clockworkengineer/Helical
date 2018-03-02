@@ -55,7 +55,8 @@ HEADERS += \
     QtSSH/qtsftp.h \
     Client/helicalfiletransfertask.h \
     Client/helicalserverconnectionsettings.h \
-    Client/helicalfiletransfercontroller.h
+    Client/helicalfiletransfercontroller.h \
+    Client/helical.h
 
 FORMS += \
     Client/heilcalmainwindow.ui \

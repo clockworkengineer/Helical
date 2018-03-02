@@ -27,6 +27,7 @@
 #include <QThread>
 #include <QScopedPointer>
 
+#include "helical.h"
 #include "QtSSH/qtssh.h"
 #include "QtSSH/qtsftp.h"
 
@@ -37,15 +38,9 @@
 class HelicalFileTransferTask : public QObject
 {
     Q_OBJECT
+
 public:
 
-    typedef std::pair<QString, QString> FileMappingPair;
-
-    enum FileAction {
-        UPLOAD,
-        DOWNLOAD,
-        DELETE
-    };
 
     // Class exception
 
@@ -66,18 +61,16 @@ signals:
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
     void deleteFileFinised(const QString &fileName);
-    void queueFileForProcessing(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile="");
-    void startFileProcessing(HelicalFileTransferTask::FileAction action);
+    void queueFileForProcessing(FileAction action, const QString &sourceFile, const QString &destinationFile="");
+    void startFileProcessing(FileAction action);
 
     void error(const QString &errorMessage, int errorCode);
 
 public slots:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
-    void processFile(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile="");;
-    void downloadDirectory(const QString &directoryPath, const FileMappingPair &fileMappingPair);
-    void uploadDirectory(const QString &directoryPath, const FileMappingPair &fileMappingPair);
-    void deleteDirectory(const QString &directoryPath);
+    void processFile(FileAction action, const QString &sourceFile, const QString &destinationFile="");
+    void processDirectory(FileAction action, const QString &directoryPath, const FileMappingPair &fileMappinegPair=FileMappingPair());
 
 private:
     QThread *m_fileTaskThread;
@@ -86,8 +79,5 @@ private:
     std::atomic_bool m_busy {false};
 
 };
-
-Q_DECLARE_METATYPE(HelicalFileTransferTask::FileMappingPair);
-Q_DECLARE_METATYPE(HelicalFileTransferTask::FileAction);
 
 #endif // HELICALFILETRANSFERTASK_H

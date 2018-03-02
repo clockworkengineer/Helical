@@ -31,7 +31,9 @@ class HelicalFileTransferController : public QObject
 {
     Q_OBJECT
 
-    typedef std::pair<QString, QString> FileTransferPair;
+//    typedef std::pair<QString, QString> FileTransferPair;
+//    typedef HelicalFileTransferTask::FileAction FileAction;
+//    typedef HelicalFileTransferTask::FileMappingPair FileMappingPair;
 
 public:
 
@@ -43,10 +45,9 @@ public:
 signals:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
-    void processFile(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile="");
-    void downloadDirectory(const QString &directoryPath, const HelicalFileTransferTask::FileMappingPair &fileMappinegPair);
-    void uploadDirectory(const QString &directoryPath, const HelicalFileTransferTask::FileMappingPair &fileMappinegPair);
-    void deleteDirectory(const QString &directoryPath);
+    void processFile(FileAction action, const QString &sourceFile, const QString &destinationFile="");
+    void processDirectory(FileAction action,const QString &directoryPath, const FileMappingPair &FileMappingPair=FileMappingPair());
+
     void statusMessage(const QString &message);
     void updateRemoteFileList();
     void error(const QString &errorMessage, int errorCode);
@@ -55,8 +56,8 @@ public slots:
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
     void deleteFileFinised(const QString &filePath);
-    void queueFileForProcessing(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile);
-    void processNextFile(HelicalFileTransferTask::FileAction action);
+    void queueFileForProcessing(FileAction action, const QString &sourceFile, const QString &destinationFile);
+    void processNextFile(FileAction action);
 
 
 private:

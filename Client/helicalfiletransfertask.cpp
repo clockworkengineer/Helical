@@ -104,7 +104,7 @@ void HelicalFileTransferTask::closeSession()
  * @param sourceFile
  * @param destinationFile
  */
-void HelicalFileTransferTask::processFile(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile)
+void HelicalFileTransferTask::processFile(FileAction action, const QString &sourceFile, const QString &destinationFile)
 {
     if (m_sftp) {
 
@@ -112,17 +112,17 @@ void HelicalFileTransferTask::processFile(HelicalFileTransferTask::FileAction ac
 
         switch(action) {
 
-        case HelicalFileTransferTask::UPLOAD:
+        case UPLOAD:
             qDebug() << "UPLOAD FILE " << sourceFile;
             m_sftp->putLocalFile(sourceFile, destinationFile);
             break;
 
-        case HelicalFileTransferTask::DOWNLOAD:
+        case DOWNLOAD:
             qDebug() << "DOWNLOAD FILE" << sourceFile;
             m_sftp->getRemoteFile(sourceFile, destinationFile);
             break;
 
-        case HelicalFileTransferTask::DELETE:
+        case DELETE:
             qDebug() << "DELETE FILE " << sourceFile;
             m_sftp->getFileAttributes(sourceFile, filAttributes);
             if (m_sftp->isARegularFile(filAttributes)) {
@@ -136,101 +136,62 @@ void HelicalFileTransferTask::processFile(HelicalFileTransferTask::FileAction ac
     }
 }
 
-///**
-// * @brief HelicalFileTransferTask::uploadFile
-// * @param sourceFile
-// * @param destinationFile
-// */
-//void HelicalFileTransferTask::uploadFile(const QString &sourceFile, const QString &destinationFile)
-//{
-//    qDebug() << "UPLOAD FILE " << sourceFile;
-//    if (m_sftp) {
-//        m_sftp->putLocalFile(sourceFile, destinationFile);
-//    }
-//}
-
-//void HelicalFileTransferTask::deleteFile(const QString &fileName, const QString &unused)
-//{
-//    qDebug() << "DELETE FILE " << fileName;
-//    if (m_sftp) {
-//        QtSFTP::FileAttributes filAttributes;
-//        m_sftp->getFileAttributes(fileName, filAttributes);
-//        if (m_sftp->isARegularFile(filAttributes)) {
-//            m_sftp->removeLink(fileName);
-//        } else if (m_sftp->isADirectory(filAttributes)) {
-//            m_sftp->removeDirectory(fileName);
-//        }
-//    }
-//}
-
-///**
-// * @brief HelicalFileTransferTask::downloadFile
-// * @param sourceFile
-// * @param destinationFile
-// */
-//void HelicalFileTransferTask::downloadFile(const QString &sourceFile, const QString &destinationFile)
-//{
-//    qDebug() << "DOWNLOAD FILE" << sourceFile;
-//    if (m_sftp) {
-//        m_sftp->getRemoteFile(sourceFile, destinationFile);
-//    }
-//}
-
 /**
- * @brief HelicalFileTransferTask::uploadDirectory
+ * @brief HelicalFileTransferTask::processDirectory
+ * @param action
  * @param directoryPath
+ * @param fileMappingPair
  */
-void HelicalFileTransferTask::uploadDirectory(const QString &directoryPath, const FileMappingPair &fileMappingPair)
+void HelicalFileTransferTask::processDirectory(FileAction action, const QString &directoryPath, const FileMappingPair &fileMappingPair)
 {
-
-    QtSFTP::FileMapper fileMapper {fileMappingPair.first, fileMappingPair.second};
-
-    Antik::FileList localFileList;
-    Antik::FileFeedBackFn localFileFeedBackFn = [this, &fileMapper]
-            (const std::string &fileName) {
-        emit queueFileForProcessing(HelicalFileTransferTask::UPLOAD, QString::fromStdString(fileName),fileMapper.toRemote(QString::fromStdString(fileName)));
-    };
-
-    Antik::listLocalRecursive(directoryPath.toStdString(), localFileList, localFileFeedBackFn);
-
-    emit startFileProcessing(HelicalFileTransferTask::UPLOAD);
-
-}
-
-/**
- * @brief HelicalFileTransferTask::deleteDirectory
- * @param directoryPath
- */
-void HelicalFileTransferTask::deleteDirectory(const QString &directoryPath)
-{
-
     if (m_sftp) {
+
+        QtSFTP::FileMapper fileMapper {fileMappingPair.first, fileMappingPair.second};
+        Antik::FileFeedBackFn fileFeedBackFn;
         Antik::FileList localFileList;
-        Antik::FileFeedBackFn localFileFeedBackFn = [this]
-                (const std::string &fileName) { emit queueFileForProcessing(HelicalFileTransferTask::DELETE, QString::fromStdString(fileName));};
-        m_sftp->listRemoteDirectoryRecursive(directoryPath, localFileFeedBackFn);
-        emit queueFileForProcessing(HelicalFileTransferTask::DELETE, directoryPath);
-        emit startFileProcessing(HelicalFileTransferTask::DELETE);
 
+        switch(action) {
+
+        case UPLOAD:
+
+
+            fileFeedBackFn = [this, &fileMapper] (const std::string &fileName)
+            {
+                emit queueFileForProcessing(UPLOAD, QString::fromStdString(fileName),fileMapper.toRemote(QString::fromStdString(fileName)));
+            };
+
+            Antik::listLocalRecursive(directoryPath.toStdString(), localFileList, fileFeedBackFn);
+
+            emit startFileProcessing(UPLOAD);
+
+            break;
+
+
+        case DOWNLOAD:
+
+            fileFeedBackFn = [this, &fileMapper] (const std::string &fileName)
+            {
+                emit queueFileForProcessing(DOWNLOAD, QString::fromStdString(fileName), fileMapper.toLocal(QString::fromStdString(fileName)));
+            };
+            m_sftp->listRemoteDirectoryRecursive(directoryPath, fileFeedBackFn);
+            emit startFileProcessing(DOWNLOAD);
+
+            break;
+
+        case DELETE:
+
+            fileFeedBackFn = [this] (const std::string &fileName)
+            {
+                emit queueFileForProcessing(DELETE, QString::fromStdString(fileName));
+            };
+            m_sftp->listRemoteDirectoryRecursive(directoryPath, fileFeedBackFn);
+            emit queueFileForProcessing(DELETE, directoryPath);
+            emit startFileProcessing(DELETE);
+
+            break;
+
+        }
     }
-
 }
 
-/**
- * @brief HelicalFileTransferTask::downloadDirectory
- * @param directoryPath
- */
-void HelicalFileTransferTask::downloadDirectory(const QString &directoryPath, const FileMappingPair &fileMappingPair)
-{
-    QtSFTP::FileMapper fileMapper {fileMappingPair.first, fileMappingPair.second};
 
-    if (m_sftp) {
-        Antik::FileFeedBackFn remoteFileFeedBackFn = [this, &fileMapper]
-                (const std::string &fileName) {
-            emit queueFileForProcessing(HelicalFileTransferTask::DOWNLOAD, QString::fromStdString(fileName), fileMapper.toLocal(QString::fromStdString(fileName)));
-        };
-        m_sftp->listRemoteDirectoryRecursive(directoryPath, remoteFileFeedBackFn);
-        emit startFileProcessing(HelicalFileTransferTask::DOWNLOAD);
-    }
-
-}
