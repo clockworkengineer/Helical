@@ -111,7 +111,7 @@ void HelicalFileTransferTask::uploadFile(const QString &sourceFile, const QStrin
     }
 }
 
-void HelicalFileTransferTask::deleteFile(const QString &fileName)
+void HelicalFileTransferTask::deleteFile(const QString &fileName, const QString &unused)
 {
     qDebug() << "DELETE FILE " << fileName;
     if (m_sftp) {

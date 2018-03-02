@@ -45,7 +45,7 @@ signals:
     void closeSession();
     void uploadFile(const QString &sourceFile, const QString &destinationFile);
     void downloadFile(const QString &sourceFile, const QString &destinationFile);
-    void deleteFile(const QString &directoryPath);
+    void deleteFile(const QString &directoryPath, const QString &unused="");
     void downloadDirectory(const QString &directoryPath, const HelicalFileTransferTask::FileMappingPair &fileMappinegPair);
     void uploadDirectory(const QString &directoryPath, const HelicalFileTransferTask::FileMappingPair &fileMappinegPair);
     void deleteDirectory(const QString &directoryPath);
