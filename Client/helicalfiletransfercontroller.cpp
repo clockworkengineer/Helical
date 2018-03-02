@@ -46,9 +46,9 @@ void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
 
     connect(this,&HelicalFileTransferController::openSession, m_fileTransferTask.data(), &HelicalFileTransferTask::openSession);
     connect(this,&HelicalFileTransferController::closeSession, m_fileTransferTask.data(), &HelicalFileTransferTask::closeSession);
-    connect(this,&HelicalFileTransferController::uploadFile, m_fileTransferTask.data(), &HelicalFileTransferTask::uploadFile);
-    connect(this,&HelicalFileTransferController::downloadFile, m_fileTransferTask.data(), &HelicalFileTransferTask::downloadFile);
-    connect(this,&HelicalFileTransferController::deleteFile, m_fileTransferTask.data(), &HelicalFileTransferTask::deleteFile);
+    connect(this,&HelicalFileTransferController::processFile, m_fileTransferTask.data(), &HelicalFileTransferTask::processFile);
+//    connect(this,&HelicalFileTransferController::downloadFile, m_fileTransferTask.data(), &HelicalFileTransferTask::downloadFile);
+//    connect(this,&HelicalFileTransferController::deleteFile, m_fileTransferTask.data(), &HelicalFileTransferTask::deleteFile);
     connect(this,&HelicalFileTransferController::downloadDirectory, m_fileTransferTask.data(), &HelicalFileTransferTask::downloadDirectory);
     connect(this,&HelicalFileTransferController::uploadDirectory, m_fileTransferTask.data(), &HelicalFileTransferTask::uploadDirectory);
     connect(this,&HelicalFileTransferController::deleteDirectory, m_fileTransferTask.data(), &HelicalFileTransferTask::deleteDirectory);
@@ -159,7 +159,7 @@ void HelicalFileTransferController::processNextFile(HelicalFileTransferTask::Fil
 
     case HelicalFileTransferTask::DOWNLOAD:
         if (!m_downloadQueue.isEmpty()) {
-            emit downloadFile(m_downloadQueue.front().first, m_downloadQueue.front().second);
+            emit processFile(action,m_downloadQueue.front().first, m_downloadQueue.front().second);
             m_downloadQueue.pop_front();
         } else {
             emit statusMessage("Download queue clear.\n");
@@ -168,7 +168,7 @@ void HelicalFileTransferController::processNextFile(HelicalFileTransferTask::Fil
         break;
     case HelicalFileTransferTask::UPLOAD:
         if (!m_uploadQueue.isEmpty()) {
-            emit uploadFile(m_uploadQueue.front().first, m_uploadQueue.front().second);
+            emit processFile(action, m_uploadQueue.front().first, m_uploadQueue.front().second);
             m_uploadQueue.pop_front();
         } else {
             emit statusMessage("Upload queue clear.\n");
@@ -177,7 +177,7 @@ void HelicalFileTransferController::processNextFile(HelicalFileTransferTask::Fil
         break;
     case HelicalFileTransferTask::DELETE:
         if (!m_deleteQueue.isEmpty()) {
-            emit deleteFile(m_deleteQueue.front());
+            emit processFile(action, m_deleteQueue.front());
             m_deleteQueue.pop_front();
         } else {
             emit statusMessage("Delete queue clear\n");

@@ -126,9 +126,7 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
 
         connect(this,&HelicalSFTPDialog::openSession, &m_helicalTransferController, &HelicalFileTransferController::openSession);
         connect(this,&HelicalSFTPDialog::closeSession, &m_helicalTransferController, &HelicalFileTransferController::closeSession);
-        connect(this,&HelicalSFTPDialog::uploadFile, &m_helicalTransferController, &HelicalFileTransferController::uploadFile);
-        connect(this,&HelicalSFTPDialog::downloadFile, &m_helicalTransferController, &HelicalFileTransferController::downloadFile);
-        connect(this,&HelicalSFTPDialog::deleteFile, &m_helicalTransferController, &HelicalFileTransferController::deleteFile);
+        connect(this,&HelicalSFTPDialog::processFile, &m_helicalTransferController, &HelicalFileTransferController::processFile);
         connect(this,&HelicalSFTPDialog::downloadDirectory, &m_helicalTransferController, &HelicalFileTransferController::downloadDirectory);
         connect(this,&HelicalSFTPDialog::uploadDirectory, &m_helicalTransferController, &HelicalFileTransferController::uploadDirectory);
         connect(this,&HelicalSFTPDialog::deleteDirectory, &m_helicalTransferController, &HelicalFileTransferController::deleteDirectory);

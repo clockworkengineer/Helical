@@ -74,9 +74,7 @@ signals:
 public slots:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
-    void uploadFile(const QString &sourceFile, const QString &destinationFile);
-    void deleteFile(const QString &fileName, const QString &unused="");
-    void downloadFile(const QString &sourceFile, const QString &destinationFile);
+    void processFile(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile="");;
     void downloadDirectory(const QString &directoryPath, const FileMappingPair &fileMappingPair);
     void uploadDirectory(const QString &directoryPath, const FileMappingPair &fileMappingPair);
     void deleteDirectory(const QString &directoryPath);

@@ -43,9 +43,7 @@ public:
 signals:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
-    void uploadFile(const QString &sourceFile, const QString &destinationFile);
-    void downloadFile(const QString &sourceFile, const QString &destinationFile);
-    void deleteFile(const QString &directoryPath, const QString &unused="");
+    void processFile(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile="");
     void downloadDirectory(const QString &directoryPath, const HelicalFileTransferTask::FileMappingPair &fileMappinegPair);
     void uploadDirectory(const QString &directoryPath, const HelicalFileTransferTask::FileMappingPair &fileMappinegPair);
     void deleteDirectory(const QString &directoryPath);

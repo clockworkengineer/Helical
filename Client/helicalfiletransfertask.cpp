@@ -99,44 +99,82 @@ void HelicalFileTransferTask::closeSession()
 }
 
 /**
- * @brief HelicalFileTransferTask::uploadFile
+ * @brief HelicalFileTransferTask::processFile
+ * @param action
  * @param sourceFile
  * @param destinationFile
  */
-void HelicalFileTransferTask::uploadFile(const QString &sourceFile, const QString &destinationFile)
+void HelicalFileTransferTask::processFile(HelicalFileTransferTask::FileAction action, const QString &sourceFile, const QString &destinationFile)
 {
-    qDebug() << "UPLOAD FILE " << sourceFile;
     if (m_sftp) {
-        m_sftp->putLocalFile(sourceFile, destinationFile);
-    }
-}
 
-void HelicalFileTransferTask::deleteFile(const QString &fileName, const QString &unused)
-{
-    qDebug() << "DELETE FILE " << fileName;
-    if (m_sftp) {
         QtSFTP::FileAttributes filAttributes;
-        m_sftp->getFileAttributes(fileName, filAttributes);
-        if (m_sftp->isARegularFile(filAttributes)) {
-            m_sftp->removeLink(fileName);
-        } else if (m_sftp->isADirectory(filAttributes)) {
-            m_sftp->removeDirectory(fileName);
+
+        switch(action) {
+
+        case HelicalFileTransferTask::UPLOAD:
+            qDebug() << "UPLOAD FILE " << sourceFile;
+            m_sftp->putLocalFile(sourceFile, destinationFile);
+            break;
+
+        case HelicalFileTransferTask::DOWNLOAD:
+            qDebug() << "DOWNLOAD FILE" << sourceFile;
+            m_sftp->getRemoteFile(sourceFile, destinationFile);
+            break;
+
+        case HelicalFileTransferTask::DELETE:
+            qDebug() << "DELETE FILE " << sourceFile;
+            m_sftp->getFileAttributes(sourceFile, filAttributes);
+            if (m_sftp->isARegularFile(filAttributes)) {
+                m_sftp->removeLink(sourceFile);
+            } else if (m_sftp->isADirectory(filAttributes)) {
+                m_sftp->removeDirectory(sourceFile);
+            }
+            break;
+
         }
     }
 }
 
-/**
- * @brief HelicalFileTransferTask::downloadFile
- * @param sourceFile
- * @param destinationFile
- */
-void HelicalFileTransferTask::downloadFile(const QString &sourceFile, const QString &destinationFile)
-{
-    qDebug() << "DOWNLOAD FILE" << sourceFile;
-    if (m_sftp) {
-        m_sftp->getRemoteFile(sourceFile, destinationFile);
-    }
-}
+///**
+// * @brief HelicalFileTransferTask::uploadFile
+// * @param sourceFile
+// * @param destinationFile
+// */
+//void HelicalFileTransferTask::uploadFile(const QString &sourceFile, const QString &destinationFile)
+//{
+//    qDebug() << "UPLOAD FILE " << sourceFile;
+//    if (m_sftp) {
+//        m_sftp->putLocalFile(sourceFile, destinationFile);
+//    }
+//}
+
+//void HelicalFileTransferTask::deleteFile(const QString &fileName, const QString &unused)
+//{
+//    qDebug() << "DELETE FILE " << fileName;
+//    if (m_sftp) {
+//        QtSFTP::FileAttributes filAttributes;
+//        m_sftp->getFileAttributes(fileName, filAttributes);
+//        if (m_sftp->isARegularFile(filAttributes)) {
+//            m_sftp->removeLink(fileName);
+//        } else if (m_sftp->isADirectory(filAttributes)) {
+//            m_sftp->removeDirectory(fileName);
+//        }
+//    }
+//}
+
+///**
+// * @brief HelicalFileTransferTask::downloadFile
+// * @param sourceFile
+// * @param destinationFile
+// */
+//void HelicalFileTransferTask::downloadFile(const QString &sourceFile, const QString &destinationFile)
+//{
+//    qDebug() << "DOWNLOAD FILE" << sourceFile;
+//    if (m_sftp) {
+//        m_sftp->getRemoteFile(sourceFile, destinationFile);
+//    }
+//}
 
 /**
  * @brief HelicalFileTransferTask::uploadDirectory
