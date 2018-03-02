@@ -57,11 +57,8 @@ void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::uploadFinished, this, &HelicalFileTransferController::uploadFinished);
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::deleteFileFinised, this, &HelicalFileTransferController::deleteFileFinised);
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForProcessing, this, &HelicalFileTransferController::queueFileForProcessing);
- //   connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForUpload, this, &HelicalFileTransferController::queueFileForUpload);
- //   connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForDelete, this, &HelicalFileTransferController::queueFileForDelete);
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startFileProcessing, this, &HelicalFileTransferController::processNextFile);
-    //    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startUploading, this, &HelicalFileTransferController::uploadNextFile);
-    //   connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startDeleting, this, &HelicalFileTransferController::deleteNextFile);
+
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::error, this, &HelicalFileTransferController::error);
 
     // Delete thread when it is finished
