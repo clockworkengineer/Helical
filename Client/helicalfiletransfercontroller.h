@@ -53,12 +53,9 @@ signals:
     void error(const QString &errorMessage, int errorCode);
 
 public slots:
-    void uploadFinished(const QString &sourceFile, const QString &destinationFile);
-    void downloadFinished(const QString &sourceFile, const QString &destinationFile);
-    void deleteFileFinised(const QString &filePath);
+    void fileFinished(FileAction action, const QString &sourceFile, const QString &destinationFile);
     void queueFileForProcessing(FileAction action, const QString &sourceFile, const QString &destinationFile);
     void processNextFile(FileAction action);
-
 
 private:
     QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;
