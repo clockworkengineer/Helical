@@ -127,17 +127,17 @@ void HelicalFileTransferController::queueFileForProcessing(FileAction action, co
 
     case DOWNLOAD:
         emit statusMessage(QString("File \"%1\" queued for download.\n").arg(sourceFile));
-        m_downloadQueue.push_back({sourceFile, destinationFile});
+        m_downloadQueue.push_back({m_nextID++, DOWNLOAD, sourceFile, destinationFile});
         break;
 
     case UPLOAD:
         emit statusMessage(QString("File \"%1\" queued for upload.\n").arg(sourceFile));
-        m_uploadQueue.push_back({sourceFile, destinationFile});
+        m_uploadQueue.push_back({m_nextID++, UPLOAD, sourceFile, destinationFile});
         break;
 
     case DELETE:
         emit statusMessage(QString("File \"%1\" queued for delete.\n").arg(sourceFile));
-        m_deleteQueue.push_back(sourceFile);
+        m_deleteQueue.push_back({m_nextID++,DELETE, sourceFile, ""});
         break;
 
     }
@@ -155,9 +155,9 @@ void HelicalFileTransferController::processNextFile(FileAction action)
 
     case DOWNLOAD:
         if (!m_downloadQueue.isEmpty()) {
-            FileTransferPair files { m_downloadQueue.front()  };
+            FileTransferAction fileTransaction { m_downloadQueue.front()  };
             m_downloadQueue.pop_front();
-            emit processFile(action,files.first, files.second);
+            emit processFile(fileTransaction.action,fileTransaction.sourceFile, fileTransaction.destinationFile);
         } else {
             emit statusMessage("Download queue clear.\n");
             updateFileList=true;
@@ -165,9 +165,9 @@ void HelicalFileTransferController::processNextFile(FileAction action)
         break;
     case UPLOAD:
         if (!m_uploadQueue.isEmpty()) {
-            FileTransferPair files { m_uploadQueue.front()  };
+            FileTransferAction fileTransaction { m_uploadQueue.front()  };
             m_uploadQueue.pop_front();
-            emit processFile(action, files.first, files.second);
+            emit processFile(fileTransaction.action,fileTransaction.sourceFile, fileTransaction.destinationFile);
         } else {
             emit statusMessage("Upload queue clear.\n");
             updateFileList=true;
@@ -175,9 +175,9 @@ void HelicalFileTransferController::processNextFile(FileAction action)
         break;
     case DELETE:
         if (!m_deleteQueue.isEmpty()) {
-            QString file { m_deleteQueue.front()  };
+            FileTransferAction fileTransaction { m_deleteQueue.front()  };
             m_deleteQueue.pop_front();
-            emit processFile(action, file);
+            emit processFile(fileTransaction.action,fileTransaction.sourceFile);
         } else {
             emit statusMessage("Delete queue clear\n");
             updateFileList=true;

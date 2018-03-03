@@ -60,9 +60,10 @@ public slots:
 private:
     QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;
 
-    QList<FileTransferPair> m_downloadQueue;
-    QList<FileTransferPair> m_uploadQueue;
-    QList<QString> m_deleteQueue;
+    std::uint64_t m_nextID {0};
+    QList<FileTransferAction> m_downloadQueue;
+    QList<FileTransferAction> m_uploadQueue;
+    QList<FileTransferAction> m_deleteQueue;
 };
 
 #endif // HELICALFILETRANSFERCONTROLLER_H

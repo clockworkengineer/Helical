@@ -12,6 +12,13 @@ enum FileAction {
     DELETE
 };
 
+struct FileTransferAction {
+    std::uint64_t id;
+    FileAction action;
+    QString sourceFile;
+    QString destinationFile;
+};
+
 Q_DECLARE_METATYPE(FileMappingPair);
 Q_DECLARE_METATYPE(FileAction);
 
