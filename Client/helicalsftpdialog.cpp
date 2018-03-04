@@ -36,8 +36,8 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
     m_localSystemRoot {localUserHome }
 {
 
-    qRegisterMetaType<FileMappingPair>();
-    qRegisterMetaType<FileAction>();
+//    qRegisterMetaType<FileMappingPair>();
+//    qRegisterMetaType<FileAction>();
     qRegisterMetaType<FileTransferAction>();
 
     ui->setupUi(this);
@@ -452,7 +452,7 @@ void HelicalSFTPDialog::downloadSelectedFile()
             if (m_sftp->isARegularFile(fileItem->m_fileAttributes)) {
                 emit queueFileForProcessing({ DOWNLOAD,fileItem->m_remoteFilePath, m_fileMapper->toLocal(fileItem->m_remoteFilePath) });
             } else if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
-                emit processDirectory({DOWNLOAD,fileItem->m_remoteFilePath}, {m_currentLocalDirectory, m_currentRemoteDirectory});
+                emit processDirectory({DOWNLOAD,fileItem->m_remoteFilePath, "", {m_currentLocalDirectory, m_currentRemoteDirectory}});
             }
         }
     }
@@ -517,8 +517,8 @@ void HelicalSFTPDialog::uploadSelectedFolder()
     for (auto rowIndex : indexList) {
         if (rowIndex.column()==0) {
             QString localFile{m_localFoldersModel->filePath(rowIndex)};
-            emit processDirectory({ UPLOAD, localFile },{QFileInfo(m_currentLocalDirectory).dir().path(),
-                                            m_currentRemoteDirectory});
+            emit processDirectory({ UPLOAD, localFile, "", {QFileInfo(m_currentLocalDirectory).dir().path(),
+                                            m_currentRemoteDirectory}});
         }
     }
 
@@ -536,7 +536,7 @@ void HelicalSFTPDialog::uploadSelectedFiles()
         if (!m_localFoldersModel->isDir(rowIndex)) {
             emit queueFileForProcessing({ UPLOAD,m_localFoldersModel->filePath(rowIndex), m_fileMapper->toRemote(m_localFoldersModel->filePath(rowIndex))});
         } else {
-            emit processDirectory({ UPLOAD, m_localFoldersModel->filePath(rowIndex)}, {m_currentLocalDirectory, m_currentRemoteDirectory});
+            emit processDirectory({ UPLOAD, m_localFoldersModel->filePath(rowIndex), "", {m_currentLocalDirectory, m_currentRemoteDirectory}});
             deferUpload=true;
         }
     }

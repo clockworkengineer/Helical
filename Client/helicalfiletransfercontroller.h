@@ -42,7 +42,7 @@ signals:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
     void processFile(const FileTransferAction &fileTransaction);
-    void processDirectory(const FileTransferAction &fileTransaction, const FileMappingPair &FileMappingPair=FileMappingPair());
+    void processDirectory(const FileTransferAction &fileTransaction);
 
     void statusMessage(const QString &message);
     void updateRemoteFileList();

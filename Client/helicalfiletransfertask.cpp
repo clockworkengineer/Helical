@@ -142,18 +142,17 @@ void HelicalFileTransferTask::processFile(const FileTransferAction &fileTransact
  * @param directoryPath
  * @param fileMappingPair
  */
-void HelicalFileTransferTask::processDirectory(const FileTransferAction &fileTransaction, const FileMappingPair &fileMappingPair)
+void HelicalFileTransferTask::processDirectory(const FileTransferAction &fileTransaction)
 {
     if (m_sftp) {
 
-        QtSFTP::FileMapper fileMapper {fileMappingPair.first, fileMappingPair.second};
+        QtSFTP::FileMapper fileMapper {fileTransaction.m_fileMappingPair.first, fileTransaction.m_fileMappingPair.second};
         Antik::FileFeedBackFn fileFeedBackFn;
         Antik::FileList localFileList;
 
         switch(fileTransaction.m_action) {
 
         case UPLOAD:
-
 
             fileFeedBackFn = [this, &fileMapper] (const std::string &fileName)
             {
