@@ -61,7 +61,7 @@ signals:
     void uploadFinished(const QString &sourceFile, const QString &destinationFile);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile);
     void deleteFileFinised(const QString &fileName);
-    void queueFileForProcessing(FileAction action, const QString &sourceFile, const QString &destinationFile="");
+    void queueFileForProcessing(const FileTransferAction &fileTransaction);
     void startFileProcessing(FileAction action);
 
     void error(const QString &errorMessage, int errorCode);
@@ -69,8 +69,8 @@ signals:
 public slots:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
-    void processFile(FileAction action, const QString &sourceFile, const QString &destinationFile="");
-    void processDirectory(FileAction action, const QString &directoryPath, const FileMappingPair &fileMappinegPair=FileMappingPair());
+    void processFile(const FileTransferAction &fileTransaction);
+    void processDirectory(const FileTransferAction &fileTransaction, const FileMappingPair &fileMappinegPair=FileMappingPair());
 
 private:
     QThread *m_fileTaskThread;

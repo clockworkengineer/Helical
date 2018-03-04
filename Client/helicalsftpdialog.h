@@ -64,9 +64,9 @@ public:
 signals:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
-    void processFile(FileAction action, const QString &sourceFile, const QString &destinationFile="");
-    void processDirectory(FileAction action,const QString &directoryPath, const FileMappingPair &FileMappingPair=FileMappingPair());
-    void queueFileForProcessing(FileAction action, const QString &sourceFile, const QString &destinationFile="");
+    void processFile(const FileTransferAction &fileTransaction);
+    void processDirectory(const FileTransferAction &fileTransaction, const FileMappingPair &FileMappingPair=FileMappingPair());
+    void queueFileForProcessing(const FileTransferAction &fileTransaction);
     void processNextFile(FileAction action);
 
 public slots:
