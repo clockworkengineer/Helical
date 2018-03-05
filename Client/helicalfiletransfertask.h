@@ -41,7 +41,6 @@ class HelicalFileTransferTask : public QObject
 
 public:
 
-
     // Class exception
 
     struct Exception : public std::runtime_error {
@@ -62,9 +61,9 @@ signals:
     void downloadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID);
     void deleteFileFinised(const QString &fileName, quint64 transactionID);
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
-    void startFileProcessing(FileAction action);
+    void startFileProcessing();
 
-    void error(const QString &errorMessage, int errorCode);
+    void error(const QString &errorMessage, int errorCode,  quint64 transactionID);
 
 public slots:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);

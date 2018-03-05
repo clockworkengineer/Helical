@@ -47,7 +47,7 @@ signals:
 
     void statusMessage(const QString &message);
     void updateRemoteFileList();
-    void error(const QString &errorMessage, int errorCode);
+    void error(const QString &errorMessage, int errorCode, quint64 transactionID);
 
 public slots:
     void fileFinished(quint64 transactionID);
@@ -59,7 +59,8 @@ private:
 
     std::uint64_t m_nextID {0};
     QMap<std::uint64_t, FileTransferAction> m_queuedFileTransactions;
-    QMap<std::uint64_t, FileTransferAction> m_fileTransactionsBeingProcessed;
+    QMap<std::uint64_t, FileTransferAction> m_beingProcessedFileTransactions;
+    QMap<std::uint64_t, FileTransferAction> m_fileTransactionsInError;
 
 };
 

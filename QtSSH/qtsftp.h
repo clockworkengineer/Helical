@@ -94,15 +94,15 @@ public:
 
 signals:
 
-    void error(const QString &errorMessage, int errorCode);
+    void error(const QString &errorMessage, int errorCode,  quint64 transactionID=0);
     void opened();
     void closed();
-    void uploadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID=0);
-    void downloadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID=0);
-    void removedLink(const QString &filePath, quint64 transactionID=0);
-    void removedDirectory(const QString &directoryPath, quint64 transactionID=0);
+    void uploadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID);
+    void downloadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID);
+    void removedLink(const QString &filePath, quint64 transactionID);
+    void removedDirectory(const QString &directoryPath, quint64 transactionID);
 
-    void listedRemoteFileName(const QString &fileName);
+   // void listedRemoteFileName(const QString &fileName);
 
 public slots:
 

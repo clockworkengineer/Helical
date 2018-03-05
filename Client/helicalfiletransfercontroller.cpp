@@ -95,10 +95,10 @@ void HelicalFileTransferController::destroyFileTransferTask()
 void HelicalFileTransferController::fileFinished(quint64 transactionID)
 {
 
-    if (!m_fileTransactionsBeingProcessed.empty()) {
+    if (!m_beingProcessedFileTransactions.empty()) {
 
-        FileTransferAction nextTransaction =  m_fileTransactionsBeingProcessed.first();
-        m_fileTransactionsBeingProcessed.remove(nextTransaction.m_fileTransferID);
+        FileTransferAction nextTransaction =  m_beingProcessedFileTransactions.first();
+        m_beingProcessedFileTransactions.remove(nextTransaction.m_fileTransferID);
 
         switch (nextTransaction.m_action) {
 
@@ -160,7 +160,7 @@ void HelicalFileTransferController::processNextFile()
     if (!m_queuedFileTransactions.empty()) {
         FileTransferAction nextTransaction =  m_queuedFileTransactions.first();
         m_queuedFileTransactions.remove(nextTransaction.m_fileTransferID);
-        m_fileTransactionsBeingProcessed[nextTransaction.m_fileTransferID] = nextTransaction;
+        m_beingProcessedFileTransactions[nextTransaction.m_fileTransferID] = nextTransaction;
         emit processFile(nextTransaction);
     } else {
         emit statusMessage("Transfer queue clear.\n");

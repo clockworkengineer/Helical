@@ -70,7 +70,7 @@ signals:
     void processNextFile();
 
 public slots:
-    void error(const QString &errorMessage, int errorCode);
+    void error(const QString &errorMessage, int errorCode, quint64 transactionID);
     void statusMessage(const QString &message);
     void updateRemoteFileList();
 

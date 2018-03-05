@@ -68,7 +68,6 @@ void HelicalFileTransferTask::openSession(const QString &serverName, const QStri
     m_session->authorizeUser();
 
     if (m_session->isConnected() && m_session->isAuthorized()) {
-        qDebug() << "CONNECTED";
         m_sftp.reset(new QtSFTP(*m_session));
         m_sftp->open();
         connect(m_sftp.data(), &QtSFTP::uploadFinished, this,  &HelicalFileTransferTask::uploadFinished);
@@ -84,7 +83,6 @@ void HelicalFileTransferTask::openSession(const QString &serverName, const QStri
  */
 void HelicalFileTransferTask::closeSession()
 {
-    qDebug() << "CLOSEDOWN FILE TRANSFER TASK";
 
     if (m_sftp) {
         m_sftp->close();
@@ -113,17 +111,14 @@ void HelicalFileTransferTask::processFile(const FileTransferAction &fileTransact
         switch(fileTransaction.m_action) {
 
         case UPLOAD:
-            qDebug() << "UPLOAD FILE " << fileTransaction.m_sourceFile;
             m_sftp->putLocalFile(fileTransaction.m_sourceFile, fileTransaction.m_destinationFile);
             break;
 
         case DOWNLOAD:
-            qDebug() << "DOWNLOAD FILE" << fileTransaction.m_sourceFile;
             m_sftp->getRemoteFile(fileTransaction.m_sourceFile, fileTransaction.m_destinationFile);
             break;
 
         case DELETE:
-            qDebug() << "DELETE FILE " << fileTransaction.m_sourceFile;
             m_sftp->getFileAttributes(fileTransaction.m_sourceFile, filAttributes);
             if (m_sftp->isARegularFile(filAttributes)) {
                 m_sftp->removeLink(fileTransaction.m_sourceFile);
@@ -158,11 +153,7 @@ void HelicalFileTransferTask::processDirectory(const FileTransferAction &fileTra
             {
                 emit queueFileForProcessing({ UPLOAD, QString::fromStdString(fileName),fileMapper.toRemote(QString::fromStdString(fileName))});
             };
-
             Antik::listLocalRecursive(fileTransaction.m_sourceFile.toStdString(), localFileList, fileFeedBackFn);
-
-            emit startFileProcessing(UPLOAD);
-
             break;
 
 
@@ -173,8 +164,6 @@ void HelicalFileTransferTask::processDirectory(const FileTransferAction &fileTra
                 emit queueFileForProcessing({DOWNLOAD, QString::fromStdString(fileName), fileMapper.toLocal(QString::fromStdString(fileName))});
             };
             m_sftp->listRemoteDirectoryRecursive(fileTransaction.m_sourceFile, fileFeedBackFn);
-            emit startFileProcessing(DOWNLOAD);
-
             break;
 
         case DELETE:
@@ -185,11 +174,13 @@ void HelicalFileTransferTask::processDirectory(const FileTransferAction &fileTra
             };
             m_sftp->listRemoteDirectoryRecursive(fileTransaction.m_sourceFile, fileFeedBackFn);
             emit queueFileForProcessing({ DELETE, fileTransaction.m_sourceFile });
-            emit startFileProcessing(DELETE);
 
             break;
 
         }
+
+        emit startFileProcessing();
+
     }
 }
 

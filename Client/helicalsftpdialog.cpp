@@ -36,7 +36,7 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
     m_localSystemRoot {localUserHome }
 {
 
-    qRegisterMetaType<FileAction>();
+ //   qRegisterMetaType<FileAction>();
     qRegisterMetaType<FileTransferAction>();
 
     ui->setupUi(this);
@@ -408,7 +408,7 @@ void HelicalSFTPDialog::showLocalFileViewContextMenu(const QPoint &pos)
  * @param errorMessage
  * @param errorCode
  */
-void HelicalSFTPDialog::error(const QString &errorMessage, int errorCode)
+void HelicalSFTPDialog::error(const QString &errorMessage, int errorCode, quint64 transactionID)
 {
     Q_UNUSED(errorCode);
 

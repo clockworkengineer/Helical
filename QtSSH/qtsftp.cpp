@@ -139,7 +139,7 @@ void QtSFTP::removeLink(const QString &filePath, quint64 transactionID)
         m_sftp->removeLink(filePath.toStdString());
         emit removedLink(filePath, transactionID);
     }catch(const CSFTP::Exception &e) {
-        emit error(QString::fromStdString(e.getMessage()),e.getCode());
+        emit error(QString::fromStdString(e.getMessage()),e.getCode(), transactionID);
     }
 }
 
@@ -153,7 +153,7 @@ void QtSFTP::removeDirectory(const QString &directoryPath, quint64 transactionID
         m_sftp->removeDirectory(directoryPath.toStdString());
         emit removedDirectory(directoryPath, transactionID);
     }catch(const CSFTP::Exception &e) {
-        emit error(QString::fromStdString(e.getMessage()),e.getCode());
+        emit error(QString::fromStdString(e.getMessage()),e.getCode(), transactionID);
     }
 }
 
@@ -231,9 +231,9 @@ void QtSFTP::getRemoteFile(const QString &sourceFile, const QString &destination
         getFile(*m_sftp, sourceFile.toStdString(), destinationFile.toStdString());
         emit downloadFinished(sourceFile, destinationFile, transactionID);
     } catch(const CSFTP::Exception &e) {
-        emit error(QString::fromStdString(e.getMessage()),e.getCode());
+        emit error(QString::fromStdString(e.getMessage()),e.getCode(),transactionID);
     } catch(const std::system_error &e) {
-        emit error(QString::fromStdString(e.what()),e.code().value());
+        emit error(QString::fromStdString(e.what()),e.code().value(), transactionID);
     }
 }
 
@@ -248,9 +248,9 @@ void QtSFTP::putLocalFile(const QString &sourceFile, const QString &destinationF
         putFile(*m_sftp, sourceFile.toStdString(), destinationFile.toStdString());
         emit uploadFinished(sourceFile, destinationFile, transactionID);
     } catch(const CSFTP::Exception &e) {
-        emit error(QString::fromStdString(e.getMessage()),e.getCode());
+        emit error(QString::fromStdString(e.getMessage()),e.getCode(), transactionID);
     } catch(const std::system_error &e) {
-        emit error(QString::fromStdString(e.what()),e.code().value());
+        emit error(QString::fromStdString(e.what()),e.code().value(), transactionID);
     }
 }
 

@@ -12,7 +12,9 @@ enum FileAction {
 };
 
 struct FileTransferAction {
+
     FileTransferAction() {}
+
     FileTransferAction(const FileAction &action, const QString &sourceFile, const QString &destinationFile="", const FileMappingPair &fileMappingPair=FileMappingPair()) :
         m_action {action}, m_sourceFile {sourceFile}, m_destinationFile{destinationFile}, m_fileMappingPair {fileMappingPair} {}
 
@@ -25,7 +27,6 @@ struct FileTransferAction {
 };
 
 Q_DECLARE_METATYPE(FileTransferAction);
-Q_DECLARE_METATYPE(FileAction);
 
 #endif // HELICAL_H
 
