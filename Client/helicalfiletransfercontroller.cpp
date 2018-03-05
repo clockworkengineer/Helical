@@ -168,3 +168,24 @@ void HelicalFileTransferController::processNextFile()
     }
 }
 
+/**
+ * @brief HelicalFileTransferController::error
+ * @param errorMessage
+ * @param errorCode
+ */
+void HelicalFileTransferController::error(const QString &errorMessage, int errorCode, quint64 transactionID)
+{
+    Q_UNUSED(errorCode);
+
+    statusMessage(errorMessage+"\n");
+
+    if (!m_beingProcessedFileTransactions.empty()) {
+        FileTransferAction nextTransaction =  m_beingProcessedFileTransactions.first();
+        m_beingProcessedFileTransactions.remove(nextTransaction.m_fileTransferID);
+        m_fileTransactionsInError[nextTransaction.m_fileTransferID] = nextTransaction;
+    }
+
+    emit processNextFile();
+
+}
+

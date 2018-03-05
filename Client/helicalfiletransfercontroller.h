@@ -47,12 +47,12 @@ signals:
 
     void statusMessage(const QString &message);
     void updateRemoteFileList();
-    void error(const QString &errorMessage, int errorCode, quint64 transactionID);
 
 public slots:
     void fileFinished(quint64 transactionID);
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
     void processNextFile();
+    void error(const QString &errorMessage, int errorCode, quint64 transactionID);
 
 private:
     QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;

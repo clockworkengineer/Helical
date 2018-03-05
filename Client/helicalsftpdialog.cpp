@@ -36,7 +36,8 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
     m_localSystemRoot {localUserHome }
 {
 
- //   qRegisterMetaType<FileAction>();
+    // Register custom signal//slot types
+
     qRegisterMetaType<FileTransferAction>();
 
     ui->setupUi(this);
@@ -109,7 +110,6 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
 
         updateRemoteFileList();
 
-        //       connect(m_sftp.data(), &QtSFTP::removedLink, this, &HelicalSFTPDialog::deleteFileFinised);
         connect(m_sftp.data(), &QtSFTP::error, this, &HelicalSFTPDialog::error);
 
         connect(m_remoteFileSystemList, &QListWidget::customContextMenuRequested, this, &HelicalSFTPDialog::showRemoteFileContextMenu);
@@ -133,7 +133,6 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
 
         connect(&m_helicalTransferController, &HelicalFileTransferController::statusMessage, this, &HelicalSFTPDialog::statusMessage);
         connect(&m_helicalTransferController, &HelicalFileTransferController::updateRemoteFileList, this, &HelicalSFTPDialog::updateRemoteFileList);
-        connect(&m_helicalTransferController, &HelicalFileTransferController::error, this, &HelicalSFTPDialog::error);
 
     }
 
