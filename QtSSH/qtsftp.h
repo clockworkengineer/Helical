@@ -76,8 +76,8 @@ public:
     bool endOfDirectory(const Directory &directoryHandle);
     void closeDirectory(Directory &directoryHandle);
 
-    void removeLink(const QString &filePath);
-    void removeDirectory(const QString &directoryPath);
+    void removeLink(const QString &filePath, quint64 transactionID=0);
+    void removeDirectory(const QString &directoryPath, quint64 transactionID=0);
 
     void getFileAttributes(const QString &filePath, FileAttributes &fileAttributes);
 
@@ -85,8 +85,8 @@ public:
     bool isARegularFile(const FileAttributes &fileAttributes);
     bool isASymbolicLink(const FileAttributes &fileAttributes);
 
-    void getRemoteFile(const QString &sourceFile, const QString &destinationFile);
-    void putLocalFile(const QString &sourceFile, const QString &destinationFile);
+    void getRemoteFile(const QString &sourceFile, const QString &destinationFile, quint64 transactionID=0);
+    void putLocalFile(const QString &sourceFile, const QString &destinationFile, quint64 transactionID=0);
 
     void listRemoteDirectoryRecursive(const QString &directoryPath, FileFeedBackFn remoteFileFeedbackFn = nullptr);
 
@@ -97,10 +97,10 @@ signals:
     void error(const QString &errorMessage, int errorCode);
     void opened();
     void closed();
-    void uploadFinished(const QString &sourceFile, const QString &destinationFile);
-    void downloadFinished(const QString &sourceFile, const QString &destinationFile);
-    void removedLink(const QString &filePath);
-    void removedDirectory(const QString &directoryPath);
+    void uploadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID=0);
+    void downloadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID=0);
+    void removedLink(const QString &filePath, quint64 transactionID=0);
+    void removedDirectory(const QString &directoryPath, quint64 transactionID=0);
 
     void listedRemoteFileName(const QString &fileName);
 

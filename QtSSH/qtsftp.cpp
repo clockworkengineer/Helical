@@ -133,11 +133,11 @@ void QtSFTP::closeDirectory(QtSFTP::Directory &directoryHandle)
  * @brief QtSFTP::removeLink
  * @param filePath
  */
-void QtSFTP::removeLink(const QString &filePath)
+void QtSFTP::removeLink(const QString &filePath, quint64 transactionID)
 {
     try {
         m_sftp->removeLink(filePath.toStdString());
-        emit removedLink(filePath);
+        emit removedLink(filePath, transactionID);
     }catch(const CSFTP::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
     }
@@ -147,11 +147,11 @@ void QtSFTP::removeLink(const QString &filePath)
  * @brief QtSFTP::removeDirectory
  * @param directoryPath
  */
-void QtSFTP::removeDirectory(const QString &directoryPath)
+void QtSFTP::removeDirectory(const QString &directoryPath, quint64 transactionID)
 {
     try {
         m_sftp->removeDirectory(directoryPath.toStdString());
-        emit removedDirectory(directoryPath);
+        emit removedDirectory(directoryPath, transactionID);
     }catch(const CSFTP::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
     }
@@ -225,11 +225,11 @@ bool QtSFTP::isASymbolicLink(const QtSFTP::FileAttributes &fileAttributes)
  * @param sourceFile
  * @param destinationFile
  */
-void QtSFTP::getRemoteFile(const QString &sourceFile, const QString &destinationFile)
+void QtSFTP::getRemoteFile(const QString &sourceFile, const QString &destinationFile, quint64 transactionID)
 {
     try {
         getFile(*m_sftp, sourceFile.toStdString(), destinationFile.toStdString());
-        emit downloadFinished(sourceFile, destinationFile);
+        emit downloadFinished(sourceFile, destinationFile, transactionID);
     } catch(const CSFTP::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
     } catch(const std::system_error &e) {
@@ -242,11 +242,11 @@ void QtSFTP::getRemoteFile(const QString &sourceFile, const QString &destination
  * @param sourceFile
  * @param destinationFile
  */
-void QtSFTP::putLocalFile(const QString &sourceFile, const QString &destinationFile)
+void QtSFTP::putLocalFile(const QString &sourceFile, const QString &destinationFile, quint64 transactionID)
 {
     try {
         putFile(*m_sftp, sourceFile.toStdString(), destinationFile.toStdString());
-        emit uploadFinished(sourceFile, destinationFile);
+        emit uploadFinished(sourceFile, destinationFile, transactionID);
     } catch(const CSFTP::Exception &e) {
         emit error(QString::fromStdString(e.getMessage()),e.getCode());
     } catch(const std::system_error &e) {

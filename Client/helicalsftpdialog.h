@@ -67,7 +67,7 @@ signals:
     void processFile(const FileTransferAction &fileTransaction);
     void processDirectory(const FileTransferAction &fileTransaction);
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
-    void processNextFile(FileAction action);
+    void processNextFile();
 
 public slots:
     void error(const QString &errorMessage, int errorCode);

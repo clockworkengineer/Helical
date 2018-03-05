@@ -50,13 +50,13 @@ void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
     connect(this,&HelicalFileTransferController::processDirectory, m_fileTransferTask.data(), &HelicalFileTransferTask::processDirectory);
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::uploadFinished,
-            [=]( const QString &sourceFile, const QString &destinationFile ) { this->fileFinished(UPLOAD, sourceFile, destinationFile); });
+            [=]( const QString &sourceFile, const QString &destinationFile, quint64 transactionID ) { this->fileFinished(transactionID); });
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::downloadFinished,
-            [=]( const QString &sourceFile, const QString &destinationFile ) { this->fileFinished(DOWNLOAD, sourceFile, destinationFile); });
+            [=]( const QString &sourceFile, const QString &destinationFile, quint64 transactionID ) { this->fileFinished(transactionID); });
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::deleteFileFinised,
-            [=]( const QString &fileName) { this->fileFinished(DELETE, fileName, ""); });
+            [=]( const QString &fileName, quint64 transactionID) { this->fileFinished(transactionID); });
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForProcessing, this, &HelicalFileTransferController::queueFileForProcessing);
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startFileProcessing, this, &HelicalFileTransferController::processNextFile);
@@ -79,8 +79,8 @@ void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
 void HelicalFileTransferController::destroyFileTransferTask()
 {
 
-    m_downloadQueue.clear();
-    m_uploadQueue.clear();
+    m_queuedFileTransactions.clear();
+    m_queuedFileTransactions.clear();
 
     emit closeSession();
     m_fileTransferTask.take();
@@ -88,31 +88,38 @@ void HelicalFileTransferController::destroyFileTransferTask()
 }
 
 /**
- * @brief HelicalFileTransferController::uploadFinished
+ * @brief HelicalFileTransferController::fileFinished
  * @param sourceFile
  * @param destinationFile
  */
-void HelicalFileTransferController::fileFinished(FileAction action, const QString &sourceFile, const QString &destinationFile)
+void HelicalFileTransferController::fileFinished(quint64 transactionID)
 {
 
-    switch (action) {
+    if (!m_fileTransactionsBeingProcessed.empty()) {
 
-    case DOWNLOAD:
-        emit statusMessage(QString("Downloaded File \"%1\" to \"%2\".\n").arg(sourceFile).arg(destinationFile));
-        processNextFile(action);
-        break;
+        FileTransferAction nextTransaction =  m_fileTransactionsBeingProcessed.first();
+        m_fileTransactionsBeingProcessed.remove(nextTransaction.m_fileTransferID);
 
-    case UPLOAD:
-        emit statusMessage(QString("Uploaded File \"%1\" to \"%2\".\n").arg(sourceFile).arg(destinationFile));
-        processNextFile(action);
-        break;
+        switch (nextTransaction.m_action) {
 
-    case DELETE:
-        emit statusMessage(QString("Deleted File \"%1\".\n").arg(sourceFile));
-        processNextFile(action);
-        break;
+        case DOWNLOAD:
+            emit statusMessage(QString("Downloaded File \"%1\" to \"%2\".\n").arg(nextTransaction.m_sourceFile).arg(nextTransaction.m_destinationFile));
+            break;
+
+        case UPLOAD:
+            emit statusMessage(QString("Uploaded File \"%1\" to \"%2\".\n").arg(nextTransaction.m_sourceFile).arg(nextTransaction.m_destinationFile));
+            break;
+
+        case DELETE:
+            emit statusMessage(QString("Deleted File \"%1\".\n").arg(nextTransaction.m_sourceFile));
+             break;
+
+        }
+
+        processNextFile();
 
     }
+
 }
 
 /**
@@ -121,21 +128,24 @@ void HelicalFileTransferController::fileFinished(FileAction action, const QStrin
  */
 void HelicalFileTransferController::queueFileForProcessing(const FileTransferAction &fileTransaction)
 {
+
+    m_queuedFileTransactions[m_nextID] = fileTransaction;
+    m_queuedFileTransactions[m_nextID].m_fileTransferID = m_nextID;
+    m_nextID++;
+
     switch (fileTransaction.m_action) {
 
     case DOWNLOAD:
         emit statusMessage(QString("File \"%1\" queued for download.\n").arg(fileTransaction.m_sourceFile));
-        m_downloadQueue.push_back(fileTransaction);
         break;
 
     case UPLOAD:
         emit statusMessage(QString("File \"%1\" queued for upload.\n").arg(fileTransaction.m_sourceFile));
-        m_uploadQueue.push_back(fileTransaction);
+
         break;
 
     case DELETE:
         emit statusMessage(QString("File \"%1\" queued for delete.\n").arg(fileTransaction.m_sourceFile));
-        m_deleteQueue.push_back(fileTransaction);
         break;
 
     }
@@ -144,46 +154,16 @@ void HelicalFileTransferController::queueFileForProcessing(const FileTransferAct
 /**
  * @brief HelicalFileTransferController::processNextFile
  */
-void HelicalFileTransferController::processNextFile(FileAction action)
+void HelicalFileTransferController::processNextFile()
 {
 
-    bool updateFileList {false};
-
-    switch(action) {
-
-    case DOWNLOAD:
-        if (!m_downloadQueue.isEmpty()) {
-            FileTransferAction fileTransaction { m_downloadQueue.front()  };
-            m_downloadQueue.pop_front();
-            emit processFile(fileTransaction);
-        } else {
-            emit statusMessage("Download queue clear.\n");
-            updateFileList=true;
-        }
-        break;
-    case UPLOAD:
-        if (!m_uploadQueue.isEmpty()) {
-            FileTransferAction fileTransaction { m_uploadQueue.front()  };
-            m_uploadQueue.pop_front();
-            emit processFile(fileTransaction);
-        } else {
-            emit statusMessage("Upload queue clear.\n");
-            updateFileList=true;
-        }
-        break;
-    case DELETE:
-        if (!m_deleteQueue.isEmpty()) {
-            FileTransferAction fileTransaction { m_deleteQueue.front()  };
-            m_deleteQueue.pop_front();
-            emit processFile(fileTransaction);
-        } else {
-            emit statusMessage("Delete queue clear\n");
-            updateFileList=true;
-        }
-        break;
-    }
-
-    if (updateFileList) {
+    if (!m_queuedFileTransactions.empty()) {
+        FileTransferAction nextTransaction =  m_queuedFileTransactions.first();
+        m_queuedFileTransactions.remove(nextTransaction.m_fileTransferID);
+        m_fileTransactionsBeingProcessed[nextTransaction.m_fileTransferID] = nextTransaction;
+        emit processFile(nextTransaction);
+    } else {
+        emit statusMessage("Transfer queue clear.\n");
         emit updateRemoteFileList();
     }
 }

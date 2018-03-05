@@ -15,14 +15,20 @@ struct FileTransferAction {
     FileTransferAction() {}
     FileTransferAction(const FileAction &action, const QString &sourceFile, const QString &destinationFile="", const FileMappingPair &fileMappingPair=FileMappingPair()) :
         m_action {action}, m_sourceFile {sourceFile}, m_destinationFile{destinationFile}, m_fileMappingPair {fileMappingPair} {}
+
+    std::uint64_t m_fileTransferID {0};
     FileAction m_action;
     QString m_sourceFile;
     QString m_destinationFile;
     FileMappingPair m_fileMappingPair;
+
 };
 
-//Q_DECLARE_METATYPE(FileMappingPair);
-//Q_DECLARE_METATYPE(FileAction);
 Q_DECLARE_METATYPE(FileTransferAction);
+Q_DECLARE_METATYPE(FileAction);
 
 #endif // HELICAL_H
+
+
+
+

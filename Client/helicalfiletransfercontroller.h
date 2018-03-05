@@ -24,6 +24,7 @@
 // =============
 
 #include <QObject>
+#include <QMap>
 
 #include "helicalfiletransfertask.h"
 
@@ -49,17 +50,17 @@ signals:
     void error(const QString &errorMessage, int errorCode);
 
 public slots:
-    void fileFinished(FileAction action, const QString &sourceFile, const QString &destinationFile);
+    void fileFinished(quint64 transactionID);
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
-    void processNextFile(FileAction action);
+    void processNextFile();
 
 private:
     QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;
 
     std::uint64_t m_nextID {0};
-    QList<FileTransferAction> m_downloadQueue;
-    QList<FileTransferAction> m_uploadQueue;
-    QList<FileTransferAction> m_deleteQueue;
+    QMap<std::uint64_t, FileTransferAction> m_queuedFileTransactions;
+    QMap<std::uint64_t, FileTransferAction> m_fileTransactionsBeingProcessed;
+
 };
 
 #endif // HELICALFILETRANSFERCONTROLLER_H

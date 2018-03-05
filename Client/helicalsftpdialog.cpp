@@ -36,8 +36,7 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
     m_localSystemRoot {localUserHome }
 {
 
-//    qRegisterMetaType<FileMappingPair>();
-//    qRegisterMetaType<FileAction>();
+    qRegisterMetaType<FileAction>();
     qRegisterMetaType<FileTransferAction>();
 
     ui->setupUi(this);
@@ -415,9 +414,7 @@ void HelicalSFTPDialog::error(const QString &errorMessage, int errorCode)
 
     statusMessage(errorMessage+"\n");
 
-    emit processNextFile(UPLOAD);
-    emit processNextFile(DOWNLOAD);
-    emit processNextFile(DELETE);
+    emit processNextFile();
 
 }
 
@@ -457,7 +454,7 @@ void HelicalSFTPDialog::downloadSelectedFile()
         }
     }
 
-    emit processNextFile(DOWNLOAD);
+    emit processNextFile();
 
 }
 
@@ -482,7 +479,7 @@ void HelicalSFTPDialog::deleteSelectedFiles()
     }
 
     if(!deferDelete) {
-        emit processNextFile(DELETE);
+        emit processNextFile();
     }
 
 
@@ -542,7 +539,7 @@ void HelicalSFTPDialog::uploadSelectedFiles()
     }
 
     if (!deferUpload) {
-        emit processNextFile(UPLOAD);
+        emit processNextFile();
     }
 
 }

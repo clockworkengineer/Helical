@@ -58,9 +58,9 @@ public:
     void setFileTaskThread(QThread *fileTaskThread);
 
 signals:
-    void uploadFinished(const QString &sourceFile, const QString &destinationFile);
-    void downloadFinished(const QString &sourceFile, const QString &destinationFile);
-    void deleteFileFinised(const QString &fileName);
+    void uploadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID);
+    void downloadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID);
+    void deleteFileFinised(const QString &fileName, quint64 transactionID);
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
     void startFileProcessing(FileAction action);
 
