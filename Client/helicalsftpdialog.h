@@ -72,6 +72,8 @@ signals:
 public slots:
     void error(const QString &errorMessage, int errorCode, quint64 transactionID);
     void statusMessage(const QString &message);
+    void finishedMessage(const QString &message);
+    void errorMessage(const QString &message);
     void updateRemoteFileList();
 
 private slots:

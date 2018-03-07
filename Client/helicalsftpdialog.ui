@@ -52,22 +52,6 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QTextEdit" name="statusMessages">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>539</y>
-      <width>961</width>
-      <height>100</height>
-     </rect>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>16777215</width>
-      <height>100</height>
-     </size>
-    </property>
-   </widget>
    <widget class="QFrame" name="localFileViewFrame">
     <property name="geometry">
      <rect>
@@ -190,6 +174,64 @@
      <property name="frameShadow">
       <enum>QFrame::Plain</enum>
      </property>
+    </widget>
+   </widget>
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>540</y>
+      <width>961</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>2</number>
+    </property>
+    <widget class="QWidget" name="statusTab">
+     <attribute name="title">
+      <string>Status</string>
+     </attribute>
+     <widget class="QTextEdit" name="statusMessages">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>961</width>
+        <height>71</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="finishedTab">
+     <attribute name="title">
+      <string>Finished</string>
+     </attribute>
+     <widget class="QTextEdit" name="finishedTransactions">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>961</width>
+        <height>70</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="errorsTab">
+     <attribute name="title">
+      <string>Errors</string>
+     </attribute>
+     <widget class="QTextEdit" name="errorTransactions">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>961</width>
+        <height>70</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

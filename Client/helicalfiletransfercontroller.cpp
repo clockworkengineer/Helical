@@ -103,15 +103,15 @@ void HelicalFileTransferController::fileFinished(quint64 transactionID)
         switch (nextTransaction.m_action) {
 
         case DOWNLOAD:
-            emit statusMessage(QString("Downloaded File \"%1\" to \"%2\".\n").arg(nextTransaction.m_sourceFile).arg(nextTransaction.m_destinationFile));
+            emit finishedMessage(QString("Downloaded File \"%1\" to \"%2\".\n").arg(nextTransaction.m_sourceFile).arg(nextTransaction.m_destinationFile));
             break;
 
         case UPLOAD:
-            emit statusMessage(QString("Uploaded File \"%1\" to \"%2\".\n").arg(nextTransaction.m_sourceFile).arg(nextTransaction.m_destinationFile));
+            emit finishedMessage(QString("Uploaded File \"%1\" to \"%2\".\n").arg(nextTransaction.m_sourceFile).arg(nextTransaction.m_destinationFile));
             break;
 
         case DELETE:
-            emit statusMessage(QString("Deleted File \"%1\".\n").arg(nextTransaction.m_sourceFile));
+            emit finishedMessage(QString("Deleted File \"%1\".\n").arg(nextTransaction.m_sourceFile));
              break;
 
         }
@@ -173,11 +173,11 @@ void HelicalFileTransferController::processNextFile()
  * @param errorMessage
  * @param errorCode
  */
-void HelicalFileTransferController::error(const QString &errorMessage, int errorCode, quint64 transactionID)
+void HelicalFileTransferController::error(const QString &errorMsg, int errorCode, quint64 transactionID)
 {
     Q_UNUSED(errorCode);
 
-    statusMessage(errorMessage+"\n");
+    emit errorMessage(errorMsg+"\n");
 
     if (!m_beingProcessedFileTransactions.empty()) {
         FileTransferAction nextTransaction =  m_beingProcessedFileTransactions.first();

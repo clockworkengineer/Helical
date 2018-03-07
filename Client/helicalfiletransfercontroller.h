@@ -46,6 +46,8 @@ signals:
     void processDirectory(const FileTransferAction &fileTransaction);
 
     void statusMessage(const QString &message);
+    void finishedMessage(const QString &message);
+    void errorMessage(const QString &message);
     void updateRemoteFileList();
 
 public slots:

@@ -132,6 +132,8 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
         connect(this,&HelicalSFTPDialog::processNextFile, &m_helicalTransferController, &HelicalFileTransferController::processNextFile);
 
         connect(&m_helicalTransferController, &HelicalFileTransferController::statusMessage, this, &HelicalSFTPDialog::statusMessage);
+        connect(&m_helicalTransferController, &HelicalFileTransferController::finishedMessage, this, &HelicalSFTPDialog::finishedMessage);
+        connect(&m_helicalTransferController, &HelicalFileTransferController::errorMessage, this, &HelicalSFTPDialog::errorMessage);
         connect(&m_helicalTransferController, &HelicalFileTransferController::updateRemoteFileList, this, &HelicalSFTPDialog::updateRemoteFileList);
 
     }
@@ -218,6 +220,26 @@ void HelicalSFTPDialog::updateRemoteFileList()
 void HelicalSFTPDialog::statusMessage(const QString &message)
 {
     ui->statusMessages->insertPlainText(message);
+    ui->statusMessages->moveCursor(QTextCursor::End);
+}
+
+/**
+ * @brief HelicalSFTPDialog::finishedMessage
+ * @param message
+ */
+void HelicalSFTPDialog::finishedMessage(const QString &message)
+{
+    ui->finishedTransactions->insertPlainText(message);
+    ui->statusMessages->moveCursor(QTextCursor::End);
+}
+
+/**
+ * @brief HelicalSFTPDialog::errorMessage
+ * @param message
+ */
+void HelicalSFTPDialog::errorMessage(const QString &message)
+{
+    ui->errorTransactions->insertPlainText(message);
     ui->statusMessages->moveCursor(QTextCursor::End);
 }
 
