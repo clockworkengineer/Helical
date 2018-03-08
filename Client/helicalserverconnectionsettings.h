@@ -2,6 +2,7 @@
 #define HELICALSERVERCONNECTIONSETTINGS_H
 
 #include <QString>
+#include <QSettings>
 
 class HelicalServerConnectionSettings
 {

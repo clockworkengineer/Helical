@@ -79,13 +79,13 @@ public slots:
 private slots:
     void remoteFileClicked(QListWidgetItem *item);
     void remoteFileDoubleClicked(QListWidgetItem * item);
-    void localFolderViewClicked(const QModelIndex &index);
-    void localFolderViewDoubleClicked(const QModelIndex &index);
+    void localDirectoryViewClicked(const QModelIndex &index);
+    void localDirectoryViewDoubleClicked(const QModelIndex &index);
     void localFileViewClicked(const QModelIndex &index);
     void localFileViewDoubleClicked(const QModelIndex &index);
 
     void showRemoteFileContextMenu(const QPoint &pos);
-    void showLocalFolderViewContextMenu(const QPoint &pos);
+    void showlocalDirectoryViewContextMenu(const QPoint &pos);
     void showLocalFileViewContextMenu(const QPoint &pos);
 
     void viewSelectedFiles();
@@ -93,7 +93,7 @@ private slots:
     void deleteSelectedFiles();
     void enterSelectedDirectory();
     void refreshSelectedDirectory();
-    void uploadSelectedFolder();
+    void uploadSelectedDirectory();
     void uploadSelectedFiles();
 
 
@@ -111,8 +111,8 @@ private:
     QString m_currentRemoteDirectory {m_remoteSystemRoot};
     QString m_currentLocalDirectory { m_localSystemRoot};
 
-    QFileSystemModel *m_localFoldersModel;
-    QTreeView *m_localFoldersView;
+    QFileSystemModel *m_localDirectorysModel;
+    QTreeView *m_localDirectorysView;
     QListView *m_localFilesView;
     QFileSystemModel *m_localFilesModel;
     QListWidget *m_remoteFileSystemList;

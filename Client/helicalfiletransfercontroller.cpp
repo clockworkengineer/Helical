@@ -21,11 +21,14 @@
 
 #include "helicalfiletransfercontroller.h"
 
+/**
+ * @brief HelicalFileTransferController::HelicalFileTransferController
+ * @param parent
+ */
 HelicalFileTransferController::HelicalFileTransferController(QObject *parent) : QObject(parent)
 {
 
 }
-
 
 /**
  * @brief HelicalFileTransferController::createFileTransferTask

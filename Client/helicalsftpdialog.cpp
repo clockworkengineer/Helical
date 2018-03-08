@@ -58,16 +58,16 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
     ui->remoteLineEdit->setReadOnly(true);
     ui->remoteLineEdit->setText(m_remoteSystemRoot);
 
-    // Local folder/file views
+    // Local Directory/file views
 
-    m_localFoldersModel = new QFileSystemModel(this);
-    m_localFoldersView  = new QTreeView(this);
-    m_localFoldersView->setModel(m_localFoldersModel);
-    m_localFoldersModel->setRootPath(m_localSystemRoot);
-    m_localFoldersModel->setFilter(QDir::Hidden|QDir::NoDotAndDotDot|QDir::AllDirs);
-    m_localFoldersView->setRootIndex(m_localFoldersModel->index(m_localSystemRoot));
-    m_localFoldersView->setContextMenuPolicy(Qt::CustomContextMenu);
-    m_localFoldersView->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_localDirectorysModel = new QFileSystemModel(this);
+    m_localDirectorysView  = new QTreeView(this);
+    m_localDirectorysView->setModel(m_localDirectorysModel);
+    m_localDirectorysModel->setRootPath(m_localSystemRoot);
+    m_localDirectorysModel->setFilter(QDir::Hidden|QDir::NoDotAndDotDot|QDir::AllDirs);
+    m_localDirectorysView->setRootIndex(m_localDirectorysModel->index(m_localSystemRoot));
+    m_localDirectorysView->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_localDirectorysView->setSelectionMode(QAbstractItemView::SingleSelection);
 
     m_localFilesModel = new QFileSystemModel(this);
     m_localFilesView  = new QListView(this);
@@ -87,18 +87,18 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
     // Put views onto window
 
     ui->localFileViewsFrame->setLayout(new QVBoxLayout(this));
-    ui->localFileViewsFrame->layout()->addWidget(m_localFoldersView);
+    ui->localFileViewsFrame->layout()->addWidget(m_localDirectorysView);
     ui->localFileViewsFrame->layout()->addWidget(m_localFilesView);
 
     ui->remoteFileViewsFrame->setLayout(new QHBoxLayout(this));
     ui->remoteFileViewsFrame->layout()->addWidget(m_remoteFileSystemList);
 
-    // Hide local folder view columns
+    // Hide local Directory view columns
 
-    m_localFoldersView->setHeaderHidden(true);
-    m_localFoldersView->hideColumn(1);
-    m_localFoldersView->hideColumn(2);
-    m_localFoldersView->hideColumn(3);
+    m_localDirectorysView->setHeaderHidden(true);
+    m_localDirectorysView->hideColumn(1);
+    m_localDirectorysView->hideColumn(2);
+    m_localDirectorysView->hideColumn(3);
 
     adjustSize();
 
@@ -119,9 +119,9 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
         connect(m_remoteFileSystemList, &QListWidget::customContextMenuRequested, this, &HelicalSFTPDialog::showRemoteFileContextMenu);
         connect(m_remoteFileSystemList, &QListWidget::itemDoubleClicked, this, &HelicalSFTPDialog::remoteFileDoubleClicked);
         connect(m_remoteFileSystemList, &QListWidget::itemClicked, this, &HelicalSFTPDialog::remoteFileClicked);
-        connect(m_localFoldersView, &QTreeView::clicked, this, &HelicalSFTPDialog::localFolderViewClicked);
-        connect(m_localFoldersView, &QTreeView::doubleClicked, this, &HelicalSFTPDialog::localFolderViewDoubleClicked);
-        connect(m_localFoldersView, &QTreeView::customContextMenuRequested, this, &HelicalSFTPDialog::showLocalFolderViewContextMenu);
+        connect(m_localDirectorysView, &QTreeView::clicked, this, &HelicalSFTPDialog::localDirectoryViewClicked);
+        connect(m_localDirectorysView, &QTreeView::doubleClicked, this, &HelicalSFTPDialog::localDirectoryViewDoubleClicked);
+        connect(m_localDirectorysView, &QTreeView::customContextMenuRequested, this, &HelicalSFTPDialog::showlocalDirectoryViewContextMenu);
         connect(m_localFilesView, &QTreeView::clicked, this, &HelicalSFTPDialog::localFileViewClicked);
         connect(m_localFilesView, &QTreeView::doubleClicked, this, &HelicalSFTPDialog::localFileViewDoubleClicked);
         connect(m_localFilesView, &QTreeView::customContextMenuRequested, this, &HelicalSFTPDialog::showLocalFileViewContextMenu);
@@ -320,22 +320,22 @@ void HelicalSFTPDialog::remoteFileClicked(QListWidgetItem *item)
 }
 
 /**
- * @brief HelicalSFTPDialog::localFolderViewClicked
+ * @brief HelicalSFTPDialog::localDirectoryViewClicked
  *
- * Local folder view clicked processing.
+ * Local Directory view clicked processing.
  *
  * @param index
  */
-void HelicalSFTPDialog::localFolderViewClicked(const QModelIndex &index)
+void HelicalSFTPDialog::localDirectoryViewClicked(const QModelIndex &index)
 {
 
-    // If a folder(Directory) update current local directory, file mapper, file view root.
+    // If a Directory(Directory) update current local directory, file mapper, file view root.
 
-    if (m_localFoldersModel->isDir(index)) {
-        m_currentLocalDirectory = m_localFoldersModel->filePath(index);
+    if (m_localDirectorysModel->isDir(index)) {
+        m_currentLocalDirectory = m_localDirectorysModel->filePath(index);
         ui->localLineEdit->setText(m_currentLocalDirectory);
         m_fileMapper.reset(new  QtSFTP::FileMapper(m_currentLocalDirectory, m_currentRemoteDirectory));
-        m_localFilesView->setRootIndex(m_localFilesModel->index( m_localFoldersModel->filePath(index)));
+        m_localFilesView->setRootIndex(m_localFilesModel->index( m_localDirectorysModel->filePath(index)));
         if (m_currentLocalDirectory!=m_localSystemRoot) { // Enable ".." for non-root files view
             m_localFilesModel->setFilter(QDir::Hidden|QDir::AllEntries|QDir::NoDot);
         }
@@ -343,19 +343,19 @@ void HelicalSFTPDialog::localFolderViewClicked(const QModelIndex &index)
 }
 
 /**
- * @brief HelicalSFTPDialog::localFolderViewDoubleClicked
+ * @brief HelicalSFTPDialog::localDirectoryViewDoubleClicked
  *
- * Local folder view double click processing.
+ * Local Directory view double click processing.
  *
  * @param index
  */
-void HelicalSFTPDialog::localFolderViewDoubleClicked(const QModelIndex &index)
+void HelicalSFTPDialog::localDirectoryViewDoubleClicked(const QModelIndex &index)
 {
 
     // If a directory selected change current local direcrory and reset filemapper.
 
-    if (m_localFoldersModel->isDir(index)) {
-        m_currentLocalDirectory = m_localFoldersModel->filePath(index);
+    if (m_localDirectorysModel->isDir(index)) {
+        m_currentLocalDirectory = m_localDirectorysModel->filePath(index);
         ui->localLineEdit->setText(m_currentLocalDirectory);
         m_fileMapper.reset(new  QtSFTP::FileMapper(QFileInfo(m_currentLocalDirectory).dir().path(), m_currentRemoteDirectory));
     }
@@ -365,7 +365,7 @@ void HelicalSFTPDialog::localFolderViewDoubleClicked(const QModelIndex &index)
 /**
  * @brief HelicalSFTPDialog::localFileViewClicked
  *
- * Local folder view click processing.
+ * Local Directory view click processing.
  *
  * @param index
  */
@@ -388,10 +388,10 @@ void HelicalSFTPDialog::localFileViewClicked(const QModelIndex &index)
 void HelicalSFTPDialog::localFileViewDoubleClicked(const QModelIndex &index)
 {
 
-    if (m_localFoldersModel->isDir(index)) {
+    if (m_localDirectorysModel->isDir(index)) {
         m_currentLocalDirectory = m_localFilesModel->fileInfo(index).canonicalFilePath();
         m_localFilesView->setRootIndex(m_localFilesModel->index(m_currentLocalDirectory));
-        m_localFoldersView->setCurrentIndex(m_localFoldersModel->index(m_currentLocalDirectory));
+        m_localDirectorysView->setCurrentIndex(m_localDirectorysModel->index(m_currentLocalDirectory));
         if (m_currentLocalDirectory==m_localSystemRoot) {
             m_localFilesModel->setFilter(QDir::Hidden|QDir::AllEntries|QDir::NoDotAndDotDot);
         } else {
@@ -451,21 +451,21 @@ void HelicalSFTPDialog::showRemoteFileContextMenu(const QPoint &pos)
 /**
  * @brief HelicalSFTPDialog::showLocalFileContextMenu
  *
- * Show and process local folder view context menu commands.
+ * Show and process local Directory view context menu commands.
  *
  * @param pos
  */
-void HelicalSFTPDialog::showLocalFolderViewContextMenu(const QPoint &pos)
+void HelicalSFTPDialog::showlocalDirectoryViewContextMenu(const QPoint &pos)
 {
 
-    QMenu contextMenu("Local Folder Context Menu", this);
+    QMenu contextMenu("Local Directory Context Menu", this);
     QAction *menuAction;
 
     menuAction = new QAction("Upload", this);
-    connect(menuAction, &QAction::triggered, this, &HelicalSFTPDialog::uploadSelectedFolder);
+    connect(menuAction, &QAction::triggered, this, &HelicalSFTPDialog::uploadSelectedDirectory);
     contextMenu.addAction(menuAction);
 
-    contextMenu.exec(m_localFoldersView->mapToGlobal(pos));
+    contextMenu.exec(m_localDirectorysView->mapToGlobal(pos));
 
 }
 
@@ -533,7 +533,7 @@ void HelicalSFTPDialog::viewSelectedFiles()
 /**
  * @brief HelicalSFTPDialog::downloadSelectedFile
  *
- * Queue selected files/folders for download. Directories result in a resrusive list of the selected
+ * Queue selected files/Directorys for download. Directories result in a resrusive list of the selected
  * directories and the files found queued by the file transaction task controller.
  *
  */
@@ -612,17 +612,17 @@ void HelicalSFTPDialog::refreshSelectedDirectory()
 }
 
 /**
- * @brief HelicalSFTPDialog::uploadSelectedFolder
+ * @brief HelicalSFTPDialog::uploadSelectedDirectory
  *
  * Queue selected local directory for upload to current remote directory.
  *
  */
-void HelicalSFTPDialog::uploadSelectedFolder()
+void HelicalSFTPDialog::uploadSelectedDirectory()
 {
-    QModelIndexList indexList = m_localFoldersView->selectionModel()->selectedIndexes();
+    QModelIndexList indexList = m_localDirectorysView->selectionModel()->selectedIndexes();
     for (auto rowIndex : indexList) {
         if (rowIndex.column()==0) {
-            QString localFile{m_localFoldersModel->filePath(rowIndex)};
+            QString localFile{m_localDirectorysModel->filePath(rowIndex)};
             emit processDirectory({ UPLOAD, localFile, "", {QFileInfo(m_currentLocalDirectory).dir().path(),
                                             m_currentRemoteDirectory}});
         }
@@ -642,10 +642,10 @@ void HelicalSFTPDialog::uploadSelectedFiles()
     bool deferUpload=false;
 
     for (auto rowIndex : indexList) {
-        if (!m_localFoldersModel->isDir(rowIndex)) {
-            emit queueFileForProcessing({ UPLOAD,m_localFoldersModel->filePath(rowIndex), m_fileMapper->toRemote(m_localFoldersModel->filePath(rowIndex))});
+        if (!m_localDirectorysModel->isDir(rowIndex)) {
+            emit queueFileForProcessing({ UPLOAD,m_localDirectorysModel->filePath(rowIndex), m_fileMapper->toRemote(m_localDirectorysModel->filePath(rowIndex))});
         } else {
-            emit processDirectory({ UPLOAD, m_localFoldersModel->filePath(rowIndex), "", {m_currentLocalDirectory, m_currentRemoteDirectory}});
+            emit processDirectory({ UPLOAD, m_localDirectorysModel->filePath(rowIndex), "", {m_currentLocalDirectory, m_currentRemoteDirectory}});
             deferUpload=true;
         }
     }

@@ -12,7 +12,9 @@
 //
 // Class: HelicalFileTransferTask
 //
-// Description:
+// Description: Class to implement SFTP file transfer task that talks to an SFTP server and
+// executes SFTP commands (upload/download/delete) files. The task runs on a separate thread
+// and commuicates with the main client using signal/slots.
 //
 
 // =============
@@ -20,7 +22,6 @@
 // =============
 
 #include "helicalfiletransfertask.h"
-#include <QDebug>
 
 /**
  * @brief HelicalFileTransferTask::HelicalFileTransferTask
@@ -32,40 +33,31 @@ HelicalFileTransferTask::HelicalFileTransferTask(QObject *parent) : QObject(pare
 }
 
 /**
- * @brief HelicalFileTransferTask::fileTaskThread
- * @return
- */
-
-QThread *HelicalFileTransferTask::fileTaskThread() const
-{
-    return m_fileTaskThread;
-}
-
-/**
- * @brief HelicalFileTransferTask::setFileTaskThread
- * @param fileTaskThread
- */
-void HelicalFileTransferTask::setFileTaskThread(QThread *fileTaskThread)
-{
-    m_fileTaskThread = fileTaskThread;
-}
-
-/**
  * @brief HelicalFileTransferTask::openSession
- * @param serverName
- * @param serverPort
- * @param userName
- * @param userPassword
+ *
+ * Open an SFTP session to transfer files.
+ *
+ * @param serverName    SSH server name
+ * @param serverPort    SSH server port
+ * @param userName      User name
+ * @param userPassword  User password
  */
 void HelicalFileTransferTask::openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword)
 {
+
+    // Create new session and set session details.
+
     m_session.reset(new QtSSH());
 
     m_session->setSessionDetails(serverName, serverPort, userName, userPassword);
 
+    // Connect to server
+
     m_session->connectToServer();
     m_session->verifyServer();
     m_session->authorizeUser();
+
+    // Once connected open up SFTP channel.
 
     if (m_session->isConnected() && m_session->isAuthorized()) {
         m_sftp.reset(new QtSFTP(*m_session));
@@ -76,10 +68,14 @@ void HelicalFileTransferTask::openSession(const QString &serverName, const QStri
         connect(m_sftp.data(), &QtSFTP::removedDirectory, this,  &HelicalFileTransferTask::deleteFileFinised);
         connect(m_sftp.data(), &QtSFTP::error, this,  &HelicalFileTransferTask::error);
     }
+
 }
 
 /**
  * @brief HelicalFileTransferTask::closeSession
+ *
+ * Close SFTP channel and disconnect its SSH session.
+ *
  */
 void HelicalFileTransferTask::closeSession()
 {
@@ -98,9 +94,12 @@ void HelicalFileTransferTask::closeSession()
 
 /**
  * @brief HelicalFileTransferTask::processFile
- * @param action
- * @param sourceFile
- * @param destinationFile
+ *
+ * Process a given file: upload/download or delete.
+ *
+ * @param action            DELETE/UPLOAD/DOWNLOAD
+ * @param sourceFile        Source file
+ * @param destinationFile   Destination file
  */
 void HelicalFileTransferTask::processFile(const FileTransferAction &fileTransaction)
 {
@@ -133,9 +132,13 @@ void HelicalFileTransferTask::processFile(const FileTransferAction &fileTransact
 
 /**
  * @brief HelicalFileTransferTask::processDirectory
- * @param action
- * @param directoryPath
- * @param fileMappingPair
+ *
+ * Process a given directory: upload/download or delete. Recursively produce a list
+ * of files in directory and queue in controller to be processed.
+ *
+ * @param action            DELETE/UPLOAD/DOWNLOAD
+ * @param directoryPath     Directory to be processed
+ * @param fileMappingPair   File mapper used to map between remote/local file paths.
  */
 void HelicalFileTransferTask::processDirectory(const FileTransferAction &fileTransaction)
 {
@@ -184,4 +187,28 @@ void HelicalFileTransferTask::processDirectory(const FileTransferAction &fileTra
     }
 }
 
+/**
+ * @brief HelicalFileTransferTask::fileTaskThread
+ *
+ * Get file transfer task thread.
+ *
+ * @return
+ */
+
+QThread *HelicalFileTransferTask::fileTaskThread() const
+{
+    return m_fileTaskThread;
+}
+
+/**
+ * @brief HelicalFileTransferTask::setFileTaskThread
+ *
+ * Set file transfer task thread.
+ *
+ * @param fileTaskThread
+ */
+void HelicalFileTransferTask::setFileTaskThread(QThread *fileTaskThread)
+{
+    m_fileTaskThread = fileTaskThread;
+}
 
