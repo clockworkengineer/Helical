@@ -70,10 +70,10 @@ signals:
     void processNextFile();
 
 public slots:
-    void error(const QString &errorMessage, int errorCode, quint64 transactionID);
+    void error(const QString &errorTransactionMessage, int errorCode, quint64 transactionID);
     void statusMessage(const QString &message);
-    void finishedMessage(const QString &message);
-    void errorMessage(const QString &message);
+    void finishedTransactionMessage(const QString &message);
+    void errorTransactionMessage(const QString &message);
     void updateRemoteFileList();
 
 private slots:

@@ -67,7 +67,7 @@ HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, int columns, int ro
 }
 
 /**
- * @brief HelicalTerminalDialog::~
+ * @brief HelicalTerminalDialog::~HelicalTerminalDialog
  *
  * Destory terminal shell window and terminate its session.
  *
@@ -107,7 +107,7 @@ void HelicalTerminalDialog::remoteShellClosed()
 /**
  * @brief HelicalTerminalDialog::closeEvent
  *
- * Overrde for window close event. Terminate session and resend event up chain.
+ * Override for window close event. Terminate session and resend event up chain.
  *
  * @param event
  */

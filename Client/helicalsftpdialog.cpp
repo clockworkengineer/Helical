@@ -12,8 +12,8 @@
 //
 // Class: HelicalSFTPDialog
 //
-// Description: Class to create/display SFTP session dialog for the viewing of remote
-// files and their upload/download and manipulation.
+// Description: Class to create/display an SFTP session dialog(window) for the viewing of remote
+// files and their upload/download/deletion.
 //
 
 // =============
@@ -25,9 +25,13 @@
 
 /**
  * @brief HelicalSFTPDialog::HelicalSFTPDialog
- * @param session
- * @param remoteUserHome
- * @param parent
+ *
+ * Create SFTP session window.
+ *
+ * @param session           Currently active session
+ * @param remoteUserHome    Remote user home directory
+ * @param localUserHome     Local user home directory
+ * @param parent            Unused
  */
 HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHome, const QString &localUserHome, QWidget *parent) :
     QDialog(parent),
@@ -36,7 +40,7 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
     m_localSystemRoot {localUserHome }
 {
 
-    // Register custom signal//slot types
+    // Register custom signal/slot types
 
     qRegisterMetaType<FileTransferAction>();
 
@@ -132,8 +136,8 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
         connect(this,&HelicalSFTPDialog::processNextFile, &m_helicalTransferController, &HelicalFileTransferController::processNextFile);
 
         connect(&m_helicalTransferController, &HelicalFileTransferController::statusMessage, this, &HelicalSFTPDialog::statusMessage);
-        connect(&m_helicalTransferController, &HelicalFileTransferController::finishedMessage, this, &HelicalSFTPDialog::finishedMessage);
-        connect(&m_helicalTransferController, &HelicalFileTransferController::errorMessage, this, &HelicalSFTPDialog::errorMessage);
+        connect(&m_helicalTransferController, &HelicalFileTransferController::finishedTransactionMessage, this, &HelicalSFTPDialog::finishedTransactionMessage);
+        connect(&m_helicalTransferController, &HelicalFileTransferController::errorTransactionMessage, this, &HelicalSFTPDialog::errorTransactionMessage);
         connect(&m_helicalTransferController, &HelicalFileTransferController::updateRemoteFileList, this, &HelicalSFTPDialog::updateRemoteFileList);
 
     }
@@ -158,7 +162,7 @@ HelicalSFTPDialog::~HelicalSFTPDialog()
 /**
  * @brief HelicalSFTPDialog::updateRemoteFileList
  *
- * Update remote file widget list for passed in directory.
+ * Update remote file widget list for current remote directory.
  *
  * @param currentDirectory
  */
@@ -171,6 +175,8 @@ void HelicalSFTPDialog::updateRemoteFileList()
 
     ui->remoteLineEdit->setText(m_currentRemoteDirectory);
 
+    // Read directory contents list and place in widget list
+
     directoryHandle= m_sftp->openDirectory(m_currentRemoteDirectory);
 
     if (directoryHandle!=nullptr) {
@@ -178,7 +184,7 @@ void HelicalSFTPDialog::updateRemoteFileList()
         while(!m_sftp->endOfDirectory(directoryHandle)) {
             QtSFTP::FileAttributes fileAttributes;
             m_sftp->readDirectory(directoryHandle, fileAttributes);
-            if (fileAttributes) {
+            if (fileAttributes) {   //  Ignore "." ".."
                 if ((static_cast<QString>(fileAttributes->name)==".")||
                         (static_cast<QString>(fileAttributes->name)=="..")) {
                     continue;
@@ -204,6 +210,8 @@ void HelicalSFTPDialog::updateRemoteFileList()
 
     }
 
+    // If not user home then enable parent directory link
+
     if (m_currentRemoteDirectory!=m_remoteSystemRoot){
         m_remoteFileSystemList->insertItem(0, new HelicalRemoteFileItem(".."));
     }
@@ -224,20 +232,26 @@ void HelicalSFTPDialog::statusMessage(const QString &message)
 }
 
 /**
- * @brief HelicalSFTPDialog::finishedMessage
+ * @brief HelicalSFTPDialog::finishedTransactionMessage
+ *
+ * Output file transaction finished message.
+ *
  * @param message
  */
-void HelicalSFTPDialog::finishedMessage(const QString &message)
+void HelicalSFTPDialog::finishedTransactionMessage(const QString &message)
 {
     ui->finishedTransactions->insertPlainText(message);
     ui->statusMessages->moveCursor(QTextCursor::End);
 }
 
 /**
- * @brief HelicalSFTPDialog::errorMessage
+ * @brief HelicalSFTPDialog::errorTransactionMessage
+ *
+ * Output file transaction error message.
+ *
  * @param message
  */
-void HelicalSFTPDialog::errorMessage(const QString &message)
+void HelicalSFTPDialog::errorTransactionMessage(const QString &message)
 {
     ui->errorTransactions->insertPlainText(message);
     ui->statusMessages->moveCursor(QTextCursor::End);
@@ -245,67 +259,100 @@ void HelicalSFTPDialog::errorMessage(const QString &message)
 
 /**
  * @brief HelicalSFTPDialog::remoteFileDoubleClicked
+ *
+ * Remote file widget double clicked processing.
+ *
  * @param item
  */
 void HelicalSFTPDialog::remoteFileDoubleClicked(QListWidgetItem *item)
 {
     HelicalRemoteFileItem *fileItem = dynamic_cast<HelicalRemoteFileItem*>(item);
 
-    if (fileItem->text()=="..") {
-        while(!m_currentRemoteDirectory.endsWith(Antik::kServerPathSep))m_currentRemoteDirectory.chop(1);
-        if (m_currentRemoteDirectory.size()!=1)m_currentRemoteDirectory.chop(1);
-        updateRemoteFileList();
-        return;
-    }
+    if (fileItem) {
 
-    if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
-        m_currentRemoteDirectory = fileItem->m_remoteFilePath;
-        m_fileMapper.reset(new  QtSFTP::FileMapper(m_currentLocalDirectory, m_currentRemoteDirectory));
-        updateRemoteFileList();
+        // Parent link so go up a directory
+
+        if (fileItem->text()=="..") {
+            while(!m_currentRemoteDirectory.endsWith(Antik::kServerPathSep))m_currentRemoteDirectory.chop(1);
+            if (m_currentRemoteDirectory.size()!=1)m_currentRemoteDirectory.chop(1);
+            updateRemoteFileList();
+            return;
+        }
+
+        // Go into directory and list
+
+        if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
+            m_currentRemoteDirectory = fileItem->m_remoteFilePath;
+            m_fileMapper.reset(new  QtSFTP::FileMapper(m_currentLocalDirectory, m_currentRemoteDirectory));
+            updateRemoteFileList();
+        }
+
     }
 
 }
 /**
  * @brief HelicalSFTPDialog::remoteFileClicked
+ *
+ * Remote file widget clicked processing.
+ *
  * @param item
  */
 void HelicalSFTPDialog::remoteFileClicked(QListWidgetItem *item)
 {
     HelicalRemoteFileItem *fileItem = dynamic_cast<HelicalRemoteFileItem*>(item);
 
-    if (fileItem->text()=="..") {
-        return;
-    }
+    if (fileItem) {
 
-    if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
-        ui->remoteLineEdit->setText(m_currentRemoteDirectory);
+        // Ignore parent link
+
+        if (fileItem->text()=="..") {
+            return;
+        }
+
+        // File is a directory so change current remote directory (do not enter)
+
+        if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
+            ui->remoteLineEdit->setText(m_currentRemoteDirectory);
+        }
+
     }
 
 }
 
 /**
- * @brief HelicalSFTPDialog::localFileViewClicked
+ * @brief HelicalSFTPDialog::localFolderViewClicked
+ *
+ * Local folder view clicked processing.
+ *
  * @param index
  */
 void HelicalSFTPDialog::localFolderViewClicked(const QModelIndex &index)
 {
+
+    // If a folder(Directory) update current local directory, file mapper, file view root.
+
     if (m_localFoldersModel->isDir(index)) {
         m_currentLocalDirectory = m_localFoldersModel->filePath(index);
         ui->localLineEdit->setText(m_currentLocalDirectory);
         m_fileMapper.reset(new  QtSFTP::FileMapper(m_currentLocalDirectory, m_currentRemoteDirectory));
         m_localFilesView->setRootIndex(m_localFilesModel->index( m_localFoldersModel->filePath(index)));
-        if (m_currentLocalDirectory!=m_localSystemRoot) {
+        if (m_currentLocalDirectory!=m_localSystemRoot) { // Enable ".." for non-root files view
             m_localFilesModel->setFilter(QDir::Hidden|QDir::AllEntries|QDir::NoDot);
         }
     }
 }
 
 /**
- * @brief HelicalSFTPDialog::localFileSystemViewDoubleClicked
+ * @brief HelicalSFTPDialog::localFolderViewDoubleClicked
+ *
+ * Local folder view double click processing.
+ *
  * @param index
  */
 void HelicalSFTPDialog::localFolderViewDoubleClicked(const QModelIndex &index)
 {
+
+    // If a directory selected change current local direcrory and reset filemapper.
 
     if (m_localFoldersModel->isDir(index)) {
         m_currentLocalDirectory = m_localFoldersModel->filePath(index);
@@ -317,16 +364,25 @@ void HelicalSFTPDialog::localFolderViewDoubleClicked(const QModelIndex &index)
 
 /**
  * @brief HelicalSFTPDialog::localFileViewClicked
+ *
+ * Local folder view click processing.
+ *
  * @param index
  */
 void HelicalSFTPDialog::localFileViewClicked(const QModelIndex &index)
 {
+
+    // Jusr reset filemapper
+
     Q_UNUSED(index);
     m_fileMapper.reset(new  QtSFTP::FileMapper(m_currentLocalDirectory, m_currentRemoteDirectory));
 }
 
 /**
  * @brief HelicalSFTPDialog::localFileViewDoubleClicked
+ *
+ * Local file view double click processing.
+ *
  * @param index
  */
 void HelicalSFTPDialog::localFileViewDoubleClicked(const QModelIndex &index)
@@ -346,11 +402,13 @@ void HelicalSFTPDialog::localFileViewDoubleClicked(const QModelIndex &index)
     }
 
 
-
 }
 
 /**
  * @brief HelicalSFTPDialog::showRemoteFileContextMenu
+ *
+ * Show and process remote file context menu commands.
+ *
  * @param pos
  */
 void HelicalSFTPDialog::showRemoteFileContextMenu(const QPoint &pos)
@@ -392,6 +450,9 @@ void HelicalSFTPDialog::showRemoteFileContextMenu(const QPoint &pos)
 
 /**
  * @brief HelicalSFTPDialog::showLocalFileContextMenu
+ *
+ * Show and process local folder view context menu commands.
+ *
  * @param pos
  */
 void HelicalSFTPDialog::showLocalFolderViewContextMenu(const QPoint &pos)
@@ -410,6 +471,9 @@ void HelicalSFTPDialog::showLocalFolderViewContextMenu(const QPoint &pos)
 
 /**
  * @brief HelicalSFTPDialog::showLocalFileViewContextMenu
+ *
+ * Show and process local file view context menu commands.
+ *
  * @param pos
  */
 void HelicalSFTPDialog::showLocalFileViewContextMenu(const QPoint &pos)
@@ -426,8 +490,12 @@ void HelicalSFTPDialog::showLocalFileViewContextMenu(const QPoint &pos)
 
 /**
  * @brief HelicalSFTPDialog::error
- * @param errorMessage
- * @param errorCode
+ *
+ * Error message processing slot.
+ *
+ * @param errorMessage   Error message
+ * @param errorCode      Error code
+ * @param transactionID  File transaction ID
  */
 void HelicalSFTPDialog::error(const QString &errorMessage, int errorCode, quint64 transactionID)
 {
@@ -441,6 +509,10 @@ void HelicalSFTPDialog::error(const QString &errorMessage, int errorCode, quint6
 
 /**
  * @brief HelicalSFTPDialog::viewSelectedFiles
+ *
+ * Download and view selected files. This is performed directly using the local SFTP session and
+ * not queued for processing.
+ *
  */
 void HelicalSFTPDialog::viewSelectedFiles()
 {
@@ -460,6 +532,10 @@ void HelicalSFTPDialog::viewSelectedFiles()
 
 /**
  * @brief HelicalSFTPDialog::downloadSelectedFile
+ *
+ * Queue selected files/folders for download. Directories result in a resrusive list of the selected
+ * directories and the files found queued by the file transaction task controller.
+ *
  */
 void HelicalSFTPDialog::downloadSelectedFile()
 {
@@ -481,6 +557,9 @@ void HelicalSFTPDialog::downloadSelectedFile()
 
 /**
  * @brief HelicalSFTPDialog::deleteSelectedFiles
+ *
+ * Queue selected files/directories for deletion.
+ *
  */
 void HelicalSFTPDialog::deleteSelectedFiles()
 {
@@ -508,6 +587,9 @@ void HelicalSFTPDialog::deleteSelectedFiles()
 
 /**
  * @brief HelicalSFTPDialog::enterSelectedDirectory
+ *
+ * Update the current remote directory and update its file widget list.
+ *
  */
 void HelicalSFTPDialog::enterSelectedDirectory()
 {
@@ -520,6 +602,9 @@ void HelicalSFTPDialog::enterSelectedDirectory()
 
 /**
  * @brief HelicalSFTPDialog::refreshSelectedDirectory
+ *
+ * Refresh current remote directory file (widget) list.
+ *
  */
 void HelicalSFTPDialog::refreshSelectedDirectory()
 {
@@ -528,6 +613,9 @@ void HelicalSFTPDialog::refreshSelectedDirectory()
 
 /**
  * @brief HelicalSFTPDialog::uploadSelectedFolder
+ *
+ * Queue selected local directory for upload to current remote directory.
+ *
  */
 void HelicalSFTPDialog::uploadSelectedFolder()
 {
@@ -544,6 +632,9 @@ void HelicalSFTPDialog::uploadSelectedFolder()
 
 /**
  * @brief HelicalSFTPDialog::uploadSelectedFiles
+ *
+ * Queue selected local directory/files for upload to current remote directory.
+ *
  */
 void HelicalSFTPDialog::uploadSelectedFiles()
 {

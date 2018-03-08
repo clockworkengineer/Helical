@@ -103,15 +103,15 @@ void HelicalFileTransferController::fileFinished(quint64 transactionID)
         switch (nextTransaction.m_action) {
 
         case DOWNLOAD:
-            emit finishedMessage(QString("Downloaded File \"%1\" to \"%2\".\n").arg(nextTransaction.m_sourceFile).arg(nextTransaction.m_destinationFile));
+            emit finishedTransactionMessage(QString("Downloaded File \"%1\" to \"%2\".\n").arg(nextTransaction.m_sourceFile).arg(nextTransaction.m_destinationFile));
             break;
 
         case UPLOAD:
-            emit finishedMessage(QString("Uploaded File \"%1\" to \"%2\".\n").arg(nextTransaction.m_sourceFile).arg(nextTransaction.m_destinationFile));
+            emit finishedTransactionMessage(QString("Uploaded File \"%1\" to \"%2\".\n").arg(nextTransaction.m_sourceFile).arg(nextTransaction.m_destinationFile));
             break;
 
         case DELETE:
-            emit finishedMessage(QString("Deleted File \"%1\".\n").arg(nextTransaction.m_sourceFile));
+            emit finishedTransactionMessage(QString("Deleted File \"%1\".\n").arg(nextTransaction.m_sourceFile));
              break;
 
         }
@@ -177,7 +177,7 @@ void HelicalFileTransferController::error(const QString &errorMsg, int errorCode
 {
     Q_UNUSED(errorCode);
 
-    emit errorMessage(errorMsg+"\n");
+    emit errorTransactionMessage(errorMsg+"\n");
 
     if (!m_beingProcessedFileTransactions.empty()) {
         FileTransferAction nextTransaction =  m_beingProcessedFileTransactions.first();

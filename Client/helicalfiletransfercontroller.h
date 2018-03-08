@@ -46,15 +46,15 @@ signals:
     void processDirectory(const FileTransferAction &fileTransaction);
 
     void statusMessage(const QString &message);
-    void finishedMessage(const QString &message);
-    void errorMessage(const QString &message);
+    void finishedTransactionMessage(const QString &message);
+    void errorTransactionMessage(const QString &message);
     void updateRemoteFileList();
 
 public slots:
     void fileFinished(quint64 transactionID);
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
     void processNextFile();
-    void error(const QString &errorMessage, int errorCode, quint64 transactionID);
+    void error(const QString &errorTransactionMessage, int errorCode, quint64 transactionID);
 
 private:
     QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;
