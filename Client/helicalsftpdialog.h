@@ -51,22 +51,36 @@ class HelicalSFTPDialog : public QDialog
 {
     Q_OBJECT
 
+    // Remote file system custom list wdiget
+
     class HelicalRemoteFileItem : public QListWidgetItem {
     public:
         HelicalRemoteFileItem(const QString &name) : QListWidgetItem(name) {}
-        QtSFTP::FileAttributes m_fileAttributes;
-        QString m_remoteFilePath;
+        QtSFTP::FileAttributes m_fileAttributes;    // File attributes
+        QString m_remoteFilePath;                   // File full remote path
     };
 
 public:
+
+    // Constructor / destructor
+
     explicit HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHome,  const QString &localUserHome, QWidget *parent = 0);
     ~HelicalSFTPDialog();
 
 signals:
+
+    // Open / close SFTP session
+
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
+
+    // File / Directory processing
+
     void processFile(const FileTransferAction &fileTransaction);
     void processDirectory(const FileTransferAction &fileTransaction);
+
+    // Queue processing
+
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
     void processNextFile();
 
@@ -78,6 +92,9 @@ public slots:
     void updateRemoteFileList();
 
 private slots:
+
+    // UI event handling
+
     void remoteFileClicked(QListWidgetItem *item);
     void remoteFileDoubleClicked(QListWidgetItem * item);
     void localDirectoryViewClicked(const QModelIndex &index);
@@ -85,9 +102,13 @@ private slots:
     void localFileViewClicked(const QModelIndex &index);
     void localFileViewDoubleClicked(const QModelIndex &index);
 
+    // Context menu handling
+
     void showRemoteFileContextMenu(const QPoint &pos);
     void showlocalDirectoryViewContextMenu(const QPoint &pos);
     void showLocalFileViewContextMenu(const QPoint &pos);
+
+    // UI command processing
 
     void viewSelectedFiles();
     void downloadSelectedFile();
@@ -105,22 +126,38 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
+
+    // Qt dialog data
+
     Ui::HelicalSFTPDialog *ui;
+
+    // Local/remote system roots and current working directory
 
     QString m_remoteSystemRoot;
     QString m_localSystemRoot;
     QString m_currentRemoteDirectory {m_remoteSystemRoot};
     QString m_currentLocalDirectory { m_localSystemRoot};
 
+    // Local file/folder views and model
+
     QFileSystemModel *m_localDirectorysModel;
     QTreeView *m_localDirectorysView;
     QListView *m_localFilesView;
     QFileSystemModel *m_localFilesModel;
+
+    // Remote file system widget list
+
     QListWidget *m_remoteFileSystemList;
+
+    // SFTP connection
 
     QScopedPointer<QtSFTP> m_sftp;
 
+    // Local/Remote file mapper
+
     QScopedPointer<QtSFTP::FileMapper> m_fileMapper;
+
+    // Controller for file transfertask
 
     HelicalFileTransferController m_helicalTransferController;
 

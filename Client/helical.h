@@ -22,7 +22,11 @@
 
 #include <QString>
 
+// File mapping pair
+
 typedef std::pair<QString, QString> FileMappingPair;
+
+// Supported file transactions
 
 enum FileAction {
     UPLOAD,
@@ -30,18 +34,22 @@ enum FileAction {
     DELETE
 };
 
+// File transfer action
+
 struct FileTransferAction {
+
+    // Constructors
 
     FileTransferAction() {}
 
     FileTransferAction(const FileAction &action, const QString &sourceFile, const QString &destinationFile="", const FileMappingPair &fileMappingPair=FileMappingPair()) :
         m_action {action}, m_sourceFile {sourceFile}, m_destinationFile{destinationFile}, m_fileMappingPair {fileMappingPair} {}
 
-    std::uint64_t m_fileTransferID {0};
-    FileAction m_action;
-    QString m_sourceFile;
-    QString m_destinationFile;
-    FileMappingPair m_fileMappingPair;
+    std::uint64_t m_fileTransferID {0}; // Transfer ID
+    FileAction m_action;                // File transaction type
+    QString m_sourceFile;               // Source file
+    QString m_destinationFile;          // Destination dile
+    FileMappingPair m_fileMappingPair;  // File Mapping pair
 
 };
 

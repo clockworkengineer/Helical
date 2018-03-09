@@ -67,7 +67,7 @@ private:
 
     Ui::HelicalServerDetailsDialog *ui;     // Qt dialog data
 
-    HelicalServerConnectionSettings m_serverConnectionSettings;
+    HelicalServerConnectionSettings m_serverConnectionSettings; // Connection settings
 
 
 };

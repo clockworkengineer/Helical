@@ -39,10 +39,12 @@ public:
 
     };
 
-    HelicalServerConnectionSettings();
+    // Load/Save settings
 
     void load(const QString& connectionName);
     void save();
+
+    // Settings getter/setters
 
     QString connectionName() const;
     void setConnectionName(const QString &connectionName);

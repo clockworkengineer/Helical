@@ -36,16 +36,28 @@ class HelicalFileTransferController : public QObject
 
 public:
 
+    // Main consstructor
+
     explicit HelicalFileTransferController(QObject *parent = nullptr);
+
+    // Create/destroy file transfer task
 
     void createFileTransferTask(QtSSH &session);
     void destroyFileTransferTask();
 
 signals:
+
+    // Open/close session
+
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
+
+    // File/directory procesing
+
     void processFile(const FileTransferAction &fileTransaction);
     void processDirectory(const FileTransferAction &fileTransaction);
+
+    // UI feedback
 
     void statusMessage(const QString &message);
     void finishedTransactionMessage(const QString &message);
@@ -53,13 +65,21 @@ signals:
     void updateRemoteFileList();
 
 public slots:
+
+    // File transaction processing
+
     void fileFinished(quint64 transactionID);
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
     void processNextFile();
+
+    // Error message feedback
+
     void error(const QString &errorTransactionMessage, int errorCode, quint64 transactionID);
 
 private:
-    QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;
+    QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;     // File transaction task
+
+    // File transaction queues (maps indexed by ID at present)
 
     std::uint64_t m_nextID {0};
     QMap<std::uint64_t, FileTransferAction> m_queuedFileTransactions;

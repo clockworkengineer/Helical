@@ -22,14 +22,6 @@
 #include "helicalserverconnectionsettings.h"
 
 /**
- * @brief HelicalServerConnectionSettings::HelicalServerConnectionSettings
- */
-HelicalServerConnectionSettings::HelicalServerConnectionSettings()
-{
-
-}
-
-/**
  * @brief HelicalServerConnectionSettings::load
  * @param connectionName
  */

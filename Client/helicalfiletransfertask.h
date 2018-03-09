@@ -52,12 +52,19 @@ public:
 
     };
 
+    // Main constructor
+
     explicit HelicalFileTransferTask(QObject *parent = nullptr);
+
+    // Set/get main thread
 
     QThread *fileTaskThread() const;
     void setFileTaskThread(QThread *fileTaskThread);
 
 signals:
+
+    // Task controller siganals
+
     void uploadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID);
     void deleteFileFinised(const QString &fileName, quint64 transactionID);
@@ -66,16 +73,21 @@ signals:
     void error(const QString &errorMessage, int errorCode,  quint64 transactionID);
 
 public slots:
+
+    // Open/close session
+
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
+
+    // File/direcrory processing
+
     void processFile(const FileTransferAction &fileTransaction);
     void processDirectory(const FileTransferAction &fileTransaction);
 
 private:
-    QThread *m_fileTaskThread;
-    QScopedPointer<QtSSH> m_session;
-    QScopedPointer<QtSFTP> m_sftp;
-    std::atomic_bool m_busy {false};
+    QThread *m_fileTransferTaskThread;  // File transfer task thread
+    QScopedPointer<QtSSH> m_session;    // File transfer task SSH Session
+    QScopedPointer<QtSFTP> m_sftp;      // File transfer task SFTP Session
 
 };
 

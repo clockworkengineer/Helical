@@ -193,7 +193,7 @@ void HelicalFileTransferTask::processDirectory(const FileTransferAction &fileTra
 
 QThread *HelicalFileTransferTask::fileTaskThread() const
 {
-    return m_fileTaskThread;
+    return m_fileTransferTaskThread;
 }
 
 /**
@@ -205,6 +205,6 @@ QThread *HelicalFileTransferTask::fileTaskThread() const
  */
 void HelicalFileTransferTask::setFileTaskThread(QThread *fileTaskThread)
 {
-    m_fileTaskThread = fileTaskThread;
+    m_fileTransferTaskThread = fileTaskThread;
 }
 
