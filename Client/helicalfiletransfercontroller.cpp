@@ -12,7 +12,10 @@
 //
 // Class: HelicalFileTransferController
 //
-// Description:
+// Description:  Class to implement file trasnfer task controller. This is the interface between
+// the main client UI and the file trasnfer task. If maintains the list of queued requests and passes
+// them onto the file trasnfer task as and when needed. It also queues any transfer requests generated as
+// a result of direct commands to the task such is list a local/remote directory recursively.
 //
 
 // =============
@@ -40,6 +43,9 @@ HelicalFileTransferController::HelicalFileTransferController(QObject *parent) : 
 
 void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
 {
+
+    // Create task thread, start it and move task object to it
+
     QScopedPointer<QThread> fileTransferThread { new QThread() };
 
     m_fileTransferTask.reset(new HelicalFileTransferTask());
@@ -47,19 +53,21 @@ void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
     m_fileTransferTask->moveToThread(m_fileTransferTask->fileTaskThread());
     m_fileTransferTask->fileTaskThread()->start();
 
+    // Signal/Slot interfce between controller/task
+
     connect(this,&HelicalFileTransferController::openSession, m_fileTransferTask.data(), &HelicalFileTransferTask::openSession);
     connect(this,&HelicalFileTransferController::closeSession, m_fileTransferTask.data(), &HelicalFileTransferTask::closeSession);
     connect(this,&HelicalFileTransferController::processFile, m_fileTransferTask.data(), &HelicalFileTransferTask::processFile);
     connect(this,&HelicalFileTransferController::processDirectory, m_fileTransferTask.data(), &HelicalFileTransferTask::processDirectory);
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::uploadFinished,
-            [=]( const QString &sourceFile, const QString &destinationFile, quint64 transactionID ) { this->fileFinished(transactionID); });
+            [=]( const QString &/*sourceFile*/, const QString &/*destinationFile*/, quint64 transactionID ) { this->fileFinished(transactionID); });
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::downloadFinished,
-            [=]( const QString &sourceFile, const QString &destinationFile, quint64 transactionID ) { this->fileFinished(transactionID); });
+            [=]( const QString &/*sourceFile*/, const QString &/*destinationFile*/, quint64 transactionID ) { this->fileFinished(transactionID); });
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::deleteFileFinised,
-            [=]( const QString &fileName, quint64 transactionID) { this->fileFinished(transactionID); });
+            [=]( const QString &/*fileName*/, quint64 transactionID) { this->fileFinished(transactionID); });
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForProcessing, this, &HelicalFileTransferController::queueFileForProcessing);
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startFileProcessing, this, &HelicalFileTransferController::processNextFile);
@@ -83,7 +91,8 @@ void HelicalFileTransferController::destroyFileTransferTask()
 {
 
     m_queuedFileTransactions.clear();
-    m_queuedFileTransactions.clear();
+    m_beingProcessedFileTransactions.clear();
+    m_fileTransactionsInError.clear();
 
     emit closeSession();
     m_fileTransferTask.take();
@@ -92,16 +101,18 @@ void HelicalFileTransferController::destroyFileTransferTask()
 
 /**
  * @brief HelicalFileTransferController::fileFinished
- * @param sourceFile
- * @param destinationFile
+ *
+ * File trasnaction finished slot. Remove transaction from being processed queue and get next.
+ *
+ * @param transactionID
  */
 void HelicalFileTransferController::fileFinished(quint64 transactionID)
 {
 
-    if (!m_beingProcessedFileTransactions.empty()) {
+    if (m_beingProcessedFileTransactions.find(transactionID)!=m_beingProcessedFileTransactions.end()) {
 
-        FileTransferAction nextTransaction =  m_beingProcessedFileTransactions.first();
-        m_beingProcessedFileTransactions.remove(nextTransaction.m_fileTransferID);
+        FileTransferAction nextTransaction =  m_beingProcessedFileTransactions[transactionID];
+        m_beingProcessedFileTransactions.remove(transactionID);
 
         switch (nextTransaction.m_action) {
 
@@ -115,18 +126,21 @@ void HelicalFileTransferController::fileFinished(quint64 transactionID)
 
         case DELETE:
             emit finishedTransactionMessage(QString("Deleted File \"%1\".\n").arg(nextTransaction.m_sourceFile));
-             break;
+            break;
 
         }
 
-        processNextFile();
-
     }
+
+    processNextFile();
 
 }
 
 /**
  * @brief HelicalFileTransferController::queueFileForProcessing
+ *
+ * Queue file transaction for processing.
+ *
  * @param fileName
  */
 void HelicalFileTransferController::queueFileForProcessing(const FileTransferAction &fileTransaction)
@@ -144,7 +158,6 @@ void HelicalFileTransferController::queueFileForProcessing(const FileTransferAct
 
     case UPLOAD:
         emit statusMessage(QString("File \"%1\" queued for upload.\n").arg(fileTransaction.m_sourceFile));
-
         break;
 
     case DELETE:
@@ -156,6 +169,9 @@ void HelicalFileTransferController::queueFileForProcessing(const FileTransferAct
 
 /**
  * @brief HelicalFileTransferController::processNextFile
+ *
+ * Process next file transaction if queue not empty.
+ *
  */
 void HelicalFileTransferController::processNextFile()
 {
@@ -173,8 +189,12 @@ void HelicalFileTransferController::processNextFile()
 
 /**
  * @brief HelicalFileTransferController::error
- * @param errorMessage
- * @param errorCode
+ *
+ * A file transaction error has occurred.
+ *
+ * @param errorMsg      Error message
+ * @param errorCode     Error code
+ * @param transactionID Transaction code.
  */
 void HelicalFileTransferController::error(const QString &errorMsg, int errorCode, quint64 transactionID)
 {
@@ -182,10 +202,10 @@ void HelicalFileTransferController::error(const QString &errorMsg, int errorCode
 
     emit errorTransactionMessage(errorMsg+"\n");
 
-    if (!m_beingProcessedFileTransactions.empty()) {
-        FileTransferAction nextTransaction =  m_beingProcessedFileTransactions.first();
-        m_beingProcessedFileTransactions.remove(nextTransaction.m_fileTransferID);
-        m_fileTransactionsInError[nextTransaction.m_fileTransferID] = nextTransaction;
+    if (m_beingProcessedFileTransactions.find(transactionID)!=m_beingProcessedFileTransactions.end()) {
+        FileTransferAction nextTransaction =  m_beingProcessedFileTransactions[transactionID];
+        m_beingProcessedFileTransactions.remove(transactionID);
+        m_fileTransactionsInError[transactionID] = nextTransaction;
     }
 
     emit processNextFile();

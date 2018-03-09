@@ -13,7 +13,7 @@
 // Class: HelicalFileTransferTask
 //
 // Description: Class to implement SFTP file transfer task that talks to an SFTP server and
-// executes SFTP commands (upload/download/delete) files. The task runs on a separate thread
+// executes SFTP commands (upload/download/delete files). The task runs on a separate thread
 // and commuicates with the main client using signal/slots.
 //
 

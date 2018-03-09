@@ -497,7 +497,7 @@ void HelicalSFTPDialog::showLocalFileViewContextMenu(const QPoint &pos)
  * @param errorCode      Error code
  * @param transactionID  File transaction ID
  */
-void HelicalSFTPDialog::error(const QString &errorMessage, int errorCode, quint64 transactionID)
+void HelicalSFTPDialog::error(const QString &errorMessage, int errorCode, quint64 /*transactionID*/)
 {
     Q_UNUSED(errorCode);
 
