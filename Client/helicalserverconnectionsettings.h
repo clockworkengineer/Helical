@@ -1,5 +1,26 @@
+/*
+ * File:   helicalserverdetailsdialog.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
 #ifndef HELICALSERVERCONNECTIONSETTINGS_H
 #define HELICALSERVERCONNECTIONSETTINGS_H
+
+//
+// Class: HelicalServerConnectionSettings
+//
+// Description: Class to load/save Helical SSH server connection details.
+//
+
+// =============
+// INCLUDE FILES
+// =============
 
 #include <QString>
 #include <QSettings>

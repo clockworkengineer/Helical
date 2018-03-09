@@ -1,5 +1,24 @@
+/*
+ * File:   helical.h
+ *
+ * Author: Robert Tizzard
+ *
+ * Created on January 10, 2018
+ *
+ * Copyright 2018.
+ *
+ */
+
 #ifndef HELICAL_H
 #define HELICAL_H
+
+//
+// Description: Common client definitions.
+//
+
+// =============
+// INCLUDE FILES
+// =============
 
 #include <QString>
 

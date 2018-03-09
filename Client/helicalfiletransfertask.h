@@ -1,9 +1,5 @@
-#ifndef HELICALFILETRANSFERTASK_H
-#define HELICALFILETRANSFERTASK_H
-
 /*
  * File:   helicalfiletransfertask.h
- *
  *
  * Author: Robert Tizzard
  *
@@ -13,10 +9,15 @@
  *
  */
 
+#ifndef HELICALFILETRANSFERTASK_H
+#define HELICALFILETRANSFERTASK_H
+
 //
 // Class: HelicalFileTransferTask
 //
-// Description:
+// Description: Class to implement SFTP file transfer task that talks to an SFTP server and
+// executes SFTP commands (upload/download/delete files). The task runs on a separate thread
+// and commuicates with the main client using signal/slots.
 //
 
 // =============

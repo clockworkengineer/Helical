@@ -1,9 +1,5 @@
-#ifndef HELICALFILETRANSFERCONTROLLER_H
-#define HELICALFILETRANSFERCONTROLLER_H
-
 /*
  * File:   helicalfiletransfercontroller.h
- *
  *
  * Author: Robert Tizzard
  *
@@ -13,10 +9,16 @@
  *
  */
 
+#ifndef HELICALFILETRANSFERCONTROLLER_H
+#define HELICALFILETRANSFERCONTROLLER_H
+
 //
 // Class: HelicalFileTransferController
 //
-// Description:
+// Description:  Class to implement file transfer task controller. This is the interface between
+// the main client UI and the file trasnfer task. If maintains the list of queued requests and passes
+// them onto the file trasnfer task as and when needed. It also queues any transfer requests generated as
+// a result of direct commands to the task such is list a local/remote directory recursively.
 //
 
 // =============

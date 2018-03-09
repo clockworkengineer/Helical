@@ -97,9 +97,7 @@ void HelicalFileTransferTask::closeSession()
  *
  * Process a given file: upload/download or delete.
  *
- * @param action            DELETE/UPLOAD/DOWNLOAD
- * @param sourceFile        Source file
- * @param destinationFile   Destination file
+ * @param fileTransaction   File transaction
  */
 void HelicalFileTransferTask::processFile(const FileTransferAction &fileTransaction)
 {
@@ -110,19 +108,19 @@ void HelicalFileTransferTask::processFile(const FileTransferAction &fileTransact
         switch(fileTransaction.m_action) {
 
         case UPLOAD:
-            m_sftp->putLocalFile(fileTransaction.m_sourceFile, fileTransaction.m_destinationFile);
+            m_sftp->putLocalFile(fileTransaction.m_sourceFile, fileTransaction.m_destinationFile, fileTransaction.m_fileTransferID);
             break;
 
         case DOWNLOAD:
-            m_sftp->getRemoteFile(fileTransaction.m_sourceFile, fileTransaction.m_destinationFile);
+            m_sftp->getRemoteFile(fileTransaction.m_sourceFile, fileTransaction.m_destinationFile, fileTransaction.m_fileTransferID);
             break;
 
         case DELETE:
             m_sftp->getFileAttributes(fileTransaction.m_sourceFile, filAttributes);
             if (m_sftp->isARegularFile(filAttributes)) {
-                m_sftp->removeLink(fileTransaction.m_sourceFile);
+                m_sftp->removeLink(fileTransaction.m_sourceFile, fileTransaction.m_fileTransferID);
             } else if (m_sftp->isADirectory(filAttributes)) {
-                m_sftp->removeDirectory(fileTransaction.m_sourceFile);
+                m_sftp->removeDirectory(fileTransaction.m_sourceFile, fileTransaction.m_fileTransferID);
             }
             break;
 
@@ -136,9 +134,7 @@ void HelicalFileTransferTask::processFile(const FileTransferAction &fileTransact
  * Process a given directory: upload/download or delete. Recursively produce a list
  * of files in directory and queue in controller to be processed.
  *
- * @param action            DELETE/UPLOAD/DOWNLOAD
- * @param directoryPath     Directory to be processed
- * @param fileMappingPair   File mapper used to map between remote/local file paths.
+ * @param fileTransaction   File transaction
  */
 void HelicalFileTransferTask::processDirectory(const FileTransferAction &fileTransaction)
 {

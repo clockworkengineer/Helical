@@ -15,7 +15,8 @@
 //
 // Class: HelicalSFTPDialog
 //
-// Description:
+// Description: Class to create/display an SFTP session dialog(window) for the viewing of remote
+// files and their upload/download/deletion.
 //
 
 // =============
