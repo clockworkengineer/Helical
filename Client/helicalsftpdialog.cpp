@@ -126,19 +126,7 @@ HelicalSFTPDialog::HelicalSFTPDialog(QtSSH &session, const QString &remoteUserHo
         connect(m_localFilesView, &QTreeView::doubleClicked, this, &HelicalSFTPDialog::localFileViewDoubleClicked);
         connect(m_localFilesView, &QTreeView::customContextMenuRequested, this, &HelicalSFTPDialog::showLocalFileViewContextMenu);
 
-        m_helicalTransferController.createFileTransferTask(session);
-
-        connect(this,&HelicalSFTPDialog::openSession, &m_helicalTransferController, &HelicalFileTransferController::openSession);
-        connect(this,&HelicalSFTPDialog::closeSession, &m_helicalTransferController, &HelicalFileTransferController::closeSession);
-        connect(this,&HelicalSFTPDialog::processFile, &m_helicalTransferController, &HelicalFileTransferController::processFile);
-        connect(this,&HelicalSFTPDialog::processDirectory, &m_helicalTransferController, &HelicalFileTransferController::processDirectory);
-        connect(this,&HelicalSFTPDialog::queueFileForProcessing, &m_helicalTransferController, &HelicalFileTransferController::queueFileForProcessing);
-        connect(this,&HelicalSFTPDialog::processNextFile, &m_helicalTransferController, &HelicalFileTransferController::processNextFile);
-
-        connect(&m_helicalTransferController, &HelicalFileTransferController::statusMessage, this, &HelicalSFTPDialog::statusMessage);
-        connect(&m_helicalTransferController, &HelicalFileTransferController::finishedTransactionMessage, this, &HelicalSFTPDialog::finishedTransactionMessage);
-        connect(&m_helicalTransferController, &HelicalFileTransferController::errorTransactionMessage, this, &HelicalSFTPDialog::errorTransactionMessage);
-        connect(&m_helicalTransferController, &HelicalFileTransferController::updateRemoteFileList, this, &HelicalSFTPDialog::updateRemoteFileList);
+        startupControllers(session);
 
     }
 
@@ -503,8 +491,6 @@ void HelicalSFTPDialog::error(const QString &errorMessage, int errorCode, quint6
 
     statusMessage(errorMessage+"\n");
 
-    emit processNextFile();
-
 }
 
 /**
@@ -551,8 +537,6 @@ void HelicalSFTPDialog::downloadSelectedFile()
         }
     }
 
-    emit processNextFile();
-
 }
 
 /**
@@ -564,8 +548,6 @@ void HelicalSFTPDialog::downloadSelectedFile()
 void HelicalSFTPDialog::deleteSelectedFiles()
 {
 
-    bool deferDelete {false};
-
     for  (auto listItem : m_remoteFileSystemList->selectedItems()) {
         HelicalRemoteFileItem *fileItem = dynamic_cast<HelicalRemoteFileItem*>(listItem);
         if (fileItem->m_fileAttributes) {
@@ -573,15 +555,9 @@ void HelicalSFTPDialog::deleteSelectedFiles()
                 emit  queueFileForProcessing({ DELETE, fileItem->m_remoteFilePath });
             } else if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
                 emit processDirectory({ DELETE, fileItem->m_remoteFilePath });
-                deferDelete=true;
             }
         }
     }
-
-    if(!deferDelete) {
-        emit processNextFile();
-    }
-
 
 }
 
@@ -639,20 +615,17 @@ void HelicalSFTPDialog::uploadSelectedDirectory()
 void HelicalSFTPDialog::uploadSelectedFiles()
 {
     QModelIndexList indexList = m_localFilesView->selectionModel()->selectedIndexes();
-    bool deferUpload=false;
 
     for (auto rowIndex : indexList) {
-        if (!m_localDirectorysModel->isDir(rowIndex)) {
-            emit queueFileForProcessing({ UPLOAD,m_localDirectorysModel->filePath(rowIndex), m_fileMapper->toRemote(m_localDirectorysModel->filePath(rowIndex))});
-        } else {
-            emit processDirectory({ UPLOAD, m_localDirectorysModel->filePath(rowIndex), "", {m_currentLocalDirectory, m_currentRemoteDirectory}});
-            deferUpload=true;
+        if (rowIndex.column()==0) {
+            if (!m_localDirectorysModel->isDir(rowIndex)) {
+                emit queueFileForProcessing({ UPLOAD,m_localDirectorysModel->filePath(rowIndex), m_fileMapper->toRemote(m_localDirectorysModel->filePath(rowIndex))});
+            } else {
+                emit processDirectory({ UPLOAD, m_localDirectorysModel->filePath(rowIndex), "", {m_currentLocalDirectory, m_currentRemoteDirectory}});
+            }
         }
     }
 
-    if (!deferUpload) {
-        emit processNextFile();
-    }
 
 }
 
@@ -665,6 +638,32 @@ void HelicalSFTPDialog::uploadSelectedFiles()
  */
 void HelicalSFTPDialog::closeEvent(QCloseEvent *event)
 {
-    this->m_helicalTransferController.destroyFileTransferTask();
+    terminateControllers();
     QDialog::closeEvent(event);
+}
+
+/**
+ * @brief HelicalSFTPDialog::startupControllers
+ * @param session
+ */
+void HelicalSFTPDialog::startupControllers(QtSSH &session)
+{
+    m_helicalTransferController.createFileTransferTask(session);
+
+    connect(this,&HelicalSFTPDialog::processFile, &m_helicalTransferController, &HelicalFileTransferController::processFile);
+    connect(this,&HelicalSFTPDialog::processDirectory, &m_helicalTransferController, &HelicalFileTransferController::processDirectory);
+    connect(this,&HelicalSFTPDialog::queueFileForProcessing, &m_helicalTransferController, &HelicalFileTransferController::queueFileForProcessing);
+
+    connect(&m_helicalTransferController, &HelicalFileTransferController::statusMessage, this, &HelicalSFTPDialog::statusMessage);
+    connect(&m_helicalTransferController, &HelicalFileTransferController::finishedTransactionMessage, this, &HelicalSFTPDialog::finishedTransactionMessage);
+    connect(&m_helicalTransferController, &HelicalFileTransferController::errorTransactionMessage, this, &HelicalSFTPDialog::errorTransactionMessage);
+    connect(&m_helicalTransferController, &HelicalFileTransferController::updateRemoteFileList, this, &HelicalSFTPDialog::updateRemoteFileList);
+}
+
+/**
+ * @brief HelicalSFTPDialog::terminateControllers
+ */
+void HelicalSFTPDialog::terminateControllers()
+{
+    this->m_helicalTransferController.destroyFileTransferTask();
 }

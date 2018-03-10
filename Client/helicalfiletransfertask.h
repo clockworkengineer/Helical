@@ -69,7 +69,6 @@ signals:
     void downloadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID);
     void deleteFileFinised(const QString &fileName, quint64 transactionID);
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
-    void startFileProcessing();
     void error(const QString &errorMessage, int errorCode,  quint64 transactionID);
 
 public slots:

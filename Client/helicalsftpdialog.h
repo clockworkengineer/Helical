@@ -71,8 +71,8 @@ signals:
 
     // Open / close SFTP session
 
-    void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
-    void closeSession();
+    //void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
+  //  void closeSession();
 
     // File / Directory processing
 
@@ -82,7 +82,6 @@ signals:
     // Queue processing
 
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
-    void processNextFile();
 
 public slots:
     void error(const QString &errorTransactionMessage, int errorCode, quint64 transactionID);
@@ -126,6 +125,9 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
+
+    void startupControllers(QtSSH &session);
+    void terminateControllers();
 
     // Qt dialog data
 

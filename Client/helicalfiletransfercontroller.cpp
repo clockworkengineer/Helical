@@ -78,7 +78,6 @@ void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
             [=]( const QString &/*fileName*/, quint64 transactionID) { this->fileFinished(transactionID); });
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForProcessing, this, &HelicalFileTransferController::queueFileForProcessing);
-    //    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::startFileProcessing, this, &HelicalFileTransferController::processNextFile);
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::error, this, &HelicalFileTransferController::error);
 
@@ -272,6 +271,9 @@ void HelicalFileTransferController::error(const QString &errorMsg, int errorCode
 
 }
 
+/**
+ * @brief HelicalFileTransferController::timerEvent
+ */
 void HelicalFileTransferController::timerEvent(QTimerEvent */*event*/)
 {
     if (!m_queuedFileTransactions.empty() && !m_busy) {

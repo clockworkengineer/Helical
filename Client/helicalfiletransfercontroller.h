@@ -74,7 +74,6 @@ public slots:
 
     void fileFinished(quint64 transactionID);
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
-    void processNextFile();
 
     // Error message feedback
 
@@ -85,6 +84,12 @@ protected:
 
 private:
 
+    // Process next queued file
+
+    void processNextFile();
+
+    // Queue hancdling code
+
     void queueFileTrasnsaction(const FileTransferAction &fileTransaction);
     FileTransferAction nextFileTrasnsaction();
     void fileTrasnsactionError(quint64 transactionID);
@@ -92,7 +97,7 @@ private:
 
     QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;     // File transaction task
 
-    std::atomic_bool m_busy {false};
+    std::atomic_bool m_busy {false};    // File transfer busy flag
 
     // File transaction queues (maps indexed by ID at present)
 

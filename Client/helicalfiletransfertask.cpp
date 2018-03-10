@@ -173,12 +173,9 @@ void HelicalFileTransferTask::processDirectory(const FileTransferAction &fileTra
             };
             m_sftp->listRemoteDirectoryRecursive(fileTransaction.m_sourceFile, fileFeedBackFn);
             emit queueFileForProcessing({ DELETE, fileTransaction.m_sourceFile });
-
             break;
 
         }
-
-        emit startFileProcessing();
 
     }
 }
