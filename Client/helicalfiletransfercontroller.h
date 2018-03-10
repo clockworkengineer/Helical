@@ -27,6 +27,10 @@
 
 #include <QObject>
 #include <QMap>
+#include <QTimerEvent>
+#include <QDebug>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include "helicalfiletransfertask.h"
 
@@ -76,15 +80,27 @@ public slots:
 
     void error(const QString &errorTransactionMessage, int errorCode, quint64 transactionID);
 
+protected:
+    void timerEvent(QTimerEvent *event);
+
 private:
+
+    void queueFileTrasnsaction(const FileTransferAction &fileTransaction);
+    FileTransferAction nextFileTrasnsaction();
+    void fileTrasnsactionError(quint64 transactionID);
+    bool removeFinishedFileTrasnsaction(quint64 transactionID, FileTransferAction &fileTransaction);
+
     QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;     // File transaction task
+
+    std::atomic_bool m_busy {false};
 
     // File transaction queues (maps indexed by ID at present)
 
-    std::uint64_t m_nextID {0};
-    QMap<std::uint64_t, FileTransferAction> m_queuedFileTransactions;
-    QMap<std::uint64_t, FileTransferAction> m_beingProcessedFileTransactions;
-    QMap<std::uint64_t, FileTransferAction> m_fileTransactionsInError;
+    static QMutex m_queueMutex;
+    static std::uint64_t m_nextID;
+    static QMap<std::uint64_t, FileTransferAction> m_queuedFileTransactions;
+    static QMap<std::uint64_t, FileTransferAction> m_beingProcessedFileTransactions;
+    static QMap<std::uint64_t, FileTransferAction> m_fileTransactionsInError;
 
 };
 
