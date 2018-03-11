@@ -69,17 +69,11 @@ public:
 
 signals:
 
-    // Open / close SFTP session
+    // Directory processing
 
-    //void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
-  //  void closeSession();
-
-    // File / Directory processing
-
-    void processFile(const FileTransferAction &fileTransaction);
     void processDirectory(const FileTransferAction &fileTransaction);
 
-    // Queue processing
+    // Queue file transaction processing
 
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
 

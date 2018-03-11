@@ -86,6 +86,8 @@ void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
     connect(m_fileTransferTask->fileTaskThread(),&QThread::finished,m_fileTransferTask->fileTaskThread(), &QThread::deleteLater );
     emit openSession(session.getServerName(), session.getServerPort(), session.getUserName(), session.getUserPassword());
 
+    // Check file transation queue every second
+
     startTimer(1000);
 
 }

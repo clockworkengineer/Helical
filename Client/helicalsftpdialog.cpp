@@ -650,7 +650,6 @@ void HelicalSFTPDialog::startupControllers(QtSSH &session)
 {
     m_helicalTransferController.createFileTransferTask(session);
 
-    connect(this,&HelicalSFTPDialog::processFile, &m_helicalTransferController, &HelicalFileTransferController::processFile);
     connect(this,&HelicalSFTPDialog::processDirectory, &m_helicalTransferController, &HelicalFileTransferController::processDirectory);
     connect(this,&HelicalSFTPDialog::queueFileForProcessing, &m_helicalTransferController, &HelicalFileTransferController::queueFileForProcessing);
 
