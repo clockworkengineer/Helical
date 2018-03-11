@@ -66,7 +66,6 @@ void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
     connect(this,&HelicalFileTransferController::openSession, m_fileTransferTask.data(), &HelicalFileTransferTask::openSession);
     connect(this,&HelicalFileTransferController::closeSession, m_fileTransferTask.data(), &HelicalFileTransferTask::closeSession);
     connect(this,&HelicalFileTransferController::processFile, m_fileTransferTask.data(), &HelicalFileTransferTask::processFile);
-    connect(this,&HelicalFileTransferController::processDirectory, m_fileTransferTask.data(), &HelicalFileTransferTask::processDirectory);
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::uploadFinished,
             [=]( const QString &/*sourceFile*/, const QString &/*destinationFile*/, quint64 transactionID ) { this->fileFinished(transactionID); });
@@ -76,6 +75,10 @@ void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::deleteFileFinised,
             [=]( const QString &/*fileName*/, quint64 transactionID) { this->fileFinished(transactionID); });
+
+    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::listRecursiveFinished,
+            [=]( const QString &/*fileName*/, quint64 transactionID) { this->fileFinished(transactionID); });
+
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForProcessing, this, &HelicalFileTransferController::queueFileForProcessing);
 
@@ -180,7 +183,7 @@ void HelicalFileTransferController::fileFinished(quint64 transactionID)
 
     FileTransferAction fileTransaction;
 
-    if (removeFinishedFileTrasnsaction(transactionID, fileTransaction)) {
+    if (removeFinishedFileTrasnsaction(transactionID, fileTransaction) && !fileTransaction.m_directory) {
 
         switch (fileTransaction.m_action) {
 

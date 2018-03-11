@@ -69,11 +69,7 @@ public:
 
 signals:
 
-    // Directory processing
-
-    void processDirectory(const FileTransferAction &fileTransaction);
-
-    // Queue file transaction processing
+      // File transaction processing
 
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
 

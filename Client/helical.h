@@ -42,13 +42,14 @@ struct FileTransferAction {
 
     FileTransferAction() {}
 
-    FileTransferAction(const FileAction &action, const QString &sourceFile, const QString &destinationFile="", const FileMappingPair &fileMappingPair=FileMappingPair()) :
-        m_action {action}, m_sourceFile {sourceFile}, m_destinationFile{destinationFile}, m_fileMappingPair {fileMappingPair} {}
+    FileTransferAction(const FileAction &action, const QString &sourceFile, const QString &destinationFile="", bool directory=false,const FileMappingPair &fileMappingPair=FileMappingPair()) :
+        m_action {action}, m_sourceFile {sourceFile}, m_destinationFile{destinationFile}, m_directory {directory}, m_fileMappingPair {fileMappingPair} {}
 
     std::uint64_t m_fileTransferID {0}; // Transfer ID
     FileAction m_action;                // File transaction type
     QString m_sourceFile;               // Source file
     QString m_destinationFile;          // Destination dile
+    bool m_directory {false};           // == true processing directory
     FileMappingPair m_fileMappingPair;  // File Mapping pair
 
 };

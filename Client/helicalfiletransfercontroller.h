@@ -56,10 +56,9 @@ signals:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
 
-    // File/directory procesing
+    // File transaction processing
 
     void processFile(const FileTransferAction &fileTransaction);
-    void processDirectory(const FileTransferAction &fileTransaction);
 
     // UI feedback
 

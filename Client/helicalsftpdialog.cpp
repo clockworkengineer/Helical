@@ -360,7 +360,7 @@ void HelicalSFTPDialog::localDirectoryViewDoubleClicked(const QModelIndex &index
 void HelicalSFTPDialog::localFileViewClicked(const QModelIndex &index)
 {
 
-    // Jusr reset filemapper
+    // Just reset filemapper
 
     Q_UNUSED(index);
     m_fileMapper.reset(new  QtSFTP::FileMapper(m_currentLocalDirectory, m_currentRemoteDirectory));
@@ -532,7 +532,8 @@ void HelicalSFTPDialog::downloadSelectedFile()
             if (m_sftp->isARegularFile(fileItem->m_fileAttributes)) {
                 emit queueFileForProcessing({ DOWNLOAD,fileItem->m_remoteFilePath, m_fileMapper->toLocal(fileItem->m_remoteFilePath) });
             } else if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
-                emit processDirectory({DOWNLOAD,fileItem->m_remoteFilePath, "", {m_currentLocalDirectory, m_currentRemoteDirectory}});
+             emit queueFileForProcessing({DOWNLOAD,fileItem->m_remoteFilePath, "", true, {m_currentLocalDirectory, m_currentRemoteDirectory}});
+                //emit processDirectory({DOWNLOAD,fileItem->m_remoteFilePath, "", {m_currentLocalDirectory, m_currentRemoteDirectory}});
             }
         }
     }
@@ -554,7 +555,7 @@ void HelicalSFTPDialog::deleteSelectedFiles()
             if (m_sftp->isARegularFile(fileItem->m_fileAttributes)) {
                 emit  queueFileForProcessing({ DELETE, fileItem->m_remoteFilePath });
             } else if (m_sftp->isADirectory(fileItem->m_fileAttributes)) {
-                emit processDirectory({ DELETE, fileItem->m_remoteFilePath });
+                queueFileForProcessing({ DELETE, fileItem->m_remoteFilePath, "", true });
             }
         }
     }
@@ -599,7 +600,7 @@ void HelicalSFTPDialog::uploadSelectedDirectory()
     for (auto rowIndex : indexList) {
         if (rowIndex.column()==0) {
             QString localFile{m_localDirectorysModel->filePath(rowIndex)};
-            emit processDirectory({ UPLOAD, localFile, "", {QFileInfo(m_currentLocalDirectory).dir().path(),
+            emit queueFileForProcessing({ UPLOAD, localFile, "", true, {QFileInfo(m_currentLocalDirectory).dir().path(),
                                             m_currentRemoteDirectory}});
         }
     }
@@ -621,7 +622,7 @@ void HelicalSFTPDialog::uploadSelectedFiles()
             if (!m_localDirectorysModel->isDir(rowIndex)) {
                 emit queueFileForProcessing({ UPLOAD,m_localDirectorysModel->filePath(rowIndex), m_fileMapper->toRemote(m_localDirectorysModel->filePath(rowIndex))});
             } else {
-                emit processDirectory({ UPLOAD, m_localDirectorysModel->filePath(rowIndex), "", {m_currentLocalDirectory, m_currentRemoteDirectory}});
+                emit queueFileForProcessing({ UPLOAD, m_localDirectorysModel->filePath(rowIndex), "", true, {m_currentLocalDirectory, m_currentRemoteDirectory}});
             }
         }
     }
@@ -650,7 +651,6 @@ void HelicalSFTPDialog::startupControllers(QtSSH &session)
 {
     m_helicalTransferController.createFileTransferTask(session);
 
-    connect(this,&HelicalSFTPDialog::processDirectory, &m_helicalTransferController, &HelicalFileTransferController::processDirectory);
     connect(this,&HelicalSFTPDialog::queueFileForProcessing, &m_helicalTransferController, &HelicalFileTransferController::queueFileForProcessing);
 
     connect(&m_helicalTransferController, &HelicalFileTransferController::statusMessage, this, &HelicalSFTPDialog::statusMessage);

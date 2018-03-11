@@ -68,6 +68,7 @@ signals:
     void uploadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID);
     void downloadFinished(const QString &sourceFile, const QString &destinationFile, quint64 transactionID);
     void deleteFileFinised(const QString &fileName, quint64 transactionID);
+    void listRecursiveFinished(const QString &fileName, quint64 transactionID);
     void queueFileForProcessing(const FileTransferAction &fileTransaction);
     void error(const QString &errorMessage, int errorCode,  quint64 transactionID);
 
@@ -78,10 +79,9 @@ public slots:
     void openSession(const QString &serverName, const QString serverPort, const QString &userName, const QString &userPassword);
     void closeSession();
 
-    // File/direcrory processing
+     // File transaction processing
 
     void processFile(const FileTransferAction &fileTransaction);
-    void processDirectory(const FileTransferAction &fileTransaction);
 
 private:
     QThread *m_fileTransferTaskThread;  // File transfer task thread
