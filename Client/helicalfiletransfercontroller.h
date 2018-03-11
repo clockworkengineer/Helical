@@ -58,7 +58,7 @@ signals:
 
     // File transaction processing
 
-    void processFile(const FileTransferAction &fileTransaction);
+    void processFileTransaction(const FileTransferAction &fileTransaction);
 
     // UI feedback
 
@@ -71,8 +71,8 @@ public slots:
 
     // File transaction processing
 
-    void fileFinished(quint64 transactionID);
-    void queueFileForProcessing(const FileTransferAction &fileTransaction);
+    void fileTransactionFinished(quint64 transactionID);
+    void queueFileTransaction(const FileTransferAction &fileTransaction);
 
     // Error message feedback
 

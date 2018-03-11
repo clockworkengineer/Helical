@@ -99,7 +99,7 @@ void HelicalFileTransferTask::closeSession()
  *
  * @param fileTransaction   File transaction
  */
-void HelicalFileTransferTask::processFile(const FileTransferAction &fileTransaction)
+void HelicalFileTransferTask::processFileTransaction(const FileTransferAction &fileTransaction)
 {
     if (m_sftp) {
 
@@ -116,7 +116,7 @@ void HelicalFileTransferTask::processFile(const FileTransferAction &fileTransact
             } else {
                 fileFeedBackFn = [this, &fileMapper] (const std::string &fileName)
                 {
-                    emit queueFileForProcessing({ UPLOAD, QString::fromStdString(fileName),fileMapper.toRemote(QString::fromStdString(fileName))});
+                    emit queueFileTransaction({ UPLOAD, QString::fromStdString(fileName),fileMapper.toRemote(QString::fromStdString(fileName))});
                 };
                 Antik::listLocalRecursive(fileTransaction.m_sourceFile.toStdString(), localFileList, fileFeedBackFn);
                 emit listRecursiveFinished(fileTransaction.m_sourceFile, fileTransaction.m_fileTransferID);
@@ -129,7 +129,7 @@ void HelicalFileTransferTask::processFile(const FileTransferAction &fileTransact
             } else {
                 fileFeedBackFn = [this, &fileMapper] (const std::string &fileName)
                 {
-                    emit queueFileForProcessing({DOWNLOAD, QString::fromStdString(fileName), fileMapper.toLocal(QString::fromStdString(fileName))});
+                    emit queueFileTransaction({DOWNLOAD, QString::fromStdString(fileName), fileMapper.toLocal(QString::fromStdString(fileName))});
                 };
                 m_sftp->listRemoteDirectoryRecursive(fileTransaction.m_sourceFile, fileFeedBackFn);
                 emit listRecursiveFinished(fileTransaction.m_sourceFile, fileTransaction.m_fileTransferID);
@@ -147,10 +147,10 @@ void HelicalFileTransferTask::processFile(const FileTransferAction &fileTransact
             } else {
                 fileFeedBackFn = [this] (const std::string &fileName)
                 {
-                    emit queueFileForProcessing({ DELETE, QString::fromStdString(fileName)} );
+                    emit queueFileTransaction({ DELETE, QString::fromStdString(fileName)} );
                 };
                 m_sftp->listRemoteDirectoryRecursive(fileTransaction.m_sourceFile, fileFeedBackFn);
-                emit queueFileForProcessing({ DELETE, fileTransaction.m_sourceFile });
+                emit queueFileTransaction({ DELETE, fileTransaction.m_sourceFile });
                 emit listRecursiveFinished(fileTransaction.m_sourceFile, fileTransaction.m_fileTransferID);
             }
             break;

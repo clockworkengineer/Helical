@@ -71,7 +71,7 @@ signals:
 
       // File transaction processing
 
-    void queueFileForProcessing(const FileTransferAction &fileTransaction);
+    void queueFileTransaction(const FileTransferAction &fileTransaction);
 
 public slots:
     void error(const QString &errorTransactionMessage, int errorCode, quint64 transactionID);

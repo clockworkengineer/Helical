@@ -65,22 +65,22 @@ void HelicalFileTransferController::createFileTransferTask(QtSSH &session)
 
     connect(this,&HelicalFileTransferController::openSession, m_fileTransferTask.data(), &HelicalFileTransferTask::openSession);
     connect(this,&HelicalFileTransferController::closeSession, m_fileTransferTask.data(), &HelicalFileTransferTask::closeSession);
-    connect(this,&HelicalFileTransferController::processFile, m_fileTransferTask.data(), &HelicalFileTransferTask::processFile);
+    connect(this,&HelicalFileTransferController::processFileTransaction, m_fileTransferTask.data(), &HelicalFileTransferTask::processFileTransaction);
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::uploadFinished,
-            [=]( const QString &/*sourceFile*/, const QString &/*destinationFile*/, quint64 transactionID ) { this->fileFinished(transactionID); });
+            [=]( const QString &/*sourceFile*/, const QString &/*destinationFile*/, quint64 transactionID ) { this->fileTransactionFinished(transactionID); });
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::downloadFinished,
-            [=]( const QString &/*sourceFile*/, const QString &/*destinationFile*/, quint64 transactionID ) { this->fileFinished(transactionID); });
+            [=]( const QString &/*sourceFile*/, const QString &/*destinationFile*/, quint64 transactionID ) { this->fileTransactionFinished(transactionID); });
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::deleteFileFinised,
-            [=]( const QString &/*fileName*/, quint64 transactionID) { this->fileFinished(transactionID); });
+            [=]( const QString &/*fileName*/, quint64 transactionID) { this->fileTransactionFinished(transactionID); });
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::listRecursiveFinished,
-            [=]( const QString &/*fileName*/, quint64 transactionID) { this->fileFinished(transactionID); });
+            [=]( const QString &/*fileName*/, quint64 transactionID) { this->fileTransactionFinished(transactionID); });
 
 
-    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileForProcessing, this, &HelicalFileTransferController::queueFileForProcessing);
+    connect(m_fileTransferTask.data(), &HelicalFileTransferTask::queueFileTransaction, this, &HelicalFileTransferController::queueFileTransaction);
 
     connect(m_fileTransferTask.data(), &HelicalFileTransferTask::error, this, &HelicalFileTransferController::error);
 
@@ -178,7 +178,7 @@ bool HelicalFileTransferController::removeFinishedFileTrasnsaction(quint64 trans
  *
  * @param transactionID
  */
-void HelicalFileTransferController::fileFinished(quint64 transactionID)
+void HelicalFileTransferController::fileTransactionFinished(quint64 transactionID)
 {
 
     FileTransferAction fileTransaction;
@@ -216,7 +216,7 @@ void HelicalFileTransferController::fileFinished(quint64 transactionID)
  *
  * @param fileName
  */
-void HelicalFileTransferController::queueFileForProcessing(const FileTransferAction &fileTransaction)
+void HelicalFileTransferController::queueFileTransaction(const FileTransferAction &fileTransaction)
 {
 
     queueFileTrasnsaction(fileTransaction);
@@ -250,7 +250,7 @@ void HelicalFileTransferController::processNextFile()
     if (!m_queuedFileTransactions.empty()) {
         FileTransferAction nextTransaction =  nextFileTrasnsaction();
         m_busy = true;
-        emit processFile(nextTransaction);
+        emit processFileTransaction(nextTransaction);
     } else {
         emit statusMessage("Transfer queue clear.\n");
         emit updateRemoteFileList();
