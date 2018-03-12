@@ -29,9 +29,9 @@ typedef std::pair<QString, QString> FileMappingPair;
 // Supported file transactions
 
 enum FileAction {
-    UPLOAD,
-    DOWNLOAD,
-    DELETE
+    UPLOAD=0x1,
+    DOWNLOAD=0x2,
+    DELETE=0x4
 };
 
 // File transfer action
@@ -55,6 +55,8 @@ struct FileTransferAction {
 };
 
 Q_DECLARE_METATYPE(FileTransferAction);
+
+const std::uint8_t kMaxControllers { 4 };
 
 #endif // HELICAL_H
 

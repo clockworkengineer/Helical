@@ -151,7 +151,7 @@ private:
 
     // Controller for file transfertask
 
-    HelicalFileTransferController m_helicalTransferController;
+    HelicalFileTransferController m_helicalTransferController[kMaxControllers];
 
 };
 

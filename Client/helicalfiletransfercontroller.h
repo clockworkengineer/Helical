@@ -49,6 +49,16 @@ public:
     void createFileTransferTask(QtSSH &session);
     void destroyFileTransferTask();
 
+    // Controller busy
+
+    bool busy() const;
+    void setBusy(bool busy);
+
+    // Controller number
+
+    std::uint32_t supportedTransactions() const;
+    void setSupportedTransactions(const std::uint32_t supportedTransactions);
+
 signals:
 
     // Open/close session
@@ -85,7 +95,7 @@ private:
 
     // Process next queued file
 
-    void processNextFile();
+    void processNextTransaction();
 
     // Queue hancdling code
 
@@ -97,6 +107,8 @@ private:
     QScopedPointer<HelicalFileTransferTask> m_fileTransferTask;     // File transaction task
 
     std::atomic_bool m_busy {false};    // File transfer busy flag
+
+    std::uint32_t m_supportedTransactions { UPLOAD|DOWNLOAD};   // Controller transaction mask
 
     // File transaction queues (maps indexed by ID at present)
 

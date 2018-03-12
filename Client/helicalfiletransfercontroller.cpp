@@ -203,9 +203,11 @@ void HelicalFileTransferController::fileTransactionFinished(quint64 transactionI
 
     }
 
-    m_busy = false;
+    qDebug() << "ID = " << transactionID;
 
-    processNextFile();
+    setBusy(false);
+
+    processNextTransaction();
 
 }
 
@@ -244,13 +246,15 @@ void HelicalFileTransferController::queueFileTransaction(const FileTransferActio
  * Process next file transaction if queue not empty.
  *
  */
-void HelicalFileTransferController::processNextFile()
+void HelicalFileTransferController::processNextTransaction()
 {
 
     if (!m_queuedFileTransactions.empty()) {
-        FileTransferAction nextTransaction =  nextFileTrasnsaction();
-        m_busy = true;
-        emit processFileTransaction(nextTransaction);
+        if (m_queuedFileTransactions.first().m_action & supportedTransactions()){
+            FileTransferAction nextTransaction =  nextFileTrasnsaction();
+            setBusy(true);
+            emit processFileTransaction(nextTransaction);
+        }
     } else {
         emit statusMessage("Transfer queue clear.\n");
         emit updateRemoteFileList();
@@ -281,9 +285,45 @@ void HelicalFileTransferController::error(const QString &errorMsg, int errorCode
  */
 void HelicalFileTransferController::timerEvent(QTimerEvent */*event*/)
 {
-    if (!m_queuedFileTransactions.empty() && !m_busy) {
-        processNextFile();
+    if (!m_queuedFileTransactions.empty() && !busy()) {
+        processNextTransaction();
     }
 
+}
+
+/**
+ * @brief HelicalFileTransferController::busy
+ * @return
+ */
+bool HelicalFileTransferController::busy() const
+{
+    return m_busy;
+}
+
+/**
+ * @brief HelicalFileTransferController::setBusy
+ * @param busy
+ */
+void HelicalFileTransferController::setBusy(bool busy)
+{
+    m_busy = busy;
+}
+
+/**
+ * @brief HelicalFileTransferController::supportedTransactions
+ * @return
+ */
+std::uint32_t HelicalFileTransferController::supportedTransactions() const
+{
+    return m_supportedTransactions;
+}
+
+/**
+ * @brief HelicalFileTransferController::setSupportedTransactions
+ * @param supportedTransactions
+ */
+void HelicalFileTransferController::setSupportedTransactions(const std::uint32_t supportedTransactions)
+{
+    m_supportedTransactions = supportedTransactions;
 }
 
