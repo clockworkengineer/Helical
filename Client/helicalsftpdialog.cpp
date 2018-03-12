@@ -217,6 +217,7 @@ void HelicalSFTPDialog::statusMessage(const QString &message)
 {
     ui->statusMessages->insertPlainText(message);
     ui->statusMessages->moveCursor(QTextCursor::End);
+
 }
 
 /**
@@ -243,6 +244,13 @@ void HelicalSFTPDialog::errorTransactionMessage(const QString &message)
 {
     ui->errorTransactions->insertPlainText(message);
     ui->statusMessages->moveCursor(QTextCursor::End);
+}
+
+void HelicalSFTPDialog::updateTransactionTotals(qint64 queuedTransactions, qint64 inProgressTransactions, qint64 errorTransactions)
+{
+     ui->queuedTransactionsLabel->setText(QString("%1").arg(queuedTransactions));
+     ui->inProgressTranactionslabel->setText(QString("%1").arg(inProgressTransactions));
+    ui->errorsTransactionLabel->setText(QString("%1").arg(errorTransactions));
 }
 
 /**
@@ -655,6 +663,7 @@ void HelicalSFTPDialog::startupControllers(QtSSH &session)
         connect(&m_helicalTransferController[controller], &HelicalFileTransferController::finishedTransactionMessage, this, &HelicalSFTPDialog::finishedTransactionMessage);
         connect(&m_helicalTransferController[controller], &HelicalFileTransferController::errorTransactionMessage, this, &HelicalSFTPDialog::errorTransactionMessage);
         connect(&m_helicalTransferController[controller], &HelicalFileTransferController::updateRemoteFileList, this, &HelicalSFTPDialog::updateRemoteFileList);
+        connect(&m_helicalTransferController[controller], &HelicalFileTransferController::updateTransactionTotals, this, &HelicalSFTPDialog::updateTransactionTotals);
     }
 
     m_helicalTransferController[0].setSupportedTransactions(m_helicalTransferController[0].supportedTransactions()|DELETE);

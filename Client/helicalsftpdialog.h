@@ -78,6 +78,7 @@ public slots:
     void statusMessage(const QString &message);
     void finishedTransactionMessage(const QString &message);
     void errorTransactionMessage(const QString &message);
+    void updateTransactionTotals(qint64 queuedTransactions, qint64 inProgressTransactions,  qint64 errorTransactions);
     void updateRemoteFileList();
 
 private slots:

@@ -56,7 +56,7 @@ struct FileTransferAction {
 
 Q_DECLARE_METATYPE(FileTransferAction);
 
-const std::uint8_t kMaxControllers { 4 };
+const std::uint8_t kMaxControllers { 5 };
 
 #endif // HELICAL_H
 
