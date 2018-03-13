@@ -658,16 +658,17 @@ void HelicalSFTPDialog::startupControllers(QtSSH &session)
 {
 
     for (auto controller=0; controller < kMaxControllers; controller++) {
-        m_helicalTransferController[controller].createFileTransferTask(session);
-        connect(&m_helicalTransferController[controller], &HelicalFileTransferController::statusMessage, this, &HelicalSFTPDialog::statusMessage);
-        connect(&m_helicalTransferController[controller], &HelicalFileTransferController::finishedTransactionMessage, this, &HelicalSFTPDialog::finishedTransactionMessage);
-        connect(&m_helicalTransferController[controller], &HelicalFileTransferController::errorTransactionMessage, this, &HelicalSFTPDialog::errorTransactionMessage);
-        connect(&m_helicalTransferController[controller], &HelicalFileTransferController::updateRemoteFileList, this, &HelicalSFTPDialog::updateRemoteFileList);
-        connect(&m_helicalTransferController[controller], &HelicalFileTransferController::updateTransactionTotals, this, &HelicalSFTPDialog::updateTransactionTotals);
+        m_helicalTransferController.push_back(new HelicalFileTransferController());
+        m_helicalTransferController[controller]->createFileTransferTask(session);
+        connect(m_helicalTransferController[controller], &HelicalFileTransferController::statusMessage, this, &HelicalSFTPDialog::statusMessage);
+        connect(m_helicalTransferController[controller], &HelicalFileTransferController::finishedTransactionMessage, this, &HelicalSFTPDialog::finishedTransactionMessage);
+        connect(m_helicalTransferController[controller], &HelicalFileTransferController::errorTransactionMessage, this, &HelicalSFTPDialog::errorTransactionMessage);
+        connect(m_helicalTransferController[controller], &HelicalFileTransferController::updateRemoteFileList, this, &HelicalSFTPDialog::updateRemoteFileList);
+        connect(m_helicalTransferController[controller], &HelicalFileTransferController::updateTransactionTotals, this, &HelicalSFTPDialog::updateTransactionTotals);
     }
 
-    m_helicalTransferController[0].setSupportedTransactions(m_helicalTransferController[0].supportedTransactions()|DELETE);
-    connect(this,&HelicalSFTPDialog::queueFileTransaction, &m_helicalTransferController[0], &HelicalFileTransferController::queueFileTransaction);
+    m_helicalTransferController[0]->setSupportedTransactions(m_helicalTransferController[0]->supportedTransactions()|DELETE);
+    connect(this,&HelicalSFTPDialog::queueFileTransaction, m_helicalTransferController[0], &HelicalFileTransferController::queueFileTransaction);
 
 }
 
@@ -677,6 +678,6 @@ void HelicalSFTPDialog::startupControllers(QtSSH &session)
 void HelicalSFTPDialog::terminateControllers()
 {
     for (auto controller=0; controller < kMaxControllers; controller++) {
-        m_helicalTransferController[controller].destroyFileTransferTask();
+        m_helicalTransferController[controller]->destroyFileTransferTask();
     }
 }

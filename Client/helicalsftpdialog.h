@@ -150,9 +150,9 @@ private:
 
     QScopedPointer<QtSFTP::FileMapper> m_fileMapper;
 
-    // Controller for file transfertask
+    // Controllers for file transfer tasks
 
-    HelicalFileTransferController m_helicalTransferController[kMaxControllers];
+    QVector<HelicalFileTransferController*> m_helicalTransferController;
 
 };
 

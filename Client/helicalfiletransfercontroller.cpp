@@ -205,8 +205,6 @@ void HelicalFileTransferController::fileTransactionFinished(quint64 transactionI
 
     }
 
-    qDebug() << "ID = " << transactionID;
-
     setBusy(false);
 
     processNextTransaction();
@@ -239,7 +237,9 @@ void HelicalFileTransferController::queueFileTransaction(const FileTransferActio
         emit statusMessage(QString("File \"%1\" queued for delete.\n").arg(fileTransaction.m_sourceFile));
         break;
     }
+
     emit updateTransactionTotals(m_queuedFileTransactions.size(), m_beingProcessedFileTransactions.size(), m_fileTransactionsInError.size());
+
 }
 
 /**
@@ -258,8 +258,7 @@ void HelicalFileTransferController::processNextTransaction()
             emit processFileTransaction(nextTransaction);
         }
     } else {
-        emit statusMessage("Transfer queue clear.\n");
-        updateTransactionTotals(m_queuedFileTransactions.size(), m_beingProcessedFileTransactions.size(), m_fileTransactionsInError.size());
+        emit updateTransactionTotals(m_queuedFileTransactions.size(), m_beingProcessedFileTransactions.size(), m_fileTransactionsInError.size());
         emit updateRemoteFileList();
     }
 }
