@@ -114,10 +114,10 @@ void HelicalFileTransferController::destroyFileTransferTask()
 }
 
 /**
- * @brief HelicalFileTransferController::queueFileTrasnsaction
+ * @brief HelicalFileTransferController::addFileTrasnsactionToQueue
  * @param fileTransaction
  */
-void HelicalFileTransferController::queueFileTrasnsaction(const FileTransferAction &fileTransaction)
+void HelicalFileTransferController::addFileTrasnsactionToQueue(const FileTransferAction &fileTransaction)
 {
     QMutexLocker locker(&m_queueMutex);
     m_queuedFileTransactions[m_nextID] = fileTransaction;
@@ -221,7 +221,7 @@ void HelicalFileTransferController::fileTransactionFinished(quint64 transactionI
 void HelicalFileTransferController::queueFileTransaction(const FileTransferAction &fileTransaction)
 {
 
-    queueFileTrasnsaction(fileTransaction);
+    addFileTrasnsactionToQueue(fileTransaction);
 
     switch (fileTransaction.m_action) {
 

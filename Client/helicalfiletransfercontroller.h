@@ -100,7 +100,7 @@ private:
 
     // Queue hancdling code
 
-    void queueFileTrasnsaction(const FileTransferAction &fileTransaction);
+    void addFileTrasnsactionToQueue(const FileTransferAction &fileTransaction);
     FileTransferAction nextFileTrasnsaction();
     void fileTrasnsactionError(quint64 transactionID);
     bool removeFinishedFileTrasnsaction(quint64 transactionID, FileTransferAction &fileTransaction);

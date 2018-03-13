@@ -628,7 +628,7 @@ void HelicalSFTPDialog::uploadSelectedFiles()
         if (rowIndex.column()==0) {
             if (!m_localDirectorysModel->isDir(rowIndex)) {
                 emit queueFileTransaction({ UPLOAD,m_localDirectorysModel->filePath(rowIndex), m_fileMapper->toRemote(m_localDirectorysModel->filePath(rowIndex))});
-            } else {
+            } else if (m_localDirectorysModel->fileName(rowIndex)!="..") {
                 emit queueFileTransaction({ UPLOAD, m_localDirectorysModel->filePath(rowIndex), "", true, {m_currentLocalDirectory, m_currentRemoteDirectory}});
             }
         }
