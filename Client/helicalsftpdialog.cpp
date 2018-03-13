@@ -246,10 +246,19 @@ void HelicalSFTPDialog::errorTransactionMessage(const QString &message)
     ui->statusMessages->moveCursor(QTextCursor::End);
 }
 
+/**
+ * @brief HelicalSFTPDialog::updateTransactionTotals
+ *
+ * Update dialog window transaction totols.
+ *
+ * @param queuedTransactions
+ * @param inProgressTransactions
+ * @param errorTransactions
+ */
 void HelicalSFTPDialog::updateTransactionTotals(qint64 queuedTransactions, qint64 inProgressTransactions, qint64 errorTransactions)
 {
-     ui->queuedTransactionsLabel->setText(QString("%1").arg(queuedTransactions));
-     ui->inProgressTranactionslabel->setText(QString("%1").arg(inProgressTransactions));
+    ui->queuedTransactionsLabel->setText(QString("%1").arg(queuedTransactions));
+    ui->inProgressTranactionslabel->setText(QString("%1").arg(inProgressTransactions));
     ui->errorsTransactionLabel->setText(QString("%1").arg(errorTransactions));
 }
 
@@ -318,14 +327,14 @@ void HelicalSFTPDialog::remoteFileClicked(QListWidgetItem *item)
 /**
  * @brief HelicalSFTPDialog::localDirectoryViewClicked
  *
- * Local Directory view clicked processing.
+ * Local directory view clicked processing.
  *
  * @param index
  */
 void HelicalSFTPDialog::localDirectoryViewClicked(const QModelIndex &index)
 {
 
-    // If a Directory(Directory) update current local directory, file mapper, file view root.
+    // If a directory update current local directory, file mapper, file view root.
 
     if (m_localDirectorysModel->isDir(index)) {
         m_currentLocalDirectory = m_localDirectorysModel->filePath(index);
@@ -341,7 +350,7 @@ void HelicalSFTPDialog::localDirectoryViewClicked(const QModelIndex &index)
 /**
  * @brief HelicalSFTPDialog::localDirectoryViewDoubleClicked
  *
- * Local Directory view double click processing.
+ * Local directory view double click processing.
  *
  * @param index
  */
@@ -361,7 +370,7 @@ void HelicalSFTPDialog::localDirectoryViewDoubleClicked(const QModelIndex &index
 /**
  * @brief HelicalSFTPDialog::localFileViewClicked
  *
- * Local Directory view click processing.
+ * Local directory view click processing.
  *
  * @param index
  */
@@ -372,6 +381,7 @@ void HelicalSFTPDialog::localFileViewClicked(const QModelIndex &index)
 
     Q_UNUSED(index);
     m_fileMapper.reset(new  QtSFTP::FileMapper(m_currentLocalDirectory, m_currentRemoteDirectory));
+
 }
 
 /**
@@ -447,7 +457,7 @@ void HelicalSFTPDialog::showRemoteFileContextMenu(const QPoint &pos)
 /**
  * @brief HelicalSFTPDialog::showLocalFileContextMenu
  *
- * Show and process local Directory view context menu commands.
+ * Show and process local directory view context menu commands.
  *
  * @param pos
  */
@@ -505,7 +515,7 @@ void HelicalSFTPDialog::error(const QString &errorMessage, int errorCode, quint6
  * @brief HelicalSFTPDialog::viewSelectedFiles
  *
  * Download and view selected files. This is performed directly using the local SFTP session and
- * not queued for processing.
+ * not queued for processing; for large files this freezez UI (need to fix).
  *
  */
 void HelicalSFTPDialog::viewSelectedFiles()
@@ -652,6 +662,9 @@ void HelicalSFTPDialog::closeEvent(QCloseEvent *event)
 
 /**
  * @brief HelicalSFTPDialog::startupControllers
+ *
+ * Create controllers to process file transactions.
+ *
  * @param session
  */
 void HelicalSFTPDialog::startupControllers(QtSSH &session)
@@ -667,6 +680,8 @@ void HelicalSFTPDialog::startupControllers(QtSSH &session)
         connect(m_helicalTransferController[controller], &HelicalFileTransferController::updateTransactionTotals, this, &HelicalSFTPDialog::updateTransactionTotals);
     }
 
+    // Controller 0 is the only one to perform deletes and it also queues files.
+
     m_helicalTransferController[0]->setSupportedTransactions(m_helicalTransferController[0]->supportedTransactions()|DELETE);
     connect(this,&HelicalSFTPDialog::queueFileTransaction, m_helicalTransferController[0], &HelicalFileTransferController::queueFileTransaction);
 
@@ -674,6 +689,9 @@ void HelicalSFTPDialog::startupControllers(QtSSH &session)
 
 /**
  * @brief HelicalSFTPDialog::terminateControllers
+ *
+ * Destroy/closedown filecontrollers.
+ *
  */
 void HelicalSFTPDialog::terminateControllers()
 {

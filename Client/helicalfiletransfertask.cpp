@@ -14,7 +14,7 @@
 //
 // Description: Class to implement SFTP file transfer task that talks to an SFTP server and
 // executes SFTP commands (upload/download/delete files). The task runs on a separate thread
-// and commuicates with the main client using signal/slots.
+// and commuicates with its contrller client using signal/slots.
 //
 
 // =============
@@ -158,8 +158,6 @@ void HelicalFileTransferTask::processFileTransaction(const FileTransferAction &f
         }
     }
 }
-
-
 
 /**
  * @brief HelicalFileTransferTask::fileTaskThread

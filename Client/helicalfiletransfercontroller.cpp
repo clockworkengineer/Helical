@@ -15,7 +15,9 @@
 // Description:  Class to implement file transfer task controller. This is the interface between
 // the main client UI and the file trasnfer task. It maintains the list of queued requests and passes
 // them onto the file trasnfer task as and when needed. It also queues any transfer requests generated as
-// a result of direct commands to the task such is list a local/remote directory recursively.
+// of directory file transaction requests. Each controller has a TimerEvent Handler that is called every
+// second to see if the task has finished processing the last transaction and to queue any new request in
+// the queue.
 //
 
 // =============
@@ -26,11 +28,12 @@
 
 // File transaction queues.
 
-QMutex HelicalFileTransferController::m_queueMutex;
-std::uint64_t HelicalFileTransferController::m_nextID {0};
-QMap<std::uint64_t, FileTransferAction> HelicalFileTransferController::m_queuedFileTransactions;
-QMap<std::uint64_t, FileTransferAction> HelicalFileTransferController::m_beingProcessedFileTransactions;
-QMap<std::uint64_t, FileTransferAction> HelicalFileTransferController::m_fileTransactionsInError;
+QMutex HelicalFileTransferController::m_queueMutex;         // Access mutex
+std::uint64_t HelicalFileTransferController::m_nextID {0};  // Next transactin ID
+
+QMap<std::uint64_t, FileTransferAction> HelicalFileTransferController::m_queuedFileTransactions;            // Queued
+QMap<std::uint64_t, FileTransferAction> HelicalFileTransferController::m_beingProcessedFileTransactions;    // In progress
+QMap<std::uint64_t, FileTransferAction> HelicalFileTransferController::m_fileTransactionsInError;           // In error
 
 /**
  * @brief HelicalFileTransferController::HelicalFileTransferController
@@ -115,6 +118,9 @@ void HelicalFileTransferController::destroyFileTransferTask()
 
 /**
  * @brief HelicalFileTransferController::addFileTrasnsactionToQueue
+ *
+ * Add file transaction to queue.
+ *
  * @param fileTransaction
  */
 void HelicalFileTransferController::addFileTrasnsactionToQueue(const FileTransferAction &fileTransaction)
@@ -127,7 +133,10 @@ void HelicalFileTransferController::addFileTrasnsactionToQueue(const FileTransfe
 
 /**
  * @brief HelicalFileTransferController::nextFileTrasnsaction
- * @return
+ *
+ * Get next file transaction from to be processed queue and place in progress.
+ *
+ * @return  Next file transaction.
  */
 FileTransferAction HelicalFileTransferController::nextFileTrasnsaction()
 {
@@ -139,8 +148,11 @@ FileTransferAction HelicalFileTransferController::nextFileTrasnsaction()
 }
 
 /**
- * @brief HelicalFileTransferController::fileTrasnsactionError
- * @param transactionID
+ * @brief HelicalFileTransferController::fileTrasnsactionErro
+ *
+ * Place file transaction in error queue.
+ *
+ * @param transactionID     File transaction ID
  */
 void HelicalFileTransferController::fileTrasnsactionError(quint64 transactionID)
 {
@@ -155,9 +167,12 @@ void HelicalFileTransferController::fileTrasnsactionError(quint64 transactionID)
 
 /**
  * @brief HelicalFileTransferController::removeFinishedFileTrasnsaction
- * @param transactionID
- * @param fileTransaction
- * @return
+ *
+ * Remove file transaction from in progress queue and delete.
+ *
+ * @param transactionID     File transaction ID
+ * @param fileTransaction   Deleted file transaction
+ * @return                  == true file transactionfound and deleted.
  */
 bool HelicalFileTransferController::removeFinishedFileTrasnsaction(quint64 transactionID, FileTransferAction &fileTransaction)
 {
@@ -174,7 +189,7 @@ bool HelicalFileTransferController::removeFinishedFileTrasnsaction(quint64 trans
 /**
  * @brief HelicalFileTransferController::fileFinished
  *
- * File trasnaction finished slot. Remove transaction from being processed queue and get next.
+ * File trasnaction finished slot. Remove transaction from in progress queue and get next.
  *
  * @param transactionID
  */
@@ -212,11 +227,11 @@ void HelicalFileTransferController::fileTransactionFinished(quint64 transactionI
 }
 
 /**
- * @brief HelicalFileTransferController::queueFileForProcessing
+ * @brief HelicalFileTransferController::queueFileTransaction
  *
  * Queue file transaction for processing.
  *
- * @param fileName
+ * @param fileTransaction
  */
 void HelicalFileTransferController::queueFileTransaction(const FileTransferAction &fileTransaction)
 {
@@ -243,7 +258,7 @@ void HelicalFileTransferController::queueFileTransaction(const FileTransferActio
 }
 
 /**
- * @brief HelicalFileTransferController::processNextFile
+ * @brief HelicalFileTransferController::processNextTransaction
  *
  * Process next file transaction if queue not empty.
  *
@@ -284,6 +299,9 @@ void HelicalFileTransferController::error(const QString &errorMsg, int errorCode
 
 /**
  * @brief HelicalFileTransferController::timerEvent
+ *
+ * Check if controller busy and if not get next transaction.
+ *
  */
 void HelicalFileTransferController::timerEvent(QTimerEvent */*event*/)
 {
@@ -295,6 +313,9 @@ void HelicalFileTransferController::timerEvent(QTimerEvent */*event*/)
 
 /**
  * @brief HelicalFileTransferController::busy
+ *
+ * Return true if controller(task) busy.
+ *
  * @return
  */
 bool HelicalFileTransferController::busy() const
@@ -304,6 +325,9 @@ bool HelicalFileTransferController::busy() const
 
 /**
  * @brief HelicalFileTransferController::setBusy
+ *
+ * Set controller busy state.
+ *
  * @param busy
  */
 void HelicalFileTransferController::setBusy(bool busy)
@@ -313,6 +337,9 @@ void HelicalFileTransferController::setBusy(bool busy)
 
 /**
  * @brief HelicalFileTransferController::supportedTransactions
+ *
+ * Return a bitmask of controller supported transactions.
+ *
  * @return
  */
 std::uint32_t HelicalFileTransferController::supportedTransactions() const
@@ -322,6 +349,9 @@ std::uint32_t HelicalFileTransferController::supportedTransactions() const
 
 /**
  * @brief HelicalFileTransferController::setSupportedTransactions
+ *
+ * Set controller supported transactions mask.
+ *
  * @param supportedTransactions
  */
 void HelicalFileTransferController::setSupportedTransactions(const std::uint32_t supportedTransactions)
