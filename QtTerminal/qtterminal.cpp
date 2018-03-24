@@ -26,6 +26,7 @@
 #include "qtterminal.h"
 
 #include <QScrollBar>
+#include <QFontDatabase>
 
 #include <cstring>
 
@@ -46,20 +47,15 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
 
     setStyleSheet("QListView {selection-background-color: white; selection-color: white;}");
 
-    QFont font("Monospace");
-    font.setStyleHint(QFont::TypeWriter);
+    QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     setFont(font);
     QFontMetrics fm(property("font").value<QFont>());
 
-    int extraCols=verticalScrollBar()->height()/fm.maxWidth();
-    int extraRows=horizontalScrollBar()->height()/fm.height()-1;
-
-    setFixedWidth(fm.maxWidth()*(m_terminal.getMaxColumns()+extraCols));
-    setFixedHeight(fm.height()*(m_terminal.getMaxRows()+extraRows));
-
-    setUniformItemSizes(true);
+    setFixedWidth((fm.maxWidth()*columns)+((verticalScrollBar()->height()+fm.maxWidth())));
+    setFixedHeight((fm.height()*rows)+(fm.height()));
 
     horizontalScrollBar()->setDisabled(true);
+    horizontalScrollBar()->setHidden(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     setSelectionRectVisible(false);
@@ -100,7 +96,7 @@ void QtTerminal::scrollScreenUp(void *terminalConext, int numberofLines)
         terminalText->m_currentViewOffset++;
     }
 
-    terminalText->setCurrentIndex(terminalText->m_terminalModel.index(terminalText->m_currentViewOffset+terminalText->m_terminal.getCurrentRow()));
+    terminalText->setCurrentIndex(terminalText->m_terminalModel.index(terminalText->m_currentViewOffset+terminalText->m_terminal.getCurrentRow()-1));
 
 }
 

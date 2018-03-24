@@ -25,7 +25,7 @@
 #include "helicalterminaldialog.h"
 #include "ui_helicalterminaldialog.h"
 
-#include <QDebug>
+#include <QFontDatabase>
 
 /**
  * @brief HelicalTerminalDialog::HelicalTerminalDialog
@@ -52,15 +52,16 @@ HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, int columns, int ro
     m_connectionChannel.reset(new QtSSHChannel(session));
     m_connectionChannel->open();
 
-    m_terminalTextArea.reset(new QtTerminal(m_columns, m_rows, ui->terminalText));
-    m_textAreaLayout.reset(new QHBoxLayout);
-    m_textAreaLayout->addWidget(m_terminalTextArea.data());
-    ui->terminalText->setLayout(m_textAreaLayout.data());
+    m_terminalTextArea.reset(new QtTerminal(m_columns, m_rows, this));
+
+    layout()->addWidget(m_terminalTextArea.data());
 
     connect(m_terminalTextArea.data(), &QtTerminal::keySend, this, &HelicalTerminalDialog::keyRecv);
     connect(m_connectionChannel.data(), &QtSSHChannel::remoteShellClosed, this, &HelicalTerminalDialog::remoteShellClosed);
     connect(m_connectionChannel.data(), &QtSSHChannel::writeStdOutput, m_terminalTextArea.data(), &QtTerminal::terminalOutput);
     connect(m_connectionChannel.data(), &QtSSHChannel::writeStdError, m_terminalTextArea.data(), &QtTerminal::terminalOutput);
+
+    layout()->setMargin(0);
 
     adjustSize();
 
