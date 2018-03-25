@@ -25,8 +25,6 @@
 #include "helicalterminaldialog.h"
 #include "ui_helicalterminaldialog.h"
 
-#include <QFontDatabase>
-
 /**
  * @brief HelicalTerminalDialog::HelicalTerminalDialog
  *
@@ -47,7 +45,7 @@ HelicalTerminalDialog::HelicalTerminalDialog(QtSSH &session, int columns, int ro
 {
     ui->setupUi(this);
 
-    setWindowTitle("Terminal");
+    setWindowTitle(QString("Terminal (%1x%2)").arg(columns).arg(rows));
 
     m_connectionChannel.reset(new QtSSHChannel(session));
     m_connectionChannel->open();

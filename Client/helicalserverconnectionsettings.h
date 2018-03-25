@@ -25,6 +25,10 @@
 #include <QString>
 #include <QSettings>
 
+// =================
+// CLASS DECLARATION
+// =================
+
 class HelicalServerConnectionSettings
 {
 public:

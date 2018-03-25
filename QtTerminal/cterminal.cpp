@@ -24,9 +24,6 @@
 
 #include "cterminal.h"
 
-#include <cstring>
-#include <iostream>
-
 //
 // Escape sequence to processing function map.
 //

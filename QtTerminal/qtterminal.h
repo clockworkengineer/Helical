@@ -32,6 +32,10 @@
 #include <QListView>
 #include <QStringListModel>
 #include <QKeyEvent>
+#include <QScrollBar>
+#include <QFontDatabase>
+
+#include <cstring>
 
 // =================
 // CLASS DECLARATION

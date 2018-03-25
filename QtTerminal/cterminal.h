@@ -30,6 +30,8 @@
 #include <functional>
 #include <deque>
 #include <utility>
+#include <cstring>
+#include <iostream>
 
 // =================
 // CLASS DECLARATION

@@ -27,13 +27,14 @@
 
 #include <QDialog>
 #include <QHBoxLayout>
+#include <QFontDatabase>
+
+#include "QtTerminal/qtterminal.h"
+#include "QtSSH/qtsshchannel.h"
 
 // =================
 // CLASS DECLARATION
 // =================
-
-#include "QtTerminal/qtterminal.h"
-#include "QtSSH/qtsshchannel.h"
 
 namespace Ui {
 class HelicalConnectionDialog;

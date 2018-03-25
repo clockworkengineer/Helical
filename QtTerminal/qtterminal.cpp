@@ -25,11 +25,6 @@
 
 #include "qtterminal.h"
 
-#include <QScrollBar>
-#include <QFontDatabase>
-
-#include <cstring>
-
 /**
  * @brief QtTerminal::QtTerminal
  *

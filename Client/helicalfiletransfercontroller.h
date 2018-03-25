@@ -34,6 +34,10 @@
 
 #include "helicalfiletransfertask.h"
 
+// =================
+// CLASS DECLARATION
+// =================
+
 class HelicalFileTransferController : public QObject
 {
     Q_OBJECT
