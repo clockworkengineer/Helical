@@ -47,8 +47,7 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
 
     setStyleSheet("QListView {selection-background-color: white; selection-color: white;}");
 
-    QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    setFont(font);
+    setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
     QFontMetrics fm(property("font").value<QFont>());
 
     setFixedWidth((fm.maxWidth()*columns)+((verticalScrollBar()->height()+fm.maxWidth())));

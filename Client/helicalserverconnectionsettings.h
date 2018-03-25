@@ -39,6 +39,13 @@ public:
 
     };
 
+    enum TerminalSize {
+        term80x24=0,
+        term80x43,
+        term132x24,
+        term132x43
+    };
+
     // Load/Save settings
 
     void load(const QString& connectionName);
@@ -60,15 +67,18 @@ public:
     void setCommand(const QString &command);
     QString userHome() const;
     void setUserHome(const QString &userHome);
+    TerminalSize terminalSize() const;
+    void setTerminalSize(const TerminalSize &terminalSize);
 
 private:
-    QString m_connectionName;   // SSH connection name
-    QString m_serverName;       // Server name
-    QString m_serverPort;       // Server port
-    QString m_userName;         // User name
-    QString m_userPassword;     // User password
-    QString m_userHome;         // User Home
-    QString m_command;          // Remote command to execute on demand.
+    QString m_connectionName;    // SSH connection name
+    QString m_serverName;        // Server name
+    QString m_serverPort;        // Server port
+    QString m_userName;          // User name
+    QString m_userPassword;      // User password
+    QString m_userHome;          // User Home
+    QString m_command;           // Remote command to execute on demand.
+    TerminalSize m_terminalSize; // Terminal size
 };
 
 #endif // HELICALSERVERCONNECTIONSETTINGS_H

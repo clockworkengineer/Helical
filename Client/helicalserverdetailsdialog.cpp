@@ -85,6 +85,7 @@ void HelicalServerDetailsDialog::on_saveButton_clicked()
     m_serverConnectionSettings.setUserPassword(ui->userPasswordLineEdit->text());
     m_serverConnectionSettings.setUserHome(ui->userHomeLineEdit->text());
     m_serverConnectionSettings.setCommand(ui->commandLineEdit->text());
+    m_serverConnectionSettings.setTerminalSize(static_cast<HelicalServerConnectionSettings::TerminalSize>((ui->terminalSizeMenu->currentIndex())));
     m_serverConnectionSettings.save();
 
     close();
@@ -126,6 +127,7 @@ void HelicalServerDetailsDialog::showEvent(QShowEvent *event)
         ui->userPasswordLineEdit->setText(m_serverConnectionSettings.userPassword());
         ui->userHomeLineEdit->setText(m_serverConnectionSettings.userHome());
         ui->commandLineEdit->setText(m_serverConnectionSettings.command());
+        ui->terminalSizeMenu->setCurrentIndex(static_cast<int>(m_serverConnectionSettings.terminalSize()));
 
 }
 

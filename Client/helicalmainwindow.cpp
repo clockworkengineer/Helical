@@ -328,7 +328,31 @@ void HelicalMainWindow::on_disconnectServerButton_clicked()
 void HelicalMainWindow::on_terminalButton_clicked()
 {
 
-    m_connectionWindow.reset(new HelicalTerminalDialog(*m_session.data(), 80, 24));
+    int columns {80};
+    int rows {24};
+
+    switch(m_serverConnectionSettings.terminalSize()) {
+
+    case HelicalServerConnectionSettings::term80x24:
+        columns=80;
+        rows=24;
+        break;
+    case HelicalServerConnectionSettings::term80x43:
+        columns=80;
+        rows=43;
+        break;
+    case HelicalServerConnectionSettings::term132x24:
+        columns=132;
+        rows=24;
+        break;
+    case HelicalServerConnectionSettings::term132x43:
+        columns=132;
+        rows=43;
+        break;
+
+    }
+
+    m_connectionWindow.reset(new HelicalTerminalDialog(*m_session.data(), columns, rows));
     m_connectionWindow->runShell();
     m_connectionWindow->show();
 
