@@ -7,7 +7,7 @@ The client is written mostly in Qt/C++ but it uses a set of Antik wrapper classe
 
 A remote shell session takes place inside a window that emulates a vt100 terminal (supports a subset of vt100 escape sequences and a fixed number of terminal screen sizes). Output from any remotely executed commands (stdout/stderr) is sent to the session log.
 
-The SFTP browser displays both local and remote files systems and the selection of single files (at present) for upload/download/viewing/deletion.
+The SFTP browser displays both local and remote files systems and the selection of files/directories for upload/download/viewing/deletion.
 
 **To Do List**
 ***
