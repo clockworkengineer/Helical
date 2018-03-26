@@ -5,15 +5,14 @@ Helical is a Qt based SSH client for connecting to SSH servers and allowing the 
 
 The client is written mostly in Qt/C++ but it uses a set of Antik wrapper classes for talking to 'C' library [libssh](https://www.libssh.org/)  which provides the client side SSH support.
 
-A remote shell session takes place inside a window that emulates a vt100 terminal (supports a subset of vt100 escape sequences) that is currently on fixed size 80x24. Output from any remotely executed commands (stdout/stderr) is sent to the session log.
+A remote shell session takes place inside a window that emulates a vt100 terminal (supports a subset of vt100 escape sequences and a fixed number of terminal screen sizes). Output from any remotely executed commands (stdout/stderr) is sent to the session log.
 
-The SFTP browser displays both local and remote files systems and selection of single files (at present) for upload/download/viewing.
+The SFTP browser displays both local and remote files systems and the selection of single files (at present) for upload/download/viewing/deletion.
 
 **To Do List**
 ***
-- Custom view/model implementaiton for vt100 to support character attributes/color.
-- Customise terminal size.
+- Custom view/model implementation for vt100 to support character attributes/color.
 - Support for more than one running session.
 - SCP client.
-- Use view/model for remote SFTP file system instead of QListWidget,
 - Better server disconnect handling (hard as libssh is awful on that front).
+- Compile in Antik sources used instead of linking  in  library.
