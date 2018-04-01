@@ -24,7 +24,7 @@
 // =============
 
 #include "qtterminal.h"
-
+#include <QDebug>
 /**
  * @brief QtTerminal::QtTerminal
  *
@@ -42,11 +42,18 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
 
     setStyleSheet("QListView {selection-background-color: white; selection-color: white;}");
 
+    setModel(&m_terminalModel);
+    m_terminalModel.insertRows(0, m_terminal.getMaxRows());
+
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
     QFontMetrics fm(property("font").value<QFont>());
 
-    setFixedWidth((fm.maxWidth()*columns)+((verticalScrollBar()->height()+fm.maxWidth())));
-    setFixedHeight((fm.height()*rows)+(fm.height()));
+    // Code still needs work to get calculation for size of terminal window correct
+
+    int textWidth= (fm.maxWidth()*columns)+((verticalScrollBar()->height()+fm.maxWidth()));
+    setFixedWidth(textWidth);
+    int textHeight = (sizeHintForRow(0)*rows)+horizontalScrollBar()->height()/2;
+    setFixedHeight(textHeight);
 
     horizontalScrollBar()->setDisabled(true);
     horizontalScrollBar()->setHidden(true);
@@ -57,10 +64,6 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
     setSelectionMode(QListView::NoSelection);
     setEditTriggers(QListView::NoEditTriggers);
     setSelectionBehavior(QListView::SelectItems);
-
-    setModel(&m_terminalModel);
-
-    m_terminalModel.insertRows(0, m_terminal.getMaxRows());
 
     setFocus();
 
