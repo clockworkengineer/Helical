@@ -50,10 +50,8 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
 
     // Code still needs work to get calculation for size of terminal window correct
 
-    int textWidth= (fm.maxWidth()*columns)+((verticalScrollBar()->height()+fm.maxWidth()));
-    setFixedWidth(textWidth);
-    int textHeight = (sizeHintForRow(0)*rows)+horizontalScrollBar()->height()/2;
-    setFixedHeight(textHeight);
+    setFixedWidth((fm.maxWidth()*columns)+((verticalScrollBar()->height()+fm.maxWidth())));
+    setFixedHeight((sizeHintForRow(0)*rows)+(horizontalScrollBar()->sizeHint().height()));
 
     horizontalScrollBar()->setDisabled(true);
     horizontalScrollBar()->setHidden(true);
