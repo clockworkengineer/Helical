@@ -24,7 +24,7 @@
 // =============
 
 #include "qtterminal.h"
-#include <QDebug>
+
 /**
  * @brief QtTerminal::QtTerminal
  *
