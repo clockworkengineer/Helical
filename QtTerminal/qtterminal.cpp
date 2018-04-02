@@ -22,9 +22,9 @@
 // =============
 // INCLUDE FILES
 // =============
-
+#include <QBoxLayout>
 #include "qtterminal.h"
-
+#include <QDebug>
 /**
  * @brief QtTerminal::QtTerminal
  *
@@ -50,7 +50,7 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
 
     // Code still needs work to get calculation for size of terminal window correct
 
-    setFixedWidth((fm.maxWidth()*columns)+((verticalScrollBar()->height()+fm.maxWidth())));
+    setFixedWidth(fm.width(QString(columns, 'X'))+verticalScrollBar()->sizeHint().width()+(parent->layout()->margin()/2));
     setFixedHeight((sizeHintForRow(0)*rows)+(horizontalScrollBar()->sizeHint().height()));
 
     horizontalScrollBar()->setDisabled(true);
@@ -64,6 +64,8 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
     setSelectionBehavior(QListView::SelectItems);
 
     setFocus();
+
+    qDebug() << width() << verticalScrollBar()->sizeHint().width() << verticalScrollBar()->height();
 
 }
 
