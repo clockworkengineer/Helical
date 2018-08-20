@@ -65,13 +65,13 @@ FORMS += \
     Client/helicalserverdetailsdialog.ui \
     Client/helicalsftpdialog.ui
 
-INCLUDEPATH += $$PWD/../../NetBeansProjects/Antik/include
-DEPENDPATH += $$PWD/../../NetBeansProjects/Antik/include
+INCLUDEPATH += $$PWD/../Antik/include
+DEPENDPATH += $$PWD/../Antik/include
 
 unix: LIBS += -L/usr/local/lib -lboost_system
 unix: LIBS += -L/usr/local/lib -lboost_filesystem
 
-unix: LIBS += -L$$PWD/../../NetBeansProjects/Antik/dist/Debug/GNU-Linux/ -lantik
+unix: LIBS += -L$$PWD/../Antik/dist/Debug/GNU-Linux/ -lantik
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += libssh
