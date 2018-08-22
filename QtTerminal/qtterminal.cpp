@@ -65,8 +65,6 @@ QtTerminal::QtTerminal(int columns, int rows, QWidget *parent) : QListView(paren
 
     setFocus();
 
-    qDebug() << width() << verticalScrollBar()->sizeHint().width() << verticalScrollBar()->height();
-
 }
 
 /**

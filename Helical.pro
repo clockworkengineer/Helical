@@ -71,7 +71,11 @@ DEPENDPATH += $$PWD/../Antik/include
 unix: LIBS += -L/usr/local/lib -lboost_system
 unix: LIBS += -L/usr/local/lib -lboost_filesystem
 
+CONFIG(debug, debug|release) {
 unix: LIBS += -L$$PWD/../Antik/dist/Debug/GNU-Linux/ -lantik
+} else {
+unix: LIBS += -L$$PWD/../Antik/dist/Release/GNU-Linux/ -lantik
+}
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += libssh
